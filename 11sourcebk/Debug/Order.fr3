@@ -1,0 +1,74 @@
+<?xml version="1.1" encoding="utf-8"?>
+<TfrxReport Version="4.7.2" DotMatrixReport="false" IniFile="\Software\Fast Reports" PreviewOptions.Buttons="4095" PreviewOptions.Zoom="1" PrintOptions.Printer="Default" PrintOptions.PrintOnSheet="0" ReportOptions.CreateDate="40497.4778269329" ReportOptions.Description.Text="" ReportOptions.LastChange="40498.4900232176" ScriptLanguage="PascalScript" ScriptText.Text="begin&#13;&#10;&#13;&#10;end." PropData="044C656674022003546F7002080844617461736574730101063620446174615365743D2266727844426F726464657461696C2220446174615365744E616D653D2266727844426F726464657461696C220001063220446174615365743D2266727844426F7264686561642220446174615365744E616D653D2266727844426F726468656164220000095661726961626C65730100055374796C650100">
+  <TfrxDataPage Name="Data" Height="1000" Left="0" Top="0" Width="1000"/>
+  <TfrxReportPage Name="Page1" PaperWidth="210" PaperHeight="297" PaperSize="9" LeftMargin="0" RightMargin="0" TopMargin="2" BottomMargin="5" ColumnWidth="0" ColumnPositions.Text="" HGuides.Text="" VGuides.Text="">
+    <TfrxPageHeader Name="PageHeader1" Height="27" Left="0" Top="154.96073" Width="793.7013">
+      <TfrxMemoView Name="Memo1" Left="600" Top="3.10235" Width="190.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="第[Page#]页 共[TotalPages#]页"/>
+    </TfrxPageHeader>
+    <TfrxReportTitle Name="ReportTitle1" Height="112" Left="0" Top="18.89765" Width="793.7013">
+      <TfrxMemoView Name="Memo2" Align="baCenter" Left="117.106525" Top="21.10235" Width="559.48825" Height="23.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-19" Font.Name="Arial" Font.Style="1" HAlign="haCenter" ParentFont="false" Text="[&#34;title&#34;]"/>
+      <TfrxMemoView Name="Memo3" Left="22" Top="69.10235" Width="358.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="电话：[&#34;tel&#34;]"/>
+      <TfrxMemoView Name="Memo4" Left="389" Top="69.10235" Width="382.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="联系人：[&#34;contact&#34;]"/>
+      <TfrxMemoView Name="Memo5" Left="22" Top="90.10235" Width="749.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="地址：[&#34;address&#34;]"/>
+    </TfrxReportTitle>
+    <TfrxMasterData Name="MasterData1" Height="135.67718" Left="0" Top="241.88992" Width="793.7013" ColumnWidth="0" ColumnGap="0" DataSet="frxDBordhead" DataSetName="frxDBordhead" RowCount="0">
+      <TfrxMemoView Name="Memo6" Left="22" Top="5.11008" Width="172.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="订单号：[frxDBordhead.&#34;OrderNtCode&#34;]"/>
+      <TfrxMemoView Name="Memo7" Left="193" Top="5.11008" Width="388.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="客户名称：[&#34;ClientName&#34;]"/>
+      <TfrxMemoView Name="Memo8" Left="584" Top="6.11008" Width="187.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="客户电话：[frxDBordhead.&#34;telephone&#34;]"/>
+      <TfrxMemoView Name="Memo9" Left="22" Top="26.11008" Width="172.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="订单日期：[frxDBordhead.&#34;hdtime&#34;]"/>
+      <TfrxMemoView Name="Memo10" Left="195" Top="26.11008" Width="576.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="备注：[frxDBordhead.&#34;remarks&#34;]"/>
+      <TfrxMemoView Name="Memo11" Left="22" Top="47.11008" Width="749.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="客户地址：[frxDBordhead.&#34;clientadd&#34;]"/>
+      <TfrxMemoView Name="Memo12" Left="22" Top="79.11008" Width="199.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="总数量：[frxDBordhead.&#34;totalamount&#34;]"/>
+      <TfrxMemoView Name="Memo13" Left="222" Top="79.11008" Width="279.48825" Height="18.89765" ShowHint="false" DisplayFormat.FormatStr="##0.00" DisplayFormat.Kind="fkNumeric" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="总码洋：[frxDBordhead.&#34;fixedprice&#34;]"/>
+      <TfrxMemoView Name="Memo14" Left="504" Top="79.11008" Width="267.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="总实洋：[frxDBordhead.&#34;discountedprice&#34;]"/>
+      <TfrxLineView Name="Line1" Left="22" Top="5.11008" Width="749" Height="0" ShowHint="false" Frame.Typ="4"/>
+      <TfrxLineView Name="Line2" Left="22" Top="5.11008" Width="0" Height="62" ShowHint="false" Frame.Typ="1"/>
+      <TfrxLineView Name="Line3" Left="23" Top="67.11008" Width="749" Height="0" ShowHint="false" Frame.Typ="4"/>
+      <TfrxLineView Name="Line4" Left="23" Top="25.11008" Width="749" Height="0" ShowHint="false" Frame.Typ="4"/>
+      <TfrxLineView Name="Line5" Left="23" Top="47.11008" Width="748" Height="0" ShowHint="false" Frame.Typ="4"/>
+      <TfrxLineView Name="Line6" Left="194" Top="6.11008" Width="0" Height="19" ShowHint="false" Frame.Typ="1"/>
+      <TfrxLineView Name="Line7" Left="583" Top="5.11008" Width="0" Height="19" ShowHint="false" Frame.Typ="1"/>
+      <TfrxLineView Name="Line8" Left="772" Top="5.11008" Width="0" Height="63" ShowHint="false" Frame.Typ="1"/>
+      <TfrxLineView Name="Line9" Left="22" Top="79.11008" Width="750" Height="0" ShowHint="false" Frame.Typ="4"/>
+      <TfrxLineView Name="Line10" Left="21" Top="98.11008" Width="751" Height="0" ShowHint="false" Frame.Typ="4"/>
+      <TfrxLineView Name="Line11" Left="21" Top="80.11008" Width="0" Height="18" ShowHint="false" Frame.Typ="1"/>
+      <TfrxLineView Name="Line12" Left="772" Top="79.11008" Width="0" Height="18" ShowHint="false" Frame.Typ="1"/>
+      <TfrxLineView Name="Line13" Left="222" Top="79.11008" Width="0" Height="18" ShowHint="false" Frame.Typ="1"/>
+      <TfrxLineView Name="Line14" Left="502" Top="80.11008" Width="0" Height="18" ShowHint="false" Frame.Typ="1"/>
+      <TfrxMemoView Name="Memo15" Left="21" Top="114.11008" Width="33.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="序号"/>
+      <TfrxMemoView Name="Memo16" Left="55" Top="114.11008" Width="101.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="书号"/>
+      <TfrxMemoView Name="Memo17" Left="157" Top="114.11008" Width="188.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="书名"/>
+      <TfrxMemoView Name="Memo18" Left="346" Top="114.11008" Width="51.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="作者"/>
+      <TfrxMemoView Name="Memo19" Left="399" Top="114.11008" Width="62.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="版别"/>
+      <TfrxMemoView Name="Memo20" Left="463" Top="114.11008" Width="51.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="版次"/>
+      <TfrxMemoView Name="Memo21" Left="515" Top="114.11008" Width="40.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="定价"/>
+      <TfrxMemoView Name="Memo22" Left="555" Top="114.11008" Width="37.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="数量"/>
+      <TfrxMemoView Name="Memo23" Left="593" Top="114.11008" Width="42.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="折扣"/>
+      <TfrxMemoView Name="Memo24" Left="636" Top="114.11008" Width="64.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="码洋"/>
+      <TfrxMemoView Name="Memo25" Left="700" Top="114.11008" Width="71.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="实洋"/>
+    </TfrxMasterData>
+    <TfrxDetailData Name="DetailData1" Height="25.67718" Left="0" Top="400.63018" Width="793.7013" AllowSplit="true" ColumnWidth="0" ColumnGap="0" DataSet="frxDBorddetail" DataSetName="frxDBorddetail" RowCount="0" Stretched="true">
+      <TfrxMemoView Name="Memo26" Left="21" Top="2.36982" Width="33.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;xuhao&#34;]"/>
+      <TfrxMemoView Name="Memo27" Left="54" Top="2.36982" Width="102.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;ISBN&#34;]"/>
+      <TfrxMemoView Name="Memo28" Left="157" Top="2.36982" Width="188.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;Name&#34;]"/>
+      <TfrxMemoView Name="Memo29" Left="346" Top="2.36982" Width="51.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;author&#34;]"/>
+      <TfrxMemoView Name="Memo30" Left="398" Top="2.36982" Width="63.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;abbreviatedname&#34;]"/>
+      <TfrxMemoView Name="Memo31" Left="461" Top="2.36982" Width="53.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;PressCount&#34;]"/>
+      <TfrxMemoView Name="Memo32" Left="514" Top="2.36982" Width="41.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;price&#34;]"/>
+      <TfrxMemoView Name="Memo33" Left="556" Top="2.36982" Width="36.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;amount&#34;]"/>
+      <TfrxMemoView Name="Memo34" Left="593" Top="2.36982" Width="42.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" DisplayFormat.FormatStr="#00%" DisplayFormat.Kind="fkNumeric" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;discount&#34;]"/>
+      <TfrxMemoView Name="Memo35" Left="636" Top="2.36982" Width="65.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" DisplayFormat.FormatStr="##0.00" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;fixedprice&#34;]"/>
+      <TfrxMemoView Name="Memo36" Left="700" Top="2.36982" Width="71.48825" Height="18.89765" ShowHint="false" StretchMode="smMaxHeight" DisplayFormat.FormatStr="##0.00" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[frxDBorddetail.&#34;discountedprice&#34;]"/>
+      <TfrxLineView Name="Line15" Align="baBottom" Left="21" Top="25.67718" Width="750" Height="0" ShowHint="false" Frame.Typ="4"/>
+    </TfrxDetailData>
+    <TfrxReportSummary Name="ReportSummary1" Height="85.67718" Left="0" Top="487.55937" Width="793.7013">
+      <TfrxMemoView Name="Memo37" Left="21" Top="4.44063" Width="65.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="合计"/>
+      <TfrxMemoView Name="Memo38" Left="555" Top="4.44063" Width="80.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[SUM(&#60;frxDBorddetail.&#34;amount&#34;&#62;,DetailData1)]"/>
+      <TfrxMemoView Name="Memo39" Left="636" Top="4.44063" Width="65.48825" Height="18.89765" ShowHint="false" DisplayFormat.FormatStr="##0.00" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[SUM(&#60;frxDBorddetail.&#34;fixedprice&#34;&#62;,DetailData1)]"/>
+      <TfrxMemoView Name="Memo40" Left="702" Top="4.44063" Width="69.48825" Height="18.89765" ShowHint="false" DisplayFormat.FormatStr="##0.00" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[SUM(&#60;frxDBorddetail.&#34;discountedprice&#34;&#62;,DetailData1)]"/>
+      <TfrxMemoView Name="Memo41" Left="21" Top="28.44063" Width="189.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="制单员：[frxDBordhead.&#34;maker&#34;]"/>
+      <TfrxMemoView Name="Memo42" Left="21" Top="49.44063" Width="750.48825" Height="18.89765" ShowHint="false" Font.Charset="1" Font.Color="0" Font.Height="-12" Font.Name="Arial" Font.Style="0" ParentFont="false" Text="[&#34;printbk&#34;]"/>
+      <TfrxLineView Name="Line16" Left="21" Top="24.44063" Width="751" Height="0" ShowHint="false" Frame.Typ="4"/>
+    </TfrxReportSummary>
+  </TfrxReportPage>
+</TfrxReport>

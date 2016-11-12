@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899-12-30 00:00:00.000.283,D:\work\book\wang\jiaocai_new\SendMsg\UnitSendMsg.pas=C:\Users\kevin\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.354,=C:\Users\kevin\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.589,=C:\Users\kevin\Documents\RAD Studio\Projects\ItemDetail1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.521,=C:\Users\kevin\Documents\RAD Studio\Projects\AppletModule1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.913,=C:\Users\kevin\Documents\RAD Studio\Projects\GroupedItems1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.283,D:\work\book\wang\jiaocai_new\SendMsg\UnitSendMsg.dfm=C:\Users\kevin\Documents\RAD Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.875,D:\work\book\wang\jiaocai_new\SendMsg\SendMsg.dproj=C:\Users\kevin\Documents\RAD Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.944,=C:\Users\kevin\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.330,=C:\Users\kevin\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899-12-30 00:00:00.000.673,=C:\Users\kevin\Documents\RAD Studio\Projects\Unit1.pas</Transaction>
+  </Transactions>
+</BorlandProject>

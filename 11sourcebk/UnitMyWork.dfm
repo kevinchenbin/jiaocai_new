@@ -1,0 +1,70 @@
+object frmMyWork: TfrmMyWork
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsSingle
+  Caption = #25105#30340#24037#20316#24179#21488
+  ClientHeight = 368
+  ClientWidth = 504
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 504
+    Height = 368
+    Align = alClient
+    BevelInner = bvLowered
+    Caption = 'Panel1'
+    Color = 16180174
+    ParentBackground = False
+    ShowCaption = False
+    TabOrder = 0
+    object SpeedButton1: TSpeedButton
+      Left = 248
+      Top = 312
+      Width = 129
+      Height = 41
+      Caption = #28155#21152#21040#25105#30340#24037#20316#24179#21488
+      Flat = True
+      OnClick = SpeedButton1Click
+    end
+    object SpeedButton2: TSpeedButton
+      Left = 400
+      Top = 312
+      Width = 89
+      Height = 41
+      Caption = #36864#20986
+      Flat = True
+      OnClick = SpeedButton2Click
+    end
+    object tvMyWork: TTreeView
+      Left = 14
+      Top = 17
+      Width = 481
+      Height = 281
+      AutoExpand = True
+      Indent = 19
+      ShowLines = False
+      TabOrder = 0
+      OnMouseDown = tvMyWorkMouseDown
+      OnMouseMove = tvMyWorkMouseMove
+    end
+  end
+  object aquery: TADOQuery
+    Parameters = <>
+    Left = 304
+    Top = 256
+  end
+end

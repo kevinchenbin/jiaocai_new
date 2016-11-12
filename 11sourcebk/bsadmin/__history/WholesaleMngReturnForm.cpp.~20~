@@ -1,0 +1,3570 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "WholesaleMngReturnForm.h"
+#include "NoteCode.h"
+#include "QryNoteCodeForm.h"
+#include "SetNotesForm.h"
+#include "mytrace.h"
+#include "SelectCustomerForm.h"
+#include "RecMoneyForm.h"
+#include "Print.h"
+//#include "customer\customer.h"
+#include "SelectCatalogForm.h"
+//#include "bsprint.h"
+#include "..\supplier\detailemessage.h"
+#include "UnitSelectClient.h"
+#include "bookQuery.h"
+#include "QueryDanHao.h"
+#include "Addsyslog.h"
+#include "UnitClient.h"
+#include   <math.h>
+#include "Unitorderquery.h"
+#include "Unitorderquery.h"
+#include "bookhistory.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "MDIChild"
+#pragma link "RzButton"
+#pragma link "RzDBCmbo"
+#pragma link "RzDBEdit"
+#pragma link "RzEdit"
+#pragma link "RzLabel"
+#pragma link "RzPanel"
+#pragma link "RzDBGrid"
+#pragma link "RzDBLbl"
+#pragma link "RzCommon"
+#pragma link "RzDBLook"
+#pragma link "RzRadGrp"
+#pragma link "RzRadChk"
+#pragma resource "*.dfm"
+TfrmWholesaleReturnMng *frmWholesaleReturnMng;
+//---------------------------------------------------------------------------
+__fastcall TfrmWholesaleReturnMng::TfrmWholesaleReturnMng(TComponent* Owner)
+	: TfrmMDIChild(Owner)
+	, m_catalogSearchMode(0)
+	, m_bsmode(BSUnknown)
+	, m_opmode(OPUnknown)
+	, m_supplierID(-1)
+{
+	m_module = MTWsaleMng;
+	this->WindowState = wsMaximized ;
+	ClientID = 1;
+	changehead = 0;
+}
+//---------------------------------------------------------------------------
+void TfrmWholesaleReturnMng::Init(LandInfo* li)
+{
+	TfrmMDIChild::Init(li);
+	linfo.app = li->app ;
+	linfo.con = li->con ;
+	linfo.userID = li->userID ;
+	linfo.UserName = li->UserName ;
+	linfo.storageID = li->storageID ;
+	linfo.FormatStr = "#,##0.00" ;;
+	lblOpName->Caption = m_opName;
+	cmdAddNtHeader->Connection = m_con;
+	spQryNtHeader->Connection = m_con;
+	spQryNtHeader1->Connection = m_con;
+	cmdUpdateNtHeader->Connection = m_con;
+	cmdAddNote->Connection = m_con;
+	cmdUpdateNote->Connection = m_con;
+	cmdDelNote->Connection = m_con;
+	cmdDelNtHeader->Connection = m_con;
+	cmdBatchDelNote->Connection = m_con;
+	cmdBatchUpdateNote->Connection = m_con;
+	cmdResetNtHeader->Connection = m_con;
+	spQryNtHeader1->Connection = m_con;
+	cmdDelNote->Connection = m_con;
+	dsetVendor->Connection = m_con;
+	dsetStaff->Connection = m_con;
+	dsetLkpVendor->Connection = m_con;
+	dsetBkstack->Connection = m_con;
+	qryrecord->Connection = m_con;
+	adospcopy->Connection = m_con;
+	spcopy->Connection = m_con;
+	spsave->Connection = m_con;
+	querydan->Connection = m_con;
+	dsetBkstack->CommandText = "select ID, Name from STK_BookstackInfo where stgid = " + IntToStr(m_storageID) ;
+	dsetBkstack->Active = true;
+	dsetVendor->Active = true;
+	dsetStaff->Active = true;
+	bearsaledataset->Connection = m_con;
+	bearsaledataset->Active = true;
+	dsetStaff->Connection = m_con;
+	sptuihuo1->Connection = m_con;
+	query->Connection = m_con;
+	ChangeCatalogSearchMode();
+	ChangeBsmode(BSNoteSendback);
+	//退货密码
+	String sql;
+	sql = "select * from SYS_BSSET where name = 'pxtuihuousepassword'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	tuihuo  = query->FieldByName("value")->AsBoolean ;
+	if (tuihuo) {
+    	if (!CheckOperateAuthority()) {
+			Close();
+			return;
+		}
+	}
+
+	ChangeOpmode(OPAddNtHeader);
+	addnotereturnvalue = 0;
+	dtpdate->Date = dbdtedtHdTime->Date  ;
+
+	//批销历史明细
+	sql = "select * from SYS_BSSET where name = 'wosaleday'" ;
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	if (query->FieldByName("value")->AsBoolean ) {
+		dgrecord->Visible = true;
+	}
+	else
+	{
+		dgrecord->Visible = false;
+	}
+	//当前客户结/欠款情况显示
+	sql = "select * from SYS_BSSET where name = 'checkedview'" ;
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	if (query->FieldByName("value")->AsBoolean ) {
+		GroupBox3->Visible = true;
+	}
+	else
+	{
+		GroupBox3->Visible = false;
+	}
+	//允许修改折扣
+	sql = "select * from SYS_BSSET where name = 'WsalelDiscountChange'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	if (query->FieldByName("value")->AsBoolean  ) {
+			dbnbedtDiscount->Enabled = true;
+	}
+	else
+	{
+		dbnbedtDiscount->Enabled = false;
+	}
+	//批销退货期限
+	sql = "select * from SYS_BSSET where name = 'pxtuihuoqixian'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	pxtuihuo = query->FieldByName("bk")->AsAnsiString ;
+	//小数位数
+	sql = "select * from SYS_BSSET where name = 'salexiaoshudian'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	format = "￥###,###,##" + query->FieldByName("bk")->AsString ;
+	dbnbedt3->DisplayFormat = "￥###,###,##0.00";
+	dbnbedt4->DisplayFormat = format;
+	//批销现场收款
+	sql = "select * from SYS_BSSET where name = 'xianchangrecive'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	if (query->FieldByName("value")->AsBoolean  ) {
+		RzToolButton2->Enabled = true;
+	}
+	else
+	{
+		RzToolButton2->Enabled = false;
+	}
+	sql = "select ID,Name from SYS_StorageInfo where id  = " + IntToStr(m_storageID) ;
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	edstorageid->Text = query->FieldByName("ID")->AsString ;
+	edstoragename->Text = query->FieldByName("Name")->AsString ;
+	GetBkStackInfo();
+	dblkpcbbVendorID->KeyValue = dsetVendor->FieldByName("ID")->AsInteger ;
+	checkedview();
+	ReadClient();
+	//打印备注
+	sql = "select wsprinttitle,wscontact,wstel,wsaddress,wsprintbk from sys_printtitle where stgid = " + IntToStr(m_storageID);
+    query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+
+	pxbk = query->FieldByName("wsprintbk")->AsAnsiString ;
+	printtitle = query->FieldByName("wsprinttitle")->AsAnsiString ;
+	contact = query->FieldByName("wscontact")->AsAnsiString ;
+	tel = query->FieldByName("wstel")->AsAnsiString ;
+	address = query->FieldByName("wsaddress")->AsAnsiString ;
+
+	//单号显示规则
+	sql = "select * from SYS_BSSET where name = 'changeDanHaoDisplay'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+
+	ChangeDisplay  = query->FieldByName("value")->AsBoolean ;
+
+	if (ChangeDisplay) {
+	  editdanhao->Visible = true;
+	  dbedtWsaleNtCode->Visible = false;
+	   DBNav->Visible = true;
+	   dgrecord->Columns->Items[1]->Visible = true;
+	   dgrecord->Columns->Items[0]->Visible = false;
+	}else
+	{
+	  editdanhao->Visible = false;
+	  dbedtWsaleNtCode->Visible = true;
+		dgrecord->Columns->Items[1]->Visible = false;
+		dgrecord->Columns->Items[0]->Visible = true;
+	}
+
+	//所有客户历史明细
+	sql = "select * from SYS_BSSET where name = 'pxallclientdetail'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	allclient  = query->FieldByName("value")->AsBoolean ;
+	//删单密码
+	sql = "select * from SYS_BSSET where name = 'pxdeleteusepassword'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	deletedetail  = query->FieldByName("value")->AsBoolean ;
+	//查单密码
+	sql = "select * from SYS_BSSET where name = 'pxfindusepassword'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	find  = query->FieldByName("value")->AsBoolean ;
+	//修改单头密码是否启用
+	sql = "select * from SYS_BSSET where name = 'pxusechange'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	changepassword  = query->FieldByName("value")->AsBoolean ;
+	// 重复提示
+	sql = "select * from sys_bsset where name = 'wsalesametishi'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	sametishi  = query->FieldByName("value")->AsBoolean ;
+	FormView();
+         if (li->FormatStr=="1") {
+            newclient=true;
+             RzButton1->Enabled = true;
+          }else {newclient = false;
+           RzButton1->Enabled = false;}
+	printmodle = 0;
+        checknewsupplier();
+}
+
+void __fastcall TfrmWholesaleReturnMng::FormClose(TObject *Sender, TCloseAction &Action)
+{
+	DelInvalidNtHeader();
+	//SaveWsale(2);
+	spQryNtHeader->Active = false;
+	spQryNtHeader1->Active = false;
+	dsetStaff->Active = false;
+	dsetLkpVendor->Active = false;
+	dsetBkstack->Active = false;
+	dsetVendor->Active = false;
+	TfrmMDIChild::FormClose(Sender, Action);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::tlbtn1Click(TObject *Sender)
+{
+	//删除
+	if (!SaveWsale(1))
+	{
+		return;
+	}
+	//DelInvalidNtHeader();
+	TControl* con = dynamic_cast<TControl*>(Sender);
+	if (con)
+	{
+		ChangeOpmode(con->Tag);
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmWholesaleReturnMng::tlbtn7Click(TObject *Sender)
+{
+	Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::edtQryVendorKeyPress(TObject *Sender, wchar_t &Key)
+{
+	if (Key == '\r')
+	{
+		if (!dsetNtHeader->Active
+			|| !dsetNote->Active
+			|| (dsetNtHeader->Active && dsetNtHeader->RecordCount < 1))
+			return;
+		if (!edtclient->Enabled ) {
+		   return;
+		}
+		TfrmselectClient * frm = new TfrmselectClient(Application,m_con,edtQryVendor->Text,linfo.storageID);
+	   if (mrOk == frm->ShowModal())
+	   {
+			//editclientname->Text = frm->GetSelect();
+			ClientID = frm->GetSelectID();
+			dsetNtHeader->Edit();
+			dsrcNtHeader->DataSet->FieldByName("VendorID")->Value =  ClientID;
+			dsetNtHeader->UpdateRecord();
+			dblkpcbbVendorID->KeyValue =  ClientID;
+			//cbclient->ItemIndex = cbclient->Items->IndexOfObject((TObject*)ClientID);
+			edtclient->SetFocus();
+			ClientView();
+			edtQryVendor->Text = "";
+			UpdateNtHeader();
+			checkedview();
+	   }
+	   delete frm;
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmWholesaleReturnMng::edtCatalogKeyPress(TObject *Sender, wchar_t &Key)
+{
+	//
+    if (m_catalogSearchMode == 6) {
+		if ((Key < '0' || Key > '9') && (Key != '\b') && (Key != '.') && (Key != '\r') ) {
+            Key = NULL;
+		}
+	}
+	if (Key == '\r')
+	{
+		if (BtnSave->Enabled) {
+			MessageBox(0,"请先保存批销退货单！","批销退货" ,MB_ICONEXCLAMATION);
+			return;
+		}
+		if (!dsetNote->Active || !dsetNtHeader->Active
+			|| (dsetNtHeader->Active && dsetNtHeader->RecordCount < 1))
+			return;
+
+		if (edtCatalog->Text == "")
+		{
+			ChangeCatalogSearchMode();
+		}
+		else
+		{
+            float price;
+			if (m_catalogSearchMode == 6) {
+				try {
+					price = StrToFloat(edtCatalog->Text.Trim());
+				} catch (...) {
+					MessageBox(0,"请输入正确的定价！","批销退货" ,MB_ICONEXCLAMATION);
+					return;
+				}
+			}
+
+            if (chqikan->Checked && m_catalogSearchMode != 1) {
+				edqikan->SetFocus();
+				return;
+			}
+			if (m_catalogSearchMode == 1 && chqikan->Checked) {
+				if (edtCatalog->Text.Length() == 15 ) {
+					edqikan->Text = edtCatalog->Text.SubString(14,2);
+					edtCatalog->Text = edtCatalog->Text.SubString(0,13);
+				}
+				else
+				{
+                	edqikan->SetFocus();
+					return;
+				}
+			}
+
+
+			switch (m_catalogSearchMode)
+			{
+			case 1:
+			 //	if (edtCatalog->Text.Length() != 13)
+			  //	{
+			   //		ShowMessage("条码输入错误！");
+			  //		return;
+			 //	}
+			case 6:
+			case 2:
+			case 3:
+			case 5:
+				{
+					TfrmSelectCatalog* frm = new TfrmSelectCatalog(Application,m_con);
+					LandInfo li;
+					li.app = m_app;
+					li.con = m_con;
+					li.userID = m_userID;
+					li.storageID = m_storageID;
+					frm->Init(&li);
+					frm->DoModalType = 7; //一般发货退货模式
+					frm->WholeReturnfrm = this;
+					frm->qikan = chqikan->Checked ;
+					frm->qikanhao = edqikan->Text ;
+					frm->SetSearchMode(m_catalogSearchMode, edtCatalog->Text);
+					if (mrOk == frm->ShowModal())
+					{
+						int supplierID = -1,catalogID = -1;
+						if (frm->SelectAll) {
+							 for (int i = 0; i < frm->lengthint  ; i++) {
+								 cbbkstackID->ItemIndex = cbbkstackID->Items->IndexOfObject((TObject*)frm->BKSKid[i]);
+
+								 if (!saleenable(frm->stkbkid[i])) {
+									return;
+								 }
+								 if (AddNote(frm->SupplierID[i],frm->BkcatalogiD[i])) {
+
+									 Key = 0;
+									 Perform(WM_NEXTDLGCTL, 0, 0);
+									 historyview();
+
+								 }  else
+								 {
+
+
+								 }
+
+							 }
+
+						}else
+						{
+							frm->GetSelectResult(supplierID, catalogID);
+							if (!retailreturn(catalogID)) {
+                            	return;
+							}
+							if (frm->addbkinfo ) {
+								supplierID = 0;
+							}
+							if (supplierID >= 0 && catalogID >= 0)
+							{
+
+								if (!frm->addbkinfo) {
+                                	cbbkstackID->ItemIndex = cbbkstackID->Items->IndexOfObject((TObject*)frm->BSKid);
+                                	if (!saleenable(frm->BKinfoid)) {
+										return;
+									}
+								}
+
+                                TLocateOptions   Opts;
+								Opts.Clear();
+								Opts   <<   loPartialKey;
+								String   str   = AnsiString(frm->BKinfoid);
+								if ( !dsetNote->Locate("BkInfoID",str,Opts)){
+								if (AddNote(supplierID, catalogID))
+								{
+									if (addnotereturnvalue == -2) {
+										 MessageBox(0,"不允许负库存销售！","一般发货" ,MB_ICONEXCLAMATION);
+										 edtCatalog->Text = "";
+                                         addnotereturnvalue = 0;
+										} else
+										{
+											Key=0;
+											historyview();
+											if (chfoceset->Checked) {
+												if (chfsamount->Checked ) {
+													dbnbedtAmount->SetFocus();
+												}
+												else if (chfsdiscount->Checked ) {
+													dbnbedtDiscount->SetFocus();
+												}
+												else if (chfsluru->Checked) {
+													edtCatalog->SetFocus();
+												}
+											}
+											else
+											{
+                                            	dbnbedtAmount->SetFocus();
+											}
+
+										 }
+											editprice->Text =  FormatFloat("0.00", dsetNote->FieldByName("price")->AsFloat * dbnbedtDiscount->Value * 0.01);
+								}
+								else
+
+									ShowMessage("库存无该书!");
+								}
+								else
+								{
+									if (sametishi) {
+										MessageBox(0,"有相同记录请核实！","提示" ,MB_ICONEXCLAMATION);
+									}
+									dbgrdNote->SelectedRows->CurrentRowSelected = true;
+									dbgrdNote->SetFocus();
+							   		dbnbedtAmount->SetFocus();
+								}
+							}
+						}
+					}
+					delete frm;
+					edtCatalog->Text = "";
+					if (dblkpcbbVendorID->Text == "") {
+						dblkpcbbVendorID->KeyValue = dsetVendor->FieldByName("ID")->AsInteger ;
+					}
+				}
+				break;
+            default:
+				;
+			}
+		}
+    }
+}
+//---------------------------------------------------------------------------
+
+void TfrmWholesaleReturnMng::ChangeCatalogSearchMode()
+{
+	if (m_catalogSearchMode==3) {
+		m_catalogSearchMode=5;
+	}else
+	{
+	m_catalogSearchMode++;  }
+	if (m_catalogSearchMode >= 7)
+	{
+		m_catalogSearchMode = 1;
+	}
+
+	switch (m_catalogSearchMode)
+	{
+	case 1:
+    	if (chqikan->Checked ) {
+			edtCatalog->MaxLength = 15;
+		}
+		else
+		{
+			edtCatalog->MaxLength = 13;
+		}
+		lblCatalog->Caption = "书号";
+		break;
+	case 2:
+		edtCatalog->MaxLength = 0;
+		lblCatalog->Caption = "自编码";
+		break;
+	case 3:
+		edtCatalog->MaxLength = 0;
+		lblCatalog->Caption = "书名";
+		break;
+	case 5:
+		edtCatalog->MaxLength = 0;
+		lblCatalog->Caption = "作者";
+		break;
+	case 6:
+		edtCatalog->MaxLength = 0;
+		lblCatalog->Caption = "定价";
+		break;
+    default:
+        break;
+	}
+}
+
+//---------------------------------------------------------------------------
+void TfrmWholesaleReturnMng::ChangeBsmode(BSMode bsmode)
+{
+	if (bsmode != m_bsmode)
+	{
+		m_bsmode = bsmode;
+    }
+
+	if (m_bsmode == BSNote)
+	{
+		mniBsNote->Checked = true;
+		mniBsNoteSendback->Checked = false;
+	}
+	else if (m_bsmode == BSNoteSendback)
+	{
+		mniBsNote->Checked = false;
+		mniBsNoteSendback->Checked = true;
+	}
+}
+
+void TfrmWholesaleReturnMng::ChangeOpmode(OPMode opmode)
+{
+	if (opmode == m_opmode
+		&& (opmode == OPDelNtHeader))
+		return;
+
+	//1为查单模式 2为添加单头模式 3为删除单头模式 4为添加单模式 5为删除单模式 6为统一模式 7为现场收款模式
+	switch (opmode)
+	{
+	case OPFind:
+		{
+			if (!SaveWsale(1))
+			{
+				return;
+			}
+
+            AnsiString sql;
+
+			if (find) {
+            	if (!CheckOperateAuthority())
+					return;
+			}
+			DBNav->Enabled = true;
+
+			Tfrmorderquery* frm = new Tfrmorderquery(Application,m_con,m_storageID,2,1,false);
+				if (frm->ShowModal() == mrOk)
+				{
+					DelInvalidNtHeader();
+					edtCatalog->Text = "";
+					edtQryVendor->Text = "";
+					AnsiString code = frm->GetNoteCode();
+					AnsiString sqlwhere = frm->GetWhere();
+					try
+					{
+						QryNtHeader(code);
+						String sql;
+						if (sqlwhere != "") {
+							sql = "select * from BS_WsaleNoteHeader " + sqlwhere;
+							querydan->Close();
+							querydan->SQL->Clear();
+							querydan->SQL->Add(sql);
+							querydan->Open();
+							TLocateOptions Opts;
+							Opts.Clear();
+							Opts << loPartialKey;
+							querydan->Locate("WsaleNtCode", code, Opts);
+						}
+					}
+					__finally
+					{
+
+					}
+					m_opmode = opmode;
+					dtpdate->Date =  dbdtedtHdTime->Date ;//更新日期
+					delete frm;
+
+					edtclient->Enabled = false;
+					BtnSave->Enabled = false;
+					SaveOrNot = true;
+					RzButton1->Enabled = false;
+					spselectClient->Enabled = false;
+					dbnbedtAddCosts->Enabled = false;
+					dblkpcbbStaffID->Enabled = false;
+				}
+
+        }
+		break;
+	case OPAddNtHeader:
+		{
+			RzToolButton2->Enabled = true;
+			edtclient->Enabled = true;
+
+
+                         if (newclient) {
+                  RzButton1->Enabled = true;
+                }else RzButton1->Enabled = false;
+
+			spselectClient->Enabled = true;
+			//如果上次是添加模式，并且没有加进任何数据，则不能添加
+			if (m_opmode == OPAddNtHeader &&
+				dsetNote->Active && dsetNote->RecordCount < 1)
+				DelInvalidNtHeader();
+
+			if (m_opmode == OPDelNote
+				&& dsetNote->Active && dsetNote->RecordCount < 1)
+				DelInvalidNtHeader();
+
+			edtCatalog->Text = "";
+			edtQryVendor->Text = "";
+			editprice->Text = "0.00";
+			AddNtHeader();
+			m_opmode = opmode;
+			edtQryVendor->SetFocus();
+			dtpdate->Date = dbdtedtHdTime->Date ;
+			//cbclient->ItemIndex = cbclient->Items->IndexOfObject((TObject*)dsetVendor->FieldByName("ID")->AsInteger );
+        }
+		break;
+	case OPDelNtHeader:
+		{
+			RzToolButton2->Enabled = true;
+			if (!CheckOperateAuthority())
+				return;
+
+			edtCatalog->Text = "";
+			edtQryVendor->Text = "";
+//			DelNtHeader();
+			m_opmode = opmode;
+        }
+		break;
+	case OPAddNote:
+		RzToolButton2->Enabled = true;
+    	edtCatalog->Text = "";
+		edtCatalog->SetFocus();
+		m_opmode = opmode;
+		break;
+	case OPDelNote:
+    	if (dsetNote->IsEmpty() ) {
+            	return;
+		}
+		RzToolButton2->Enabled = true;
+		if (deletedetail) {
+			if (!CheckOperateAuthority())
+				return;
+		}
+		else
+		{
+        	if (MessageBoxA(0,"是否要删除该条记录?","询问",MB_ICONQUESTION|MB_OKCANCEL)!=1 )
+				return;
+		}
+		DelNote();
+
+		ResetNtHeader();
+    	m_opmode = opmode;
+		break;
+	case OPSetNotes:
+		RzToolButton2->Enabled = true;
+    	if (dsetNote->Active && dsetNote->RecordCount >= 1)
+		{
+			//统一模式
+			if (dbgrdNote->SelectedRows->Count == 0 || dbgrdNote->SelectedRows->Count == 1) {
+            	for (int i = 1; i <= dsetNote->RecordCount ; i++) {
+					dbgrdNote->DataSource->DataSet->RecNo = i;
+					dbgrdNote->SelectedRows->CurrentRowSelected = true;
+				}
+			}
+			TfrmSetNotes* frm = new TfrmSetNotes(this);
+			frm->ChangeBsmode(m_bsmode);
+			if (frm->ShowModal() == mrOk)
+			{
+				int amount = 0;
+				float discount = 0;
+				bool bsetAmount = frm->GetAmount(amount);
+				bool bsetDiscount = frm->GetDiscount(discount);
+				if (bsetAmount && bsetDiscount)
+				{
+					BatchSetNotes(amount, discount, 1);
+				}
+				else if (bsetAmount && !bsetDiscount)
+				{
+					BatchSetNotes(amount, discount, 2);
+				}
+				else if (!bsetAmount && bsetDiscount)
+				{
+                	BatchSetNotes(amount, discount, 3);
+				}
+				else
+				{
+
+                }
+			}
+			delete frm;
+			m_opmode = opmode;
+        }
+		break;
+	case OPRecCash:
+		//现场收款模式
+		if (editdanhao->Text == "") {
+			return;
+		}
+    	if (!SaveWsale(1))
+		{
+			return;
+		}
+    	RzToolButton2->Enabled = true;
+
+		if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+		{
+			//首先把修改的更新一下哈
+			dbgrdNote->SetFocus();
+			//其次把最新数据刷新一下哈
+			QryNtHeader();
+			//
+			/*String NtHeader = dbedtWsaleNtCode->Text.Trim(),Headerdate;
+			if (NtHeader.Length() == 13 ) {
+				Headerdate = NtHeader.SubString(0,4)+ "-" + NtHeader.SubString(5,2) + "-" + NtHeader.SubString(7,2);
+			}
+			else if(NtHeader.Length() == 14)
+			{
+				Headerdate = NtHeader.SubString(1,4)+ "-" + NtHeader.SubString(6,2) + "-" + NtHeader.SubString(8,2);
+			}
+			else if (NtHeader.Length() == 15) {
+				Headerdate = NtHeader.SubString(2,4)+ "-" + NtHeader.SubString(7,2) + "-" + NtHeader.SubString(9,2);
+			}
+			if (StrToDate(Headerdate) != Date()) {
+				MessageBox(0,"现场收款只能收当日的！","一般发货退货" ,MB_OK);
+				return;
+			}   */
+			if (StrToDate(dsetNtHeader->FieldByName("HdTime")->AsAnsiString ) != Date()  ) {
+				MessageBox(0,"现场收款只能收当日的！","一般发货退货" ,MB_OK);
+				return;
+			}
+			TfrmRecMoney* frm = new TfrmRecMoney(this);
+			frm->format = format;
+			frm->SetDiscountedPrice(dsetNtHeader->FieldByName("DiscountedPrice")->AsFloat);
+			frm->SetChecked(dsetNtHeader->FieldByName("Checked")->AsFloat);
+			frm->lbl2->Caption = "现场收款";
+			frm->RzLabel1->Caption = "应收金额";
+			if (mrOk == frm->ShowModal())
+			{
+				if (frm->numedtUnchecked ->Value > 0) {
+					if (MessageBox(0,"你还有未结金额，是否继续？","现场收款",MB_ICONQUESTION|MB_OKCANCEL)!=1) {
+                        frm->ShowModal();
+						return;
+					}
+				}
+				dsetNtHeader->Edit();
+				dsetNtHeader->FieldByName("Checked")->AsFloat =
+				dsetNtHeader->FieldByName("Checked")->AsFloat + frm->GetReceived();
+				UpdateNtHeader();
+				AnsiString Code = NoteCode::BuildCode(query, GetDBTime(query), 0, "FN_CUSEndMoneyDocuments", "MoneyCode");
+				AnsiString sql;
+				sql = "insert into FN_CUSEndMoneyDocuments (MoneyCode,date,state,type,userid,CustmerName,ClearingType,Clearingstyle,cusid) values ("+Code+",getdate(),1,2," + IntToStr(m_userID) +",'" + edtclient->Text + "','现场收款','现金'," + IntToStr(ClientID) + ")";
+				query->Close();
+				query->SQL->Clear();
+				query->SQL->Add(sql);
+				query->ExecSQL();
+				sql = "insert into FN_CUSEndMoneyDtails(EndMoneyDocumentID,stgntcode,thistime,type,CodeStr) values(" + Code + "," + dsetNtHeader->FieldByName("WsaleNtCode")->AsAnsiString + "," + FloatToStr(frm->GetReceived()) + ",2,'" + dsetNtHeader->FieldByName("WsaleNtCodeStr")->AsAnsiString + "')";
+				query->Close();
+				query->SQL->Clear();
+				query->SQL->Add(sql);
+				query->ExecSQL();
+			}
+			delete frm;
+		}
+    	m_opmode = opmode;
+    	break;
+    default:
+        break;
+	}
+}
+
+void TfrmWholesaleReturnMng::BatchSetNotes(int amount, float discount, int mode)
+{
+	if (dsetNote->Active && dsetNote->RecordCount >= 1)
+	{
+		String ids = "-1";
+		if (dbgrdNote->SelectedRows->Count == 0)
+		{
+			if (mode != 3) {
+				if (tuihuocatch(abs(amount),dsetNote->FieldByName("BkcatalogID")->AsInteger)) {
+					ids = ids + "," + dsetNote->FieldByName("ID")->AsString;
+				}
+			}
+			else
+			{
+				ids = ids + "," + dsetNote->FieldByName("ID")->AsString;
+			}
+		}
+		else if (dbgrdNote->SelectedRows->Count > 0)
+		{
+			dsetNote->Bookmark = dbgrdNote->SelectedRows->Items[0];
+			if (mode != 3) {
+				if (tuihuocatch(abs(amount),dsetNote->FieldByName("BkcatalogID")->AsInteger)) {
+					ids = ids + "," + dsetNote->FieldByName("ID")->AsString;
+				}
+			}
+			else
+			{
+				ids = ids + "," + dsetNote->FieldByName("ID")->AsString;
+			}
+			for (int i=1; i < dbgrdNote->SelectedRows->Count; i++)
+			{
+				dsetNote->Bookmark = dbgrdNote->SelectedRows->Items[i];
+				if (mode != 3) {
+					if (tuihuocatch(abs(amount),dsetNote->FieldByName("BkcatalogID")->AsInteger)) {
+						ids = ids + "," + dsetNote->FieldByName("ID")->AsString;
+					}
+				}
+				else
+				{
+					ids = ids + "," + dsetNote->FieldByName("ID")->AsString;
+				}
+			}
+		}
+		else
+			return;
+
+		switch(mode)
+		{
+		case 1://两者均更新
+			cmdBatchUpdateNote->Parameters->ParamByName("@IDS")->Value = ids;
+			cmdBatchUpdateNote->Parameters->ParamByName("@Amount")->Value = amount;
+			cmdBatchUpdateNote->Parameters->ParamByName("@Discount")->Value = discount;
+            cmdBatchUpdateNote->Parameters->ParamByName("@Bsmode")->Value = 2;
+			cmdBatchUpdateNote->Execute();
+			try
+			{
+				//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+				QryNtHeader();
+			}
+			__finally
+			{
+				//LockWindowUpdate(NULL);
+			}
+			break;
+		case 2://只更新Amount
+			cmdBatchUpdateNote->Parameters->ParamByName("@IDS")->Value = ids;
+			cmdBatchUpdateNote->Parameters->ParamByName("@Amount")->Value = amount;
+			cmdBatchUpdateNote->Parameters->ParamByName("@Discount")->Value = "";
+			cmdBatchUpdateNote->Parameters->ParamByName("@Bsmode")->Value = 2;
+			cmdBatchUpdateNote->Execute();
+			try
+			{
+				//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+				QryNtHeader();
+			}
+			__finally
+			{
+				//LockWindowUpdate(NULL);
+			}
+			break;
+		case 3://只更新Discount
+			cmdBatchUpdateNote->Parameters->ParamByName("@IDS")->Value = ids;
+			cmdBatchUpdateNote->Parameters->ParamByName("@Amount")->Value = "";
+			cmdBatchUpdateNote->Parameters->ParamByName("@Discount")->Value = discount;
+			cmdBatchUpdateNote->Parameters->ParamByName("@Bsmode")->Value = 2;
+			cmdBatchUpdateNote->Execute();
+			try
+			{
+				//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+				QryNtHeader();
+			}
+			__finally
+			{
+				//LockWindowUpdate(NULL);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+void __fastcall TfrmWholesaleReturnMng::mniBsNoteSendbackClick(TObject *Sender)
+{
+	//添加单据类型
+	TMenuItem* item = dynamic_cast<TMenuItem*>(Sender);
+	if (item != NULL)
+	{
+		if (item->Tag == BSNoteSendback && !CheckOperateAuthority())
+			return;
+
+		ChangeBsmode(item->Tag);
+		ChangeOpmode(OPAddNtHeader);
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmWholesaleReturnMng::tlbtn4Click(TObject *Sender)
+{
+	//Excel导出
+	//Excel导出
+	if (!SaveWsale(1))
+	{
+		return;
+	}
+	if (dsetNote->Active && dsetNote->RecordCount >= 1)
+	{
+		DbgridToExcel(dbgrdNote);
+	}
+}
+//---------------------------------------------------------------------------
+//Excel导出函数
+bool __fastcall TfrmWholesaleReturnMng::DbgridToExcel(TRzDBGrid* dbg)
+{
+	AnsiString temptext,path  ;
+	int k = dbg->DataSource ->DataSet ->RecordCount ,n=0;
+
+	savedlg->FileName = StringReplace(edtclient->Text+editdanhao->Text ,"\\","-",TReplaceFlags()<<rfReplaceAll) + "发货退货单";
+	if (savedlg->Execute())
+	{
+		String DBPath,Name;
+		DBPath = Sysutils::ExtractFilePath(savedlg->FileName .c_str()  );
+		Name = Sysutils::ExtractFileName(savedlg->FileName .c_str() );
+		DBPath = DBPath + Name + ".xls";
+		path =  DBPath;
+	}
+	else
+	{
+		return false;
+	}
+
+	if(FileExists(path))
+		try {
+			DeleteFileA(path);
+		} catch (...) {
+			return false;
+		}
+
+	/*int  iFileHandle;
+	int   iFileLength;
+	if(FileExists(path))
+	   //iFileHandle = FileOpen(path.c_str() ,fmOpenReadWrite);
+	   if (DeleteFileA(path))
+			iFileHandle = FileCreate(path.c_str());
+	   else
+			return false;
+	else
+		iFileHandle = FileCreate(path.c_str());*/
+
+    Variant  v,vSheet,R,xWorkbook;
+	v   =Variant::CreateObject("Excel.Application");
+	v.OlePropertySet("Visible",true);
+	v.OlePropertyGet("WorkBooks").OleFunction("Add");
+	xWorkbook = v.OlePropertyGet("ActiveWorkBook");
+	vSheet =  xWorkbook.OlePropertyGet("ActiveSheet");
+
+	int t1= 0;
+	temptext = "\n";
+	for(int q=0;q<dbg->FieldCount-1 ;++q)
+	{
+		if (dbg->Columns->Items[q]->Visible == true) {
+			t1++;
+			temptext = "'"+ dbg->Columns ->Items [q]->Title ->Caption;
+			v.OlePropertyGet("Cells",1+n,(t1)).OlePropertySet("Value",temptext .c_str() );
+			/*if (printmodle == 0 && (dbg->Columns ->Items [q]->Title ->Caption == "折扣" ||dbg->Columns ->Items [q]->Title ->Caption == "实洋")) {
+
+			}
+			else
+			{
+            	temptext = temptext + dbg->Columns ->Items [q]->Title ->Caption + ",";
+			}*/
+		}
+	}
+	//FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+
+	int t2 = dbg->DataSource ->DataSet ->RecordCount ;
+
+	dbg->DataSource ->DataSet ->First();
+	dbg->DataSource ->DataSet->DisableControls();
+	for(int   i=2+n;i<=t2+1+n ;i++)
+	{
+		t1=0;
+		temptext = "\n";
+		for(int j=1;j<dbg->Columns ->Count  ;j++)
+		{
+			if (dbg->Columns->Items[j-1]->Visible == true) {
+				if (dbg->Columns ->Items [j-1]->FieldName == "ISBN") {
+                	t1++;
+					temptext = "'"+ dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+					v.OlePropertyGet("Cells",i,t1).OlePropertySet("Value",temptext .c_str() );
+					//temptext = temptext + "'" + dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+				}
+				/*else if (dbg->Columns ->Items [j-1]->FieldName == "CatalogName") {
+                	AnsiString bookname;
+					int len;
+					bookname = dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+					bookname = StringReplace(bookname , ",",".",TReplaceFlags()<<rfReplaceAll);
+					temptext = temptext + bookname + ",";
+				}*/
+				else if (dbg->Columns ->Items [j-1]->FieldName == "id" || dbg->Columns ->Items [j-1]->FieldName == "backdot"){
+
+				}
+				else
+				{
+					/*if (printmodle == 0 && (dbg->Columns ->Items [j-1]->FieldName == "DiscountedPrice" || dbg->Columns ->Items [j-1]->FieldName == "Discount")) {
+
+					}
+					else
+					{
+						temptext = temptext + dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+					} */
+					t1++;
+					temptext = dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+					v.OlePropertyGet("Cells",i,t1).OlePropertySet("Value",temptext .c_str() );  // AsString .c_str()
+				}
+			}
+		}
+		//FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+		dbg->DataSource ->DataSet ->Next() ;
+	}
+    R = vSheet.OlePropertyGet("Range",vSheet.OlePropertyGet("Cells",n+1,1),vSheet.OlePropertyGet("Cells",t2+n+2,t1)); //取得合并的区域
+	R.OlePropertyGet("Borders",2).OlePropertySet("linestyle",1);
+	R.OlePropertyGet("Borders",4).OlePropertySet("linestyle",1);
+
+	v.OlePropertyGet("Cells",t2+2+n,1).OlePropertySet("Value","合计");
+	temptext = dbnbedt2->Text ;
+	v.OlePropertyGet("Cells",t2+2+n,9).OlePropertySet("Value",temptext .c_str() );
+	temptext = dbnbedt3->Text ;
+	v.OlePropertyGet("Cells",t2+2+n,11).OlePropertySet("Value",temptext .c_str() );
+	temptext = dbnbedt4->Text ;
+	v.OlePropertyGet("Cells",t2+2+n,12).OlePropertySet("Value",temptext .c_str() );
+	dbg->DataSource ->DataSet->EnableControls();
+
+	try {
+		xWorkbook.OleFunction("SaveAs",path.c_str());
+	} catch (Exception &E) {
+		//ShowMessage(E.Message);
+	}
+
+	/*AnsiString pxamount,mayang,shiyang;
+	mayang =  dbnbedt3->Text;
+	shiyang = dbnbedt4->Text;
+	pxamount = dbnbedt2->Text;
+	mayang = StringReplace(mayang , ",","",TReplaceFlags()<<rfReplaceAll);
+	shiyang = StringReplace(shiyang , ",","",TReplaceFlags()<<rfReplaceAll);
+	pxamount = StringReplace(pxamount , ",","",TReplaceFlags()<<rfReplaceAll);
+	temptext = "\n";
+	if (printmodle == 0) {
+		temptext = temptext + "合计,,,,,,,," + pxamount + ",'" + mayang ;
+	}
+	else
+	{
+		temptext = temptext + "合计,,,,,,,," + pxamount + ",,'" + mayang + ",'" + shiyang ;
+	}
+
+	iFileLength   =   FileSeek(iFileHandle,0,2);
+	FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+
+	FileClose(iFileHandle);
+
+	MessageBox(0,"导出完毕！","提示" ,MB_OK);   */
+	return false;
+}
+//---------------------------------------------------------------------------}
+//---------------------------------------------------------------------------
+void TfrmWholesaleReturnMng::QryNtHeader(String code, bool qrybkstack)
+{
+	spQryNtHeader->Active = false;
+	spQryNtHeader1->Active = false;
+	spQryNtHeader1->Parameters->ParamByName("@NtCode")->Value = code;
+	spQryNtHeader1->Parameters->ParamByName("@Bsmode")->Value = 2;
+	MYTRACEF(_T("query note header @NtCode=%S"), code.c_str());
+	try
+	{
+		spQryNtHeader1->Active = true;
+		dsrcNtHeader->DataSet = NULL;
+		dsetNtHeader->Recordset = spQryNtHeader1->Recordset;
+		dsrcNtHeader->DataSet = dsetNtHeader;
+		dsetNtHeader->Last();
+		int count = 0;
+		dsrcNote->DataSet = NULL;
+		dsetNote->AfterScroll = NULL;
+		dsetNote->Recordset = spQryNtHeader1->NextRecordset(count);
+		dsrcNote->DataSet = dsetNote;
+		dsetNote->Last();
+		dbnbedt2->Visible = true;
+		dbnbedt3->Visible = true;
+		dbnbedt4->Visible = true;
+
+		dsetNote->AfterScroll = dsetNoteAfterScroll;
+		ClientID = dsrcNtHeader->DataSet->FieldByName("VendorID")->Value;
+		ClientView();
+		checkedview();
+		if (qrybkstack)
+		{
+            QryBkstack();
+		}
+		editdanhao->Text = dsetNtHeader->FieldByName("WsaleNtCodeStr")->AsAnsiString ;
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Discount"))->DisplayFormat = "0.00%";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Price"))->DisplayFormat = "￥###,###,##0.00";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = "￥###,###,##0.00";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = "￥###,###,##0.00";
+		operterview(dsetNtHeader->FieldByName("OperatorID")->AsInteger );
+		dtpdate->Date = dsetNtHeader->FieldByName("HdTime")->AsDateTime ;
+		membk->Text =  dsetNtHeader->FieldByName("Remarks")->AsString;
+		if (dsetNtHeader->FieldByName("cwstate")->AsInteger == 1 ) {
+			grpbxNote->Enabled = false;
+			tlbtnAddNote->Enabled = false;
+			tlbtn2->Enabled = false;
+			tlbtn3->Enabled = false;
+			Image1->Visible = true;
+		}
+		else
+		{
+			grpbxNote->Enabled = true;
+			tlbtnAddNote->Enabled = true;
+			tlbtn2->Enabled = true;
+			tlbtn3->Enabled = true;
+			Image1->Visible = false;
+		}
+
+                lock(dsetNtHeader->FieldByName("lock")->AsInteger);
+	}
+	catch(...)
+	{
+		//ShowMessage("该单不存在！");
+	}
+}
+
+void TfrmWholesaleReturnMng::QryNtHeader(bool qrybkstack)
+{
+	//保存查询之前的当前活动记录ID
+	int noteID = 0;
+	if (dsetNote->Active && dsetNote->RecordCount >= 1)
+	{
+        noteID = dsetNote->FieldByName("ID")->AsInteger;
+	}
+	//查询单头
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+	{
+		spQryNtHeader1->Active = false;
+		spQryNtHeader->Active = false;
+		spQryNtHeader->Parameters->ParamByName("@ID")->Value = dsetNtHeader->FieldByName("ID")->AsInteger;
+		spQryNtHeader->Parameters->ParamByName("@Bsmode")->Value = 2;
+		try
+		{
+			spQryNtHeader->Active = true;
+			dsrcNtHeader->DataSet = NULL;
+			dsetNtHeader->Recordset = spQryNtHeader->Recordset;
+			dsrcNtHeader->DataSet = dsetNtHeader;
+			dsetNtHeader->Last();
+			int count = 0;
+			dsrcNote->DataSet = NULL;
+			dsetNote->AfterScroll = NULL;
+			dsetNote->Recordset = spQryNtHeader->NextRecordset(count);
+			dsrcNote->DataSet = dsetNote;
+			if (noteID > 0)//将当前记录的ID重新调整至noteID
+			{
+                TLocateOptions Opts;
+				Opts.Clear();
+				Opts << loPartialKey;
+				if (!dsetNote->Locate("ID", noteID, Opts))
+					dsetNote->Last();
+			}
+			else
+			{
+				dsetNote->Last();
+			}
+			dsetNote->AfterScroll = dsetNoteAfterScroll;
+			ClientID = dsrcNtHeader->DataSet->FieldByName("VendorID")->Value;
+			ClientView();
+			checkedview();
+			if (qrybkstack)
+			{
+				QryBkstack();
+			}
+			((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Discount"))->DisplayFormat = "0.00%";
+			((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Price"))->DisplayFormat = "￥###,###,##0.00";
+			((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = "￥###,###,##0.00";
+			((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = "￥###,###,##0.00";
+			operterview(dsetNtHeader->FieldByName("OperatorID")->AsInteger );
+			dtpdate->Date = dsetNtHeader->FieldByName("HdTime")->AsDateTime ;
+			membk->Text =  dsetNtHeader->FieldByName("Remarks")->AsString;
+            if (dsetNtHeader->FieldByName("cwstate")->AsInteger == 1 ) {
+				grpbxNote->Enabled = false;
+				tlbtnAddNote->Enabled = false;
+				tlbtn2->Enabled = false;
+				tlbtn3->Enabled = false;
+				Image1->Visible = true;
+			}
+			else
+			{
+				grpbxNote->Enabled = true;
+				tlbtnAddNote->Enabled = true;
+				tlbtn2->Enabled = true;
+				tlbtn3->Enabled = true;
+				Image1->Visible = false;
+			}
+                         lock(dsetNtHeader->FieldByName("lock")->AsInteger);
+		}
+		catch(...)
+		{
+			//ShowMessage("该单不存在！");
+		}
+	}
+}
+
+void TfrmWholesaleReturnMng::QryNtHeader(int id, bool qrybkstack)
+{
+	//查询单头
+	spQryNtHeader1->Active = false;
+	spQryNtHeader->Active = false;
+	spQryNtHeader->Parameters->ParamByName("@ID")->Value = id;
+	spQryNtHeader->Parameters->ParamByName("@Bsmode")->Value = 2;
+	try
+	{
+		spQryNtHeader->Active = true;
+		dsrcNtHeader->DataSet = NULL;
+		dsetNtHeader->Recordset = spQryNtHeader->Recordset;
+		dsrcNtHeader->DataSet = dsetNtHeader;
+		dsetNtHeader->Last();
+		int count = 0;
+		dsrcNote->DataSet = NULL;
+		dsetNote->AfterScroll = NULL;
+		dsetNote->Recordset = spQryNtHeader->NextRecordset(count);
+		dsrcNote->DataSet = dsetNote;
+		dsetNote->Last();
+		dsetNote->AfterScroll = dsetNoteAfterScroll;
+		ClientID = dsrcNtHeader->DataSet->FieldByName("VendorID")->Value;
+		ClientView();
+		checkedview();
+		if (qrybkstack)
+		{
+			QryBkstack();
+		}
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Discount"))->DisplayFormat = "0.00%";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Price"))->DisplayFormat = "￥###,###,##0.00";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = "￥###,###,##0.00";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = "￥###,###,##0.00";
+		operterview(dsetNtHeader->FieldByName("OperatorID")->AsInteger );
+		dtpdate->Date = dsetNtHeader->FieldByName("HdTime")->AsDateTime ;
+		membk->Text =  dsetNtHeader->FieldByName("Remarks")->AsString;
+		if (dsetNtHeader->FieldByName("cwstate")->AsInteger == 1 ) {
+			grpbxNote->Enabled = false;
+			tlbtnAddNote->Enabled = false;
+			tlbtn2->Enabled = false;
+			tlbtn3->Enabled = false;
+			Image1->Visible = true;
+		}
+		else
+		{
+			grpbxNote->Enabled = true;
+			tlbtnAddNote->Enabled = true;
+			tlbtn2->Enabled = true;
+			tlbtn3->Enabled = true;
+			Image1->Visible = false;
+		}
+                 lock(dsetNtHeader->FieldByName("lock")->AsInteger);
+	}
+	catch(...)
+	{
+    	//ShowMessage("该单不存在！");
+    }
+}
+
+void TfrmWholesaleReturnMng::AddNtHeader()
+{
+	spQryNtHeader->Active = false;
+	spQryNtHeader1->Active = false;
+	cmdAddNtHeader->Parameters->ParamByName("@StgID")->Value = m_storageID;
+	cmdAddNtHeader->Parameters->ParamByName("@OperatorID")->Value = m_userID;
+	cmdAddNtHeader->Parameters->ParamByName("@Bsmode")->Value = 2;
+	cmdAddNtHeader->Parameters->ParamByName("@CODEMODE")->Value = 1;
+	MYTRACEF(_T("add note header @StgID=%d,@OperatorID=%d,@Bsmode=%d"),m_storageID,m_userID,2);
+	cmdAddNtHeader->Execute();
+	int id = cmdAddNtHeader->Parameters->ParamByName("@RETURN_VALUE")->Value;
+	try
+	{
+		//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+		QryNtHeader(id);
+	}
+	__finally
+	{
+		//LockWindowUpdate(NULL);
+	}
+}
+
+void TfrmWholesaleReturnMng::DelInvalidNtHeader()
+{
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1
+		&& dsetNote->Active && dsetNote->RecordCount < 1
+		&& dsetNtHeader->FieldByName("State")->AsInteger == 0 && dsetNtHeader->FieldByName("WsaleNtCode")->AsInteger == 0)
+	{
+		DelNtHeader();
+    }
+}
+
+void TfrmWholesaleReturnMng::DelNtHeader()
+{
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+	{
+		cmdDelNtHeader->Parameters->ParamByName("@ID")->Value
+			= dsetNtHeader->FieldByName("ID")->AsInteger;
+		int id = dsetNtHeader->FieldByName("ID")->AsInteger;
+		cmdDelNtHeader->Parameters->ParamByName("@Bsmode")->Value = 2;
+		MYTRACEF(_T("del note header @ID=%d,@Bsmode=%d"), id, 2);
+		cmdDelNtHeader->Execute();
+		try
+		{
+			//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+			//QryNtHeader(id);
+		}
+		__finally
+		{
+			//LockWindowUpdate(NULL);
+		}
+	}
+}
+
+void TfrmWholesaleReturnMng::UpdateNtHeader()
+{
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+	{
+		cmdUpdateNtHeader->Parameters->ParamByName("@ID")->Value =
+			dsetNtHeader->FieldByName("ID")->AsInteger;
+		cmdUpdateNtHeader->Parameters->ParamByName("@HdTime")->Value =
+			dsetNtHeader->FieldByName("HdTime")->AsDateTime;
+		cmdUpdateNtHeader->Parameters->ParamByName("@StgID")->Value =
+			dsetNtHeader->FieldByName("StgID")->AsInteger;
+		if (dsetNtHeader->FieldByName("StaffID")->AsString != "")
+			cmdUpdateNtHeader->Parameters->ParamByName("@StaffID")->Value =
+				dsetNtHeader->FieldByName("StaffID")->AsInteger;
+		cmdUpdateNtHeader->Parameters->ParamByName("@AddCosts")->Value =
+			abs(dsetNtHeader->FieldByName("AddCosts")->AsFloat);
+		cmdUpdateNtHeader->Parameters->ParamByName("@Remarks")->Value =
+			dsetNtHeader->FieldByName("Remarks")->AsWideString;
+		cmdUpdateNtHeader->Parameters->ParamByName("@CustomerID")->Value =
+			dsetNtHeader->FieldByName("VendorID")->AsInteger;
+		cmdUpdateNtHeader->Parameters->ParamByName("@Cash")->Value =
+			dsetNtHeader->FieldByName("Checked")->AsFloat;
+		if (dsetNtHeader->FieldByName("DiscountedPrice")->AsFloat > 0 &&
+			dsetNtHeader->FieldByName("Checked")->AsFloat >= dsetNtHeader->FieldByName("DiscountedPrice")->AsFloat)
+		{
+			cmdUpdateNtHeader->Parameters->ParamByName("@State")->Value = 1;
+		}
+		else if (dsetNtHeader->FieldByName("DiscountedPrice")->AsFloat < 0 &&
+			dsetNtHeader->FieldByName("Checked")->AsFloat <= dsetNtHeader->FieldByName("DiscountedPrice")->AsFloat)
+		{
+			cmdUpdateNtHeader->Parameters->ParamByName("@State")->Value = 1;
+		}
+		else
+		{
+			cmdUpdateNtHeader->Parameters->ParamByName("@State")->Value =
+				dsetNtHeader->FieldByName("State")->AsInteger;;
+		}
+//		MYTRACEF(_T("ID=%d,HdTime=%S,StgID=%d,StaffID=%d,AddCosts=%s,Remarks=%S,CustomerID=%d,Cash=%s,State=%d")
+//			, dsetNtHeader->FieldByName("ID")->AsInteger
+//			, dsetNtHeader->FieldByName("HdTime")->AsString.c_str()
+//			, dsetNtHeader->FieldByName("StgID")->AsInteger
+//			, dsetNtHeader->FieldByName("StaffID")->AsInteger
+//			, FloatToCStr(cmdUpdateNtHeader->Parameters->ParamByName("@AddCosts")->Value.VDouble)
+//			, dsetNtHeader->FieldByName("Remarks")->AsWideString.c_str()
+//			, dsetNtHeader->FieldByName("VendorID")->AsInteger
+//			, FloatToCStr(dsetNtHeader->FieldByName("Checked")->AsFloat)
+//			, cmdUpdateNtHeader->Parameters->ParamByName("@State")->Value.VInteger);
+		cmdUpdateNtHeader->Parameters->ParamByName("@Bsmode")->Value = 2;
+		cmdUpdateNtHeader->Execute();
+
+		try
+		{
+			//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+			QryNtHeader();
+		}
+		__finally
+		{
+			//LockWindowUpdate(NULL);
+		}
+	}
+}
+
+bool TfrmWholesaleReturnMng::AddNote(int supplierID, int catalogID)
+{
+	bool result = false;
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+	{
+		if (pxtuihuo != "" && pxtuihuo != "0") {
+        	AnsiString sql;
+			sql = "select BS_WsaleNote.* from BS_WsaleNote left join BS_WsaleNoteHeader "
+				" on BS_WsaleNote.WsaleNtHeaderID = BS_WsaleNoteHeader.id "
+				" left join stk_bookinfo on BS_WsaleNote.bkinfoid = stk_bookinfo.id "
+				" where stk_bookinfo.bkcatalogid = " + IntToStr(catalogID) + " and BS_WsaleNoteHeader.VendorID = " + IntToStr(ClientID) + " and datediff(day,dateadd(month,-" + pxtuihuo + ",getdate()),HdTime) >= 0 ";
+			query->Close();
+			query->SQL->Clear();
+			query->SQL->Add(sql);
+			query->Open();
+			if (query->RecordCount == 0) {
+				MessageBoxA(0,"该书没有发过货或者该书发货日期超过退货期限！","提示",MB_ICONEXCLAMATION);
+				return false;
+			}
+		}
+
+		cmdAddNote->Parameters->ParamByName("@NtHeaderID")->Value
+			= dsetNtHeader->FieldByName("ID")->AsInteger;
+		cmdAddNote->Parameters->ParamByName("@BkcatalogID")->Value
+			= catalogID;
+		cmdAddNote->Parameters->ParamByName("@SupplierID")->Value = supplierID;
+		cmdAddNote->Parameters->ParamByName("@bkstackID")->Value = (int)(cbbkstackID->Items->Objects[cbbkstackID->ItemIndex]);
+		cmdAddNote->Parameters->ParamByName("@Bsmode")->Value = 9;
+		cmdAddNote->Execute();
+		int ret = cmdAddNote->Parameters->ParamByName("@RETURN_VALUE")->Value;
+		if (ret > 0)//插入成功
+		{
+			try
+			{
+				//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+				QryNtHeader(dsetNtHeader->FieldByName("ID")->AsInteger, true);
+				((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Discount"))->DisplayFormat = "0.00%";
+				((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Price"))->DisplayFormat = "￥###,###,##0.00";
+				((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = "￥###,###,##0.00";
+				((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = "￥###,###,##0.00";
+			}
+			__finally
+			{
+				//LockWindowUpdate(NULL);
+			}
+
+			if (dsetNtHeader->FieldByName("printcount")->AsInteger > 0 ) {
+				if (ChangeDisplay) {
+					logmessage = "添加一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCodeStr")->AsAnsiString ;
+				}
+				else
+				{
+					logmessage = "添加一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCode")->AsAnsiString ;
+				}
+				logmessage = logmessage + "的书目《" + dsetNote->FieldByName("CatalogName")->AsAnsiString + "》";
+				AddEvent(1,"一般发货退货窗口",m_userID,m_storageID,logmessage,linfo.con);
+			}
+
+			result = true;
+		}
+		else if (ret == 0)//查无此书
+		{
+
+		}
+		else if (ret == -1)//库存出错了
+		{
+
+		}
+		else if (ret == -2) {
+				  //addnotereturnvalue = -2;
+                        //负库存
+				  result = true;
+		}
+
+	}
+	return result;
+}
+void TfrmWholesaleReturnMng::UpdateNote()
+{
+	if (dsetNote->Active && dsetNote->RecordCount >= 1)
+	{
+        if (dsetNtHeader->FieldByName("printcount")->AsInteger > 0 ) {
+			AnsiString sql;
+			sql = "select amount,discount from BS_WsaleNote where id = " + dsetNote->FieldByName("ID")->AsAnsiString;
+			query->Close();
+			query->SQL->Clear();
+			query->SQL->Add(sql);
+			query->Open();
+			float discount;
+			int amount;
+			amount = query->FieldByName("amount")->AsInteger ;
+			discount = query->FieldByName("discount")->AsFloat ;
+			AnsiString ss;
+			if (amount != - abs(dsetNote->FieldByName("Amount")->AsInteger)) {
+				ss = "数量" + IntToStr(amount) + "为-" + dsetNote->FieldByName("Amount")->AsAnsiString;
+			}
+			if (discount != fabs(dsetNote->FieldByName("Discount")->AsFloat)) {
+				ss = ss + "折扣" + FloatToStr(discount) + "为" + dsetNote->FieldByName("Discount")->AsAnsiString;
+			}
+			if (ss != "") {
+            	if (ChangeDisplay) {
+					logmessage = "修改一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCodeStr")->AsAnsiString ;
+				}
+				else
+				{
+					logmessage = "修改一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCode")->AsAnsiString ;
+				}
+				logmessage = logmessage + "的书目《" + dsetNote->FieldByName("CatalogName")->AsAnsiString + "》";
+                logmessage = logmessage + ss;
+				AddEvent(1,"一般发货退货窗口",m_userID,m_storageID,logmessage,linfo.con);
+			}
+		}
+
+		cmdUpdateNote->Parameters->ParamByName("@ID")->Value
+			= dsetNote->FieldByName("ID")->AsInteger;
+		cmdUpdateNote->Parameters->ParamByName("@Amount")->Value
+			= - abs(dsetNote->FieldByName("Amount")->AsInteger);
+		cmdUpdateNote->Parameters->ParamByName("@Discount")->Value
+			= fabs(dsetNote->FieldByName("Discount")->AsFloat);
+		cmdUpdateNote->Parameters->ParamByName("@Bsmode")->Value = 2;
+		cmdUpdateNote->Execute();
+	}
+	try
+	{
+		//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+		QryNtHeader();
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Discount"))->DisplayFormat = "0.00%";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("Price"))->DisplayFormat = "￥###,###,##0.00";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = "￥###,###,##0.00";
+		((TFloatField *)dbgrdNote->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = "￥###,###,##0.00";
+	}
+	__finally
+	{
+		//LockWindowUpdate(NULL);
+	}
+}
+void TfrmWholesaleReturnMng::DelNote()
+{
+	if (dsetNote->Active && dsetNote->RecordCount >= 1)
+	{
+		if (dbgrdNote->SelectedRows->Count == 0)
+		{
+			cmdDelNote->Parameters->ParamByName("@ID")->Value
+				= dsetNote->FieldByName("ID")->AsInteger;
+			cmdDelNote->Parameters->ParamByName("@Bsmode")->Value = 2;
+			if (ChangeDisplay) {
+				logmessage = "删除一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCodeStr")->AsAnsiString ;
+			}
+			else
+			{
+				logmessage = "删除一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCode")->AsAnsiString ;
+			}
+			logmessage = logmessage + "的书目《" + dsetNote->FieldByName("CatalogName")->AsAnsiString + "》";
+			AddEvent(1,"一般发货退货窗口",m_userID,m_storageID,logmessage,linfo.con);
+			cmdDelNote->Execute();
+		}
+		else if (dbgrdNote->SelectedRows->Count > 0)
+		{
+			String ids = "";
+			dsetNote->Bookmark = dbgrdNote->SelectedRows->Items[0];
+			ids = ids + dsetNote->FieldByName("ID")->AsString;
+			if (ChangeDisplay) {
+				logmessage = "删除一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCodeStr")->AsAnsiString ;
+			}
+			else
+			{
+				logmessage = "删除一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCode")->AsAnsiString ;
+			}
+			logmessage = logmessage + "的书目《" + dsetNote->FieldByName("CatalogName")->AsAnsiString + "》";
+			AddEvent(1,"一般发货退货窗口",m_userID,m_storageID,logmessage,linfo.con);
+			for (int i=1; i < dbgrdNote->SelectedRows->Count; i++)
+			{
+				dsetNote->Bookmark = dbgrdNote->SelectedRows->Items[i];
+				ids = ids + "," + dsetNote->FieldByName("ID")->AsString;
+				if (ChangeDisplay) {
+					logmessage = "删除一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCodeStr")->AsAnsiString ;
+				}
+				else
+				{
+					logmessage = "删除一般发货退货单" + dsetNtHeader->FieldByName("WsaleNtCode")->AsAnsiString ;
+				}
+				logmessage = logmessage + "的书目《" + dsetNote->FieldByName("CatalogName")->AsAnsiString + "》";
+				AddEvent(1,"一般发货退货窗口",m_userID,m_storageID,logmessage,linfo.con);
+			}
+			cmdBatchDelNote->Parameters->ParamByName("@IDS")->Value = ids;
+			cmdBatchDelNote->Parameters->ParamByName("@Bsmode")->Value = 2;
+			cmdBatchDelNote->Execute();
+		}
+		try
+		{
+			//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+			QryNtHeader();
+		}
+		__finally
+		{
+			//LockWindowUpdate(NULL);
+		}
+	}
+}
+
+void __fastcall TfrmWholesaleReturnMng::dblkpcbbBkstackIDKeyPress(TObject *Sender, wchar_t &Key)
+{
+	//
+	if (Key == '\r')
+	{
+		tlbtn1Click(tlbtnAddNote);
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmWholesaleReturnMng::dblkpcbbVendorIDKeyPress(TObject *Sender, wchar_t &Key)
+{
+	if (Key == '\r')
+	{
+		if (dsetNote->FieldByName("BkInfoID")->AsString == "") {
+        	return;
+		}
+		Key = 0;
+		if (dbnbedtAmount->Text == "") {
+			dbnbedtAmount->Text ="0";
+		}
+
+		if (tuihuocatch(dbnbedtAmount->IntValue,dsetNote->FieldByName("BkcatalogID")->AsInteger)) {
+        	if (chfoceset->Checked) {
+				if (chfsdiscount->Checked) {
+					Perform(WM_NEXTDLGCTL, 0, 0);
+				}
+				else if (chfsluru->Checked) {
+					edtCatalog->SetFocus();
+				}
+				else if (chfsamount->Checked) {
+					if (!dsetNote->Eof) {
+						dbgrdNote->SetFocus();
+						dsetNote->Next();
+						dbgrdNote->SelectedRows->CurrentRowSelected = true;
+						dbnbedtAmount->SetFocus();
+					}
+				}
+			}
+			else
+			{
+				Perform(WM_NEXTDLGCTL, 0, 0);
+			}
+		}
+		else
+		{
+			MessageBoxA(0,"退货数量大于发货数量！","警告",MB_ICONEXCLAMATION);
+			dbnbedtAmount->Value = 0;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+bool TfrmWholesaleReturnMng::tuihuocatch(int amount,int bkcatalogid)
+{
+	if (bearsaledataset->FieldByName("value")->AsBoolean) {
+		AnsiString sql;
+		sql = "select sum(BS_WsaleNote.amount) as amount from BS_WsaleNote left join BS_WsaleNoteHeader "
+			" on BS_WsaleNote.WsaleNtHeaderID = BS_WsaleNoteHeader.id "
+			" left join stk_bookinfo on BS_WsaleNote.bkinfoid = stk_bookinfo.id "
+			" where stk_bookinfo.bkcatalogid = " + IntToStr(bkcatalogid) + " and BS_WsaleNoteHeader.VendorID = " + IntToStr(ClientID) + " and BS_WsaleNote.id <> " + dsetNote->FieldByName("id")->AsAnsiString ;
+		query->Close();
+		query->SQL->Clear();
+		query->SQL->Add(sql);
+		query->Open();
+		if (amount > query->FieldByName("amount")->AsInteger) {
+        	return false;
+		}
+		else
+		{
+        	return true;
+		}
+	}
+	else
+	{
+		return true;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dblkpcbbStaffIDExit(TObject *Sender)
+{
+	UpdateNtHeader();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dbnbedtAmountExit(TObject *Sender)
+{
+	UpdateNote();
+	historyview();
+		editprice->Text =  FormatFloat("0.00", dsetNote->FieldByName("price")->AsFloat * dbnbedtDiscount->Value * 0.01);
+	if (dblkpcbbVendorID->Text == "") {
+		dblkpcbbVendorID->KeyValue = dsetVendor->FieldByName("ID")->AsInteger ;
+	}
+}
+//---------------------------------------------------------------------------
+
+void TfrmWholesaleReturnMng::Print(int modle,int type,int printid)//modle 1预览，2打印 type 0 默认方案 1 指定方案  prinid 方案id
+{
+	if (!SaveWsale(1))
+	{
+		return;
+	}
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1 && dsrcNote->DataSet != NULL)
+	{
+		Tfrmwsaleprinta* frm = new Tfrmwsaleprinta(this,m_con);
+		::ShowWindow(frm->Handle, SW_HIDE);
+		LandInfo li;
+		li.app = m_app;
+		li.con = m_con;
+		li.userID = m_userID;
+		li.storageID = m_storageID;
+		frm->stgid = m_storageID;
+                frm->booltuihuo = true;
+		frm->InputPara(dsetNtHeader->FieldByName("ID")->AsString,0);
+
+		frm->DanhaoChange = ChangeDisplay ;                      //change danhao
+		frm->RvSystem1->SystemSetups >>ssAllowSetup;
+		frm->RvSystem1->SystemSetups >>ssAllowDestPreview;
+		frm->RvSystem1->SystemSetups >>ssAllowDestPrinter;
+		frm->RvSystem1->SystemSetups >>ssAllowPrinterSetup;
+		frm->RvSystem1->SystemSetups >>ssAllowDestFile;
+
+		if (modle == 1) {
+			frm->RvSystem1->DefaultDest   = rdPreview ;
+		}
+		else
+		{
+			frm->RvSystem1->DefaultDest   = rdPrinter ;
+		}
+
+		frm->RvSystem1->SystemSetups<<ssAllowDestPrinter;
+
+		frm->RvSystem1->SystemSetups<<ssAllowDestPrinter;
+		frm->pxbk = pxbk;
+		frm->printtitle = printtitle;
+		frm->contact = contact;
+		frm->tel = tel;
+		frm->address = address;
+		frm->ClientName = edtclient->Text ;
+        if (type == 0) {
+			frm->printmodle = -1;
+		}
+		else
+		{
+			frm->printmodle = printid;
+		}
+		frm->tuihuo = 1;
+		frm->previewprint(modle,2);
+		frm->Close();
+		delete frm;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::tlbtn5Click(TObject *Sender)
+{
+	Print(0,0,0);
+	/*if (!SaveWsale(1))
+	{
+	  return;
+	}
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1 && dsrcNote->DataSet != NULL)
+	{
+		Tfrmwsaleprinta* frm = new Tfrmwsaleprinta(this,m_con);
+		::ShowWindow(frm->Handle, SW_HIDE);
+		LandInfo li;
+		li.app = m_app;
+		li.con = m_con;
+		li.userID = m_userID;
+		li.storageID = m_storageID;
+		frm->InputPara(dsetNtHeader->FieldByName("ID")->AsString);
+
+		frm->DanhaoChange = ChangeDisplay ;                      //change danhao
+		frm->RvSystem1->SystemSetups >>ssAllowSetup;
+		frm->RvSystem1->SystemSetups >>ssAllowDestPreview;
+		frm->RvSystem1->SystemSetups >>ssAllowDestPrinter;
+		frm->RvSystem1->SystemSetups >>ssAllowPrinterSetup;
+		frm->RvSystem1->SystemSetups >>ssAllowDestFile;
+
+		frm->RvSystem1->DefaultDest   = rdPrinter ;
+
+		// frm->RvSystem1->SystemSetups<<ssAllowSetup;
+		 frm->RvSystem1->SystemSetups<<ssAllowDestPrinter;
+		// frm->RvSystem1->SystemSetups<<ssAllowPrinterSetup;
+		frm->pxbk = pxbk;
+		frm->ClientName = edtclient->Text ;
+		frm->printmodle = printmodle;
+		frm->previewprint(2,1);
+		frm->Close();
+		delete frm;
+	}    */
+}
+//---------------------------------------------------------------------------
+
+
+void TfrmWholesaleReturnMng::QryBkstack()
+{
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1
+		&& dsetNote->Active && dsetNote->RecordCount >= 1)
+	{
+		String sql;
+		sql = " SELECT STK_BookstackInfo.ID, STK_BookstackInfo.Name "
+			" FROM STK_BookInfo LEFT OUTER JOIN"
+			" STK_BookstackInfo ON STK_BookInfo.BkstackID = STK_BookstackInfo.ID"
+			" where SupplierID=" + dsetNote->FieldByName("SupplierID")->AsString
+			 + " and BkcatalogID=" + dsetNote->FieldByName("BkcatalogID")->AsString
+			 + " and STK_BookstackInfo.StgID=" + dsetNtHeader->FieldByName("StgID")->AsString;
+		dsetBkstack->Active = false;
+		//dblkpcbbBkstackID->ListSource = NULL;
+		//dblkpcbbBkstackID->DataSource = NULL;
+		dsetBkstack->CommandText = sql;
+		dsetBkstack->Active = true;
+		//dblkpcbbBkstackID->ListSource = dsrcBkstack;
+		//dblkpcbbBkstackID->DataSource = dsrcNote;
+		//ShowMessage("OK");
+	}
+}
+
+void __fastcall TfrmWholesaleReturnMng::dsetNoteAfterScroll(TDataSet *DataSet)
+{
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+        QryBkstack();
+}
+//---------------------------------------------------------------------------
+
+void TfrmWholesaleReturnMng::ResetNtHeader()
+{
+	//重置单头
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1
+		&& dsetNote->Active && dsetNote->RecordCount < 1
+		&& dsetNtHeader->FieldByName("State")->AsInteger == 0)
+	{
+		cmdResetNtHeader->Parameters->ParamByName("@ID")->Value =
+		dsetNtHeader->FieldByName("ID")->AsInteger;
+		cmdResetNtHeader->Parameters->ParamByName("@Bsmode")->Value = 2;
+		cmdResetNtHeader->Execute();
+		try
+		{
+			//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+			QryNtHeader();
+		}
+		__finally
+		{
+			//LockWindowUpdate(NULL);
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N1Click(TObject *Sender)
+{
+	lblCatalog->Caption = "书号";
+	m_catalogSearchMode=1;
+	if (chqikan->Checked ) {
+		edtCatalog->MaxLength = 15;
+	}
+	else
+	{
+		edtCatalog->MaxLength = 13;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N2Click(TObject *Sender)
+{
+	lblCatalog->Caption = "自编码";
+	m_catalogSearchMode=2;
+	edtCatalog->MaxLength = 0;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N3Click(TObject *Sender)
+{
+	lblCatalog->Caption = "书名";
+	m_catalogSearchMode=3;
+	edtCatalog->MaxLength = 0;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::lblCatalogMouseDown(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+	if (Button == mbLeft ) {
+		TPoint  pt;
+		GetCursorPos(&pt);
+		pm->Popup(pt.x,pt.y);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N11Click(TObject *Sender)
+{
+	tlbtn5->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N21Click(TObject *Sender)
+{
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+	{
+		Tfrmwsaleprinta* frm = new Tfrmwsaleprinta(this,m_con);
+		::ShowWindow(frm->Handle, SW_HIDE);
+		LandInfo li;
+		li.app = m_app;
+		li.con = m_con;
+		li.userID = m_userID;
+		li.storageID = m_storageID;
+		frm->InputPara(dsetNtHeader->FieldByName("ID")->AsString,0);
+
+		frm->RvSystem1->SystemSetups >>ssAllowSetup;
+		frm->RvSystem1->SystemSetups >>ssAllowDestPreview;
+		frm->RvSystem1->SystemSetups >>ssAllowDestPrinter;
+		frm->RvSystem1->SystemSetups >>ssAllowPrinterSetup;
+		frm->RvSystem1->SystemSetups >>ssAllowDestFile;
+
+		frm->RvSystem1->DefaultDest    = rdPrinter ;
+		// frm->RvSystem1->SystemSetups<<ssAllowSetup;
+		 frm->RvSystem1->SystemSetups<<ssAllowDestPrinter;
+	  //	 frm->RvSystem1->SystemSetups<<ssAllowPrinterSetup;
+		if (Label2->Caption == "一般发货单")
+		{
+			frm->previewprint(1,2);
+		}else
+		{
+		   frm->previewprint(2,2);
+		}
+		  //1,一般发货单 2.一般发货退货单 //1打印格式1 2 打印格式2
+		frm->Close();
+		delete frm;
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TfrmWholesaleReturnMng::BtnClearClick(TObject *Sender)
+{
+   Print(1,0,0);
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N22Click(TObject *Sender)
+{
+	 if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+	{
+		Tfrmwsaleprinta* frm = new Tfrmwsaleprinta(this,m_con);
+		::ShowWindow(frm->Handle, SW_HIDE);
+		LandInfo li;
+		li.app = m_app;
+		li.con = m_con;
+		li.userID = m_userID;
+		li.storageID = m_storageID;
+		frm->InputPara(dsetNtHeader->FieldByName("ID")->AsString,0);
+
+		frm->RvSystem1->SystemSetups >>ssAllowSetup;
+		frm->RvSystem1->SystemSetups >>ssAllowDestPreview;
+		frm->RvSystem1->SystemSetups >>ssAllowDestPrinter;
+		frm->RvSystem1->SystemSetups >>ssAllowPrinterSetup;
+		frm->RvSystem1->SystemSetups >>ssAllowDestFile;
+
+
+
+		frm->RvSystem1->DefaultDest  = rdPreview ;
+		frm->RvSystem1->SystemSetups<<ssAllowDestPreview;
+		if (Label2->Caption == "一般发货单")
+		{
+			frm->previewprint(1,2);
+		}else
+		{
+		   frm->previewprint(2,2);
+		}
+		  //1,一般发货单 2.一般发货退货单 //1打印格式1 2 打印格式2
+		frm->Close();
+		delete frm;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N12Click(TObject *Sender)
+{
+  BtnClear->Click();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dbnbedtDiscountKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r')
+	{
+	 // Perform(WM_NEXTDLGCTL, 0, 0);
+	  edtCatalog->Text = "";
+
+	  if (chfoceset->Checked) {
+			if (chfsluru->Checked) {
+				edtCatalog->SetFocus();
+			}
+			else if (chfsamount->Checked) {
+				if (!dsetNote->Eof) {
+					dbgrdNote->SetFocus();
+					dsetNote->Next();
+					dbgrdNote->SelectedRows->CurrentRowSelected = true;
+					dbnbedtAmount->SetFocus();
+				}
+			}
+			else if (chfsdiscount->Checked) {
+				if (!dsetNote->Eof) {
+					dbgrdNote->SetFocus();
+					dsetNote->Next();
+					dbgrdNote->SelectedRows->CurrentRowSelected = true;
+					dbnbedtDiscount->SetFocus();
+				}
+			}
+		}
+		else
+		{
+			edtCatalog->SetFocus();
+		}
+
+	}
+}
+//---------------------------------------------------------------------------
+
+
+
+void __fastcall TfrmWholesaleReturnMng::FormResize(TObject *Sender)
+{
+	//dbgrdNote->Height = 393;
+	//dbgrdNote->Width = 700;
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N4Click(TObject *Sender)
+{
+	lblCatalog->Caption = "定价";
+	m_catalogSearchMode=6;
+	edtCatalog->MaxLength = 0;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dbnbedtTotalAmountKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+       if (Key == '\r')
+	{
+	  Perform(WM_NEXTDLGCTL, 0, 0);
+
+	}
+}
+//---------------------------------------------------------------------------
+
+void  TfrmWholesaleReturnMng::FindNote(String code)
+{
+	DelInvalidNtHeader();
+	edtCatalog->Text = "";
+	edtQryVendor->Text = "";
+	try
+	{
+		//LockWindowUpdate(dbgrdNote->Handle);//锁定指定窗口，禁止它更新。
+		QryNtHeader(code);
+		//editclientname->Text = dsetVendor->FieldByName("Name")->AsString ;
+		//cbclient->Text =  dsetVendor->FieldByName("Name")->AsString ;
+
+	}
+	__finally
+	{
+		//LockWindowUpdate(NULL);
+	}
+	dtpdate->Date =  dbdtedtHdTime->Date ;//更新日期
+	//cbclient->Enabled = false;
+	edtclient->Enabled = false;
+	BtnSave->Enabled = false;
+	SaveOrNot = true;
+}
+
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmWholesaleReturnMng::N6Click(TObject *Sender)
+{
+	if (dsetNote->IsEmpty() ) {
+		return;
+	}
+	for (int i = 1; i <= dsetNote->RecordCount; i++) {
+		dbgrdNote->DataSource->DataSet->RecNo = i;
+		dbgrdNote->SelectedRows->CurrentRowSelected = true;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dbgrdNoteCellClick(TColumn *Column)
+{
+	historyview();
+	editprice->Text = FormatFloat("0.00",dsetNote->FieldByName("price")->AsFloat * dbnbedtDiscount->Value*0.01);
+}
+//---------------------------------------------------------------------------
+
+void TfrmWholesaleReturnMng::historyview()
+{
+	String sql;
+	if (dsetNote->RecordCount > 0) {
+    	sql = "select * from SYS_BSSET where name = 'wosaleday'" ;
+		query->Close();
+		query->SQL->Clear();
+		query->SQL->Add(sql);
+		query->Open();
+		int day = query->FieldByName("bk")->AsInteger ;
+		DATE datetime = Date();
+		datetime = datetime - day;
+		sql = "select BS_WsaleNoteHeader.WsaleNtCode,BS_WsaleNoteHeader.WsaleNtCodeStr,BS_WsaleNote.Amount,BS_WsaleNote.Discount,Convert(varchar(20),BS_WsaleNoteHeader.HdTime,111) as HdTime,dbo.UF_BS_GetClientName(BS_WsaleNoteHeader.VendorID) as Name from BS_WsaleNote left join BS_WsaleNoteHeader on BS_WsaleNote.WsaleNtHeaderID = BS_WsaleNoteHeader.ID"
+			" left join STK_BookInfo on STK_BookInfo.ID = BS_WsaleNote.BkInfoID ";
+		sql = sql + " where STK_BookInfo.BkcatalogID = " + dsetNote->FieldByName("BkcatalogID")->AsString ;
+		sql = sql + " and BS_WsaleNoteHeader.HdTime >= '" + DateToStr(datetime) + "'";
+        if (!allclient) {
+			sql = sql + " and BS_WsaleNoteHeader.VendorID in(select id from dbo.GetChild(dbo.UF_BS_GetParentID(" + dsetVendor->FieldByName("ID")->AsString + ")))";
+		}
+
+		qryrecord->Close();
+		qryrecord->SQL->Clear();
+		qryrecord->SQL->Add(sql);
+		qryrecord->Open();
+		((TFloatField *)dgrecord->DataSource->DataSet->FieldByName("Discount"))->DisplayFormat = "0%";
+		int totamount = 0;
+		qryrecord->DisableControls();
+		qryrecord->First();
+		while(!qryrecord->Eof)
+		{
+			totamount = totamount + qryrecord->FieldByName("Amount")->AsInteger ;
+			qryrecord->Next();
+		}
+		qryrecord->EnableControls();
+		edtotamount->Text = IntToStr(totamount);
+		ClientTuiHuo();
+	}
+}
+//---------------------------------------------------------------------------
+
+void  TfrmWholesaleReturnMng::checkedview()
+{
+	String sql;
+	sql = "select sum(Checked) as checked,sum(Nochecked) as nochecked from BS_WsaleNoteHeader where VendorID = " + dsetVendor->FieldByName("ID")->AsString ;
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	edchecked->Text = FormatFloat("0.00",query->FieldByName("checked")->AsFloat);
+	ednochecked->Text = FormatFloat("0.00",query->FieldByName("nochecked")->AsFloat);
+}
+//---------------------------------------------------------------------------
+
+bool TfrmWholesaleReturnMng::retailreturn(int catalogID)
+{
+    String sql;
+
+	sql = "select * from SYS_BSSET where name = 'wosalereturn'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	if (!query->FieldByName("value")->AsBoolean) {
+		sql = "select count(*) as count from BS_WsaleNote left join BS_WsaleNoteHeader on BS_WsaleNote.WsaleNtHeaderID = BS_WsaleNoteHeader.id left join STK_BookInfo on BS_WsaleNote.BkInfoID = STK_BookInfo.ID "
+		" left join BS_BookCatalog on STK_BookInfo.BkcatalogID = BS_BookCatalog.ID where BS_BookCatalog.ID = " + IntToStr(catalogID) + " and BS_WsaleNoteHeader.VendorID = " + IntToStr(ClientID) ;
+		query->Close();
+		query->SQL->Clear();
+		query->SQL->Add(sql);
+		query->Open();
+		if (query->FieldByName("count")->AsInteger == 0 ) {
+			MessageBox(0,"该书没有对该客户发过货，不能退货！","一般发货退货" ,MB_OK);
+			return false;
+		}
+	}
+
+	return true;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmWholesaleReturnMng::BtnNewClick(TObject *Sender)
+{
+	if (!SaveWsale(1))
+	{
+		return;
+	}
+
+	querydan->Active = false;
+	querydan->Active = true;
+	DBNav->Enabled = false;
+    AnsiString sql;
+
+	ChangeBsmode(BSNoteSendback);
+	ChangeOpmode(OPAddNtHeader);
+	SaveOrNot = false;
+	BtnSave->Enabled = true;
+	dbnbedtAddCosts->Enabled = true;
+
+	dbnbedt2->Visible = true;
+	dbnbedt3->Visible = true;
+	dbnbedt4->Visible = true;
+	dblkpcbbStaffID->Enabled = true;
+	dsetNtHeader->Edit();
+	dsrcNtHeader->DataSet->FieldByName("AddCosts")->Value =  0.0;
+	dsrcNtHeader->DataSet->FieldByName("Remarks")->Value =  "";
+	dsetNtHeader->UpdateRecord();
+	membk->Text = "";
+	dbnbedtAddCosts->Text = "";
+	edtQryVendor->Text = "";
+	editdanhao->Text = "";
+	dblkpcbbStaffID->KeyValue = -1;
+	try {
+		qryrecord->Active = false;
+	} catch (...) {
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void  TfrmWholesaleReturnMng::ModifyEnable()
+{
+    String sql = "select * from SYS_BSSET where name = 'WsalelDiscountChange'";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	if (m_opmode == OPFind) {
+		dbnbedtAmount->Enabled = false;
+		dbnbedtDiscount->Enabled = false;
+		cbbkstackID->Enabled = false;
+		if (dsetNote->FieldByName("amount")->AsInteger >= 0 ) {
+			Label2->Caption = "一般发货退货单";
+		}
+		else
+		{
+			//Label2->Caption = "一般发货单";
+		}
+	}
+	else
+	{
+		Label2->Caption = "一般发货退货单";
+		dbnbedtAmount->Enabled = true;
+		if (query->FieldByName("value")->AsBoolean  ) {
+			dbnbedtDiscount->Enabled = true;
+		}
+	  //	cbbkstackID->Enabled = true;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::cbbkstackIDKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r')
+	{
+		tlbtn1Click(tlbtnAddNote);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::cbbkstackIDExit(TObject *Sender)
+{
+	UpdateNote();
+	historyview();
+}
+//---------------------------------------------------------------------------
+
+
+void TfrmWholesaleReturnMng::GetBkStackInfo()
+{
+   AnsiString sql= "select  name, ID from STK_BookstackInfo where StgID = " + IntToStr(m_storageID);
+   TADOQuery *aq  = new TADOQuery(Application);
+  try
+  {
+
+   aq->Connection = m_con ;
+   aq->Close();
+   aq->SQL->Clear();
+   aq->SQL->Add(sql);
+   aq->Open();
+   while(!aq->Eof)
+   {
+	 cbbkstackID->AddItem(aq->FieldByName("name")->AsAnsiString ,(TObject*)aq->FieldByName("ID")->AsInteger);
+	 aq->Next();
+   }
+   cbbkstackID->ItemIndex = 0;
+  }
+  __finally
+  {
+	delete aq;
+  }
+}
+
+void __fastcall TfrmWholesaleReturnMng::spselectClientClick(TObject *Sender)
+{
+		TfrmselectClient * frm = new TfrmselectClient(Application,m_con,"",linfo.storageID);
+	   if (mrOk == frm->ShowModal())
+	   {
+			//editclientname->Text = frm->GetSelect();
+			ClientID = frm->GetSelectID();
+			dsetNtHeader->Edit();
+			dsrcNtHeader->DataSet->FieldByName("VendorID")->Value =  ClientID;
+			dsetNtHeader->UpdateRecord();
+			dblkpcbbVendorID->KeyValue =  ClientID;
+			//cbclient->ItemIndex = cbclient->Items->IndexOfObject((TObject*)ClientID);
+			edtclient->SetFocus();
+			ClientView();
+			UpdateNtHeader();
+	   		checkedview();
+	   }
+	   delete frm;
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dtpdateChange(TObject *Sender)
+{
+dbdtedtHdTime->Date = dtpdate->Date ;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmWholesaleReturnMng::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_F1) {   //查单
+		if (!RzToolButton1->Enabled ) {
+			return;
+		}
+		RzToolButton1->Click();
+	}
+	if (Key == VK_F2) {   //增单
+		if (!BtnNew->Enabled ) {
+			return;
+		}
+		BtnNew->Click();
+	}
+	if (Key == VK_F3) {   //保存
+		if (!BtnSave->Enabled ) {
+			return;
+		}
+		BtnSave->Click();
+	}
+	if (Key == VK_F4) {   //修改单头
+		if (!tlbtnAddNote->Enabled ) {
+			return;
+		}
+		tlbtnAddNote->Click();
+	}
+	if (Key == VK_F5) {   //删行
+		if (!tlbtn2->Enabled ) {
+			return;
+		}
+		tlbtn2->Click();
+	}
+	if (Key == VK_F6) {    //统一
+		if (!tlbtn3->Enabled ) {
+			return;
+		}
+		tlbtn3->Click();
+	}
+	if (Key == VK_F7) {    //现场收款
+		if (!RzToolButton2->Enabled ) {
+			return;
+		}
+		RzToolButton2->Click();
+	}
+	if (Key == VK_F8) {    //导出
+		if (!tlbtn4->Enabled ) {
+			return;
+		}
+		tlbtn4->Click();
+	}
+	if (Key == VK_F10) {   //打印
+		if (!tlbtn5->Enabled ) {
+			return;
+		}
+		tlbtn5->Click();
+	}
+	if (Key == VK_F11) {    //预览
+		if (!BtnClear->Enabled ) {
+			return;
+		}
+		BtnClear->Click();
+	}
+
+	if (Shift.Contains(ssAlt)&& Key == 88) {    //期刊
+		if (chqikan->Checked ) {
+			chqikan->Checked = false;
+		}
+		else
+		{
+			chqikan->Checked = true;
+		}
+		chqikan->OnClick ;
+	}
+	if (Shift.Contains(ssAlt)&& Key == 67) {    //定位
+		SpeedButton1->Click();
+	}
+	if (Shift.Contains(ssAlt)&& Key ==81  ) {
+		tlbtn7->Click();
+	}
+	if (Shift.Contains(ssAlt)&& Key == 78 ) {
+		BtnAlignBottom->Click();
+	}
+	if (Shift.Contains(ssAlt)&& Key == 70 ) {
+		BtnAlignBottom->Click();
+	}
+	if (Shift.Contains(ssAlt)&& Key ==90) {
+		WindowState = wsNormal  ;
+	}
+}
+//---------------------------------------------------------------------------
+void TfrmWholesaleReturnMng::ReadClient()
+{
+  /*AnsiString sql;
+  sql = "select ID,name from CUST_CustomerInfo where type =2 or type = 3 order by name";
+  TADOQuery *aq = new TADOQuery(NULL);
+  aq->Connection = m_con ;
+  aq->Close();
+  aq->SQL->Clear();
+  aq->SQL->Add(sql);
+  aq->Open();
+  while(!aq->Eof)
+  {
+	cbclient->Items->AddObject(aq->FieldByName("name")->AsAnsiString ,(TObject*)aq->FieldByName("id")->AsInteger );
+	aq->Next();
+  }
+  delete aq;
+   cbclient->ItemIndex = cbclient->Items->IndexOfObject((TObject*)1);     */
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::cbclientKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r') {
+		if (cbclient->Text =="") {
+			MessageBoxA(0,"请输入单位名称！","提示",MB_ICONINFORMATION);
+			return;
+		}
+		try {
+			ClientID = (int)(cbclient->Items->Objects[cbclient->ItemIndex]);
+		} catch (...) {
+			MessageBoxA(0,"请输入正确单位名称！","提示",MB_ICONINFORMATION);
+			return;
+		}
+
+		cbclient->Text = cbclient->Items->operator [](cbclient->ItemIndex);
+		if (ClientID == -1) {
+			MessageBoxA(0,"请输入正确单位名称！","提示",MB_ICONINFORMATION);
+			return;
+		}
+            AnsiString sql = "select Salesman from CUST_CustomerInfo where id = " + IntToStr(ClientID);
+			query->Close();
+			query->SQL->Clear();
+			query->SQL->Add(sql);
+			query->Open();
+			sql = "select * from SYS_StaffInfo where Name = '" + query->FieldByName("Salesman")->AsString + "' and stgID = " + IntToStr(m_storageID) + " and Career = 2";
+			query->Close();
+			query->SQL->Clear();
+			query->SQL->Add(sql);
+			query->Open();
+			if (!query->IsEmpty() ) {
+				int staff = query->FieldByName("ID")->AsInteger;
+				dblkpcbbStaffID->KeyValue = staff;
+				dsetNtHeader->Edit();
+				dsetNtHeader->FieldByName("StaffID")->AsInteger = staff;
+				dsetNtHeader->Post();
+			}
+			dsetNtHeader->Edit();
+			dsrcNtHeader->DataSet->FieldByName("VendorID")->Value =  ClientID;
+			dsetNtHeader->UpdateRecord();
+			dblkpcbbVendorID->KeyValue =  ClientID;
+			UpdateNtHeader();
+			checkedview();
+		//dbnbedtAddCosts->SetFocus();
+		cbclient->Enabled = false;
+		RzButton1->Enabled = false;
+		spselectClient->Enabled = false;
+		BtnSave->Click();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::tlbtnAddNoteClick(TObject *Sender)
+{
+    if (changepassword) {
+		if (!CheckOperateAuthority())
+					return;
+   	}
+	AnsiString sql;
+   sql = "select value from sys_bsset where name ='modifypxdanwei'";
+   TADOQuery *aq = new TADOQuery(NULL);
+   aq->Connection = m_con ;
+   aq->Close();
+   aq->SQL->Clear();
+   aq->SQL->Add(sql);
+   aq->Open();
+   if (aq->FieldByName("value")->AsBoolean ) {     //显示密码
+	   if (!CheckOperateAuthority())
+				return;
+			//cbclient->Enabled = true;
+			edtclient->Enabled = true;
+			   if (newclient) {
+                  RzButton1->Enabled = true;
+                }else RzButton1->Enabled = false;
+			spselectClient->Enabled = true;
+			dbnbedtAddCosts->Enabled = true;
+			edtclient->SetFocus();
+			BtnSave->Enabled = true;
+			dtpdate->Enabled =  true;
+			dblkpcbbStaffID->Enabled = true;
+
+   }else //不显示密码输入
+   {
+			//cbclient->Enabled = true;
+			edtclient->Enabled = true;
+		   if (newclient) {
+                  RzButton1->Enabled = true;
+                }else RzButton1->Enabled = false;
+			spselectClient->Enabled = true;
+			dbnbedtAddCosts->Enabled = true;
+			dtpdate->Enabled =  true;
+			edtclient->SetFocus();
+			BtnSave->Enabled = true;
+			dblkpcbbStaffID->Enabled = true;
+   }
+   SaveOrNot = false;
+   delete aq;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dbgrdNoteMouseUp(TObject *Sender, TMouseButton Button,
+          TShiftState Shift, int X, int Y)
+{
+	  int CurrNo;
+  if (Button == mbLeft ) {
+	  if (!blSelect) {
+		 BookMark = dsetNote->GetBookmark();   //dataset
+		 blSelect  = true;
+		 return;
+	  }
+  }
+   if (Shift.Contains(ssShift)) {
+		  CurrNo = dsetNote->FieldByName("ID")->AsInteger ;
+		  dsetNote->DisableControls();
+		  dsetNote->GotoBookmark(BookMark);
+		  dbgrdNote->SelectedRows->CurrentRowSelected = true;
+		  if (CurrNo > dsetNote->FieldByName("ID")->AsInteger) {
+			  while(CurrNo > dsetNote->FieldByName("ID")->AsInteger)
+			  {
+				dbgrdNote->SelectedRows->CurrentRowSelected = true;
+				dsetNote->Next();
+			  }
+		  }
+		  if ( CurrNo < dsetNote->FieldByName("ID")->AsInteger ) {
+				  while(CurrNo < dsetNote->FieldByName("ID")->AsInteger)
+			  {
+				dbgrdNote->SelectedRows->CurrentRowSelected = true;
+				dsetNote->Prior() ;
+			  }
+		  }
+		  dsetNote->EnableControls();
+		  dsetNote->FreeBookmark(BookMark);
+		  blSelect = false;
+		}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N8Click(TObject *Sender)
+{
+	if (dsetNote->IsEmpty()) {
+		return;
+	}
+	AnsiString StgID;
+	StgID = "-10";
+
+	dsetNote->DisableControls();
+
+	if (dbgrdNote->SelectedRows->Count > 0) {
+		for (int i=0; i < dbgrdNote->SelectedRows->Count; i++)
+		{
+			dsetNote->Bookmark = dbgrdNote->SelectedRows->Items[i];
+			StgID = StgID + "," + dsetNote->FieldByName("ID")->AsString;
+		}
+	}
+	else
+	{
+		StgID = StgID + "," + dsetNote->FieldByName("ID")->AsString;
+	}
+
+	spcopy->ProcedureName = "CopyData";
+	spcopy->Parameters->Clear();
+	spcopy->Parameters->CreateParameter("@mode",ftInteger,pdInput,sizeof(int),2);
+	spcopy->Parameters->CreateParameter("@ID",ftString,pdInput,StgID.Length(),StgID.c_str());
+	spcopy->Parameters->CreateParameter("@userid",ftInteger,pdInput,sizeof(int),linfo.userID );
+	spcopy->ExecProc();
+	dsetNote->EnableControls();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N9Click(TObject *Sender)
+{
+	if (BtnSave->Enabled) {
+		MessageBoxA(0,"本单还未保存，请先保存！","提示",MB_ICONASTERISK);
+		return;
+	}
+	spcopy->ProcedureName = "StickData";
+	spcopy->Parameters->Clear();
+	spcopy->Parameters->CreateParameter("@mode",ftInteger,pdInput,sizeof(int),4);
+	spcopy->Parameters->CreateParameter("@HeadId",ftInteger,pdInput,sizeof(int),dsetNtHeader->FieldByName("ID")->AsInteger);
+	spcopy->Parameters->CreateParameter("@userid",ftInteger,pdInput,sizeof(int),linfo.userID );
+	spcopy->ExecProc();
+	QryNtHeader(dsetNtHeader->FieldByName("ID")->AsInteger, true);
+
+
+	Screen->Cursor = crDefault ;
+
+}
+//---------------------------------------------------------------------------
+
+bool  TfrmWholesaleReturnMng::saleenable(int stkid)
+{
+	AnsiString sql;
+	sql = "select * from STK_StockInventories where states = 0 and STK_bookInfoID = " + IntToStr(stkid);
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	if (query->RecordCount > 0) {
+        MessageBox(0,"该书正在盘点，不能销售！","提示",MB_ICONWARNING);
+		return false;
+	}
+	else
+	{
+    	sql = "select * from STK_stockxuyiDetail,STK_stockxuyiHeader where STK_stockxuyiHeader.AdjustHeaderID = STK_stockxuyiDetail.AdjustHeaderID and STK_stockxuyiHeader.state = 0 and STK_stockxuyiDetail.bkinfoid = " + IntToStr(stkid);
+		query->Close();
+		query->SQL->Clear();
+		query->SQL->Add(sql);
+		query->Open();
+		if (query->RecordCount > 0) {
+        	MessageBox(0,"该书正在盘点，不能销售！","提示",MB_ICONWARNING);
+			return false;
+		}
+		else
+		{
+        	return true;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::BtnViewClick(TObject *Sender)
+{
+	Tfrmbookquery * frm = new Tfrmbookquery(Application,linfo.con,linfo.storageID);
+	frm->ShowModal();
+	delete frm;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::cbclientExit(TObject *Sender)
+{
+	//wchar_t Key = '\r';
+	//cbclientKeyPress(Sender,Key);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::BtnSaveClick(TObject *Sender)
+{
+	/*if (changehead == 1) {
+		wchar_t key = '\r';
+		cbclientKeyPress(Sender, key);
+	}
+	try {
+			ClientID = (int)(cbclient->Items->Objects[cbclient->ItemIndex]);
+	} catch (...) {
+			MessageBoxA(0,"请输入正确单位名称！","提示",MB_ICONINFORMATION);
+			return;
+	}
+	dsetNtHeader->Edit();
+	dsrcNtHeader->DataSet->FieldByName("VendorID")->Value =  ClientID;
+	dsetNtHeader->UpdateRecord();
+	dblkpcbbVendorID->KeyValue =  ClientID;
+	UpdateNtHeader();     */
+	if (!SaveOK()) {
+		return;
+	}
+	edtCatalog->SetFocus();
+}
+//---------------------------------------------------------------------------
+
+bool TfrmWholesaleReturnMng::SaveOK()
+{
+   /* if (cbclient->Enabled) {
+        MessageBoxA(0,"请在单位处用回车键确认客户！","提示",MB_ICONASTERISK);
+		return false;
+  }  */
+
+  	if (dsetNtHeader->RecordCount > 0) {
+		AnsiString sql = "update BS_WsaleNoteHeader set HdTime = '" + DateToStr(dtpdate->Date)  + "' where id = " + dsetNtHeader->FieldByName("id")->AsString ;
+		query->Close();
+		query->SQL->Clear();
+		query->SQL->Add(sql);
+		query->ExecSQL();
+	}
+
+  if (dsetNote->RecordCount > 0) {
+		SaveOrNot = true;
+		BtnSave->Enabled = false;
+		dbnbedtAddCosts->Enabled = false;
+		//cbclient->Enabled = false;
+		edtclient->Enabled = false;
+		dblkpcbbStaffID->Enabled = false;
+		return true;
+  }
+  else if (dsetNtHeader->FieldByName("WsaleNtCode")->AsInteger != 0 ) {
+		SaveOrNot = true;
+		BtnSave->Enabled = false;
+		dbnbedtAddCosts->Enabled = false;
+		//cbclient->Enabled = false;
+		edtclient->Enabled = false;
+		dblkpcbbStaffID->Enabled = false;
+		return true;
+  }
+	spsave->Parameters->ParamByName("@MODE")->Value = 1;
+  spsave->Parameters->ParamByName("@ID")->Value = dsetNtHeader->FieldByName("ID")->AsInteger ;
+  spsave->Parameters->ParamByName("@STGID")->Value = linfo.storageID;
+  spsave->Parameters->ParamByName("@TYPE")->Value = 2;
+  spsave->Parameters->ParamByName("@CODEMODE")->Value = 1;
+  spsave->Parameters->ParamByName("@ReturnCode")->Value = 0;
+  spsave->Parameters->ParamByName("@ReturnCode2")->Value = 0;
+  spsave->ExecProc() ;
+
+
+
+  if (ChangeDisplay) {
+	logmessage = "添加一般发货退货单" + spsave->Parameters->ParamByName("@ReturnCode2")->Value ;
+  }
+  else
+  {
+	logmessage = "添加一般发货退货单" + spsave->Parameters->ParamByName("@ReturnCode")->Value ;
+  }
+  AddEvent(1,"一般发货退货窗口",m_userID,m_storageID,logmessage,linfo.con);
+  historyview();     //SaveBenDan
+  dbedtWsaleNtCode->Text = spsave->Parameters->ParamByName("@ReturnCode")->Value ;
+  editdanhao->Text = spsave->Parameters->ParamByName("@ReturnCode2")->Value ;
+  SaveOrNot = true;
+  BtnSave->Enabled = false;
+  dbnbedtAddCosts->Enabled = false;
+  //cbclient->Enabled = false;
+  edtclient->Enabled = false;
+  dtpdate->Enabled =  false;
+  dblkpcbbStaffID->Enabled = false;
+  QryNtHeader();
+  return true;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmWholesaleReturnMng::cbclientDropDown(TObject *Sender)
+{
+	int i;
+   int maxwidth;
+	maxwidth = ((TComboBox*)Sender)->Width;
+	for (int i=0 ; i < ((TComboBox*)Sender)->Items->Count ; i++) {
+	 maxwidth = Math::Max(maxwidth, ((TComboBox*)Sender)->Canvas->TextWidth(((TComboBox*)Sender)->Items->Strings[i])+10);
+	((TComboBox*)Sender)->Perform(CB_SETDROPPEDWIDTH,maxwidth,0);
+	}
+}
+//---------------------------------------------------------------------------
+
+ bool TfrmWholesaleReturnMng::SaveWsale(int mode)
+{
+    if (dsrcNote->DataSet == NULL) {
+		return true;
+	}
+	if (!dbgrdNote->DataSource->DataSet->Active ) {
+		return true;
+	}
+	int recordRN = dbgrdNote->DataSource->DataSet->RecordCount;
+	if ((!SaveOrNot)&& (recordRN != 0)) {                      //SaveBenDan
+	if (mode == 1) {                      //打印或预
+
+		MessageBoxA(0,"本单还未保存，请先保存！","提示",MB_ICONASTERISK);
+		return false;
+
+	}else
+	{
+		  if( MessageBoxA(0,"本单还未保存，是否需要保存？","提示",MB_ICONQUESTION||MB_YESNO)==1)
+		  {
+			  BtnSave->Click();
+		  }else
+		  {
+			spsave->Parameters->ParamByName("@MODE")->Value = 2;
+			spsave->Parameters->ParamByName("@ID")->Value = dsetNtHeader->FieldByName("ID")->AsInteger ;
+			spsave->Parameters->ParamByName("@STGID")->Value = 0;
+			spsave->Parameters->ParamByName("@TYPE")->Value = 2;
+			spsave->Parameters->ParamByName("@CODEMODE")->Value = 1;
+			spsave->Parameters->ParamByName("@ReturnCode")->Value = 0;
+			spsave->Parameters->ParamByName("@ReturnCode2")->Value = 0;
+			spsave->ExecProc() ;
+		  }
+	  }
+	}else return true;
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dbnbedtAddCostsExit(TObject *Sender)
+{
+	if (dsetNtHeader->RecordCount > 0) {
+    	AnsiString sql = "update BS_WsaleNoteHeader set AddCosts = " + FloatToStr(abs(dsetNtHeader->FieldByName("AddCosts")->AsFloat))  + " where id = " + dsetNtHeader->FieldByName("id")->AsString ;
+		query->Close();
+		query->SQL->Clear();
+		query->SQL->Add(sql);
+		query->ExecSQL();
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmWholesaleReturnMng::dbnbedtAddCostsKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r') {
+		membk->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::DBNavClick(TObject *Sender, TNavigateBtn Button)
+
+{
+	AnsiString code ;
+	code = querydan->FieldByName("WsaleNtCode")->AsAnsiString ;
+	editdanhao->Text = querydan->FieldByName("WsaleNtCodeStr")->AsAnsiString ;
+	QryNtHeader(code,false);
+	//editclientname->Text = dsetVendor->FieldByName("Name")->AsString ;
+	//cbclient->Text =  dsetVendor->FieldByName("Name")->AsString ;
+	checkedview();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::RzButton1Click(TObject *Sender)
+{
+	String ID;
+	ID = "";
+	if (dsetNtHeader->Active && dsetNtHeader->RecordCount >= 1)
+	{
+        dsetVendor->Active = false;
+		dsetVendor->CommandText = "select ID,Name from CUST_CustomerInfo where   Type in (2,3)  order by ID";
+		dsetVendor->Active = true;
+		int count1 = dsetVendor->RecordCount;
+
+		/*TDetaileForm * frm = new TDetaileForm(m_app,2,1,ID.c_str() ,m_con);
+		frm->ParentID = -1;
+		frm->ShowModal();
+		delete frm; */
+
+		Tfrmclient * frm = new Tfrmclient(Application,m_con);
+	   frm->FormStyle = fsNormal ;
+	   frm->WindowState = wsNormal ;
+	   frm->Visible = false;
+	   frm->Position = poMainFormCenter ;
+		frm->ShowModal();
+	   delete frm;
+
+		dsetVendor->Active = false;
+		dsetVendor->Active = true;
+		int count2 = dsetVendor->RecordCount;
+		if (count2 > count1)
+		{
+			dsetVendor->Last();
+			dblkpcbbVendorID->KeyValue = dsetVendor->FieldByName("ID")->AsInteger ;
+			//dsetNtHeader->Edit();
+			//dsetNtHeader->FieldByName("VendorID"/)->AsInteger = dsetVendor->FieldByName("ID")->AsInteger;
+			//cbclient->Items->AddObject(dsetVendor->FieldByName("name")->AsAnsiString,(TObject*)dsetVendor->FieldByName("ID")->AsInteger);
+			//cbclient->ItemIndex = cbclient->Items->IndexOfObject((TObject*)dsetVendor->FieldByName("ID")->AsInteger );
+			//cbclient->SetFocus();
+			//UpdateNtHeader();
+			ClientID = dsetVendor->FieldByName("ID")->AsInteger;
+			dsetNtHeader->Edit();
+			dsrcNtHeader->DataSet->FieldByName("VendorID")->Value =  ClientID;
+			dsetNtHeader->UpdateRecord();
+			ClientView();
+			edtclient->SetFocus();
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::cbclientClick(TObject *Sender)
+{
+    try {
+			ClientID = (int)(cbclient->Items->Objects[cbclient->ItemIndex]);
+	} catch (...) {
+			MessageBoxA(0,"请输入正确单位名称！","提示",MB_ICONINFORMATION);
+			return;
+	}
+	dsetNtHeader->Edit();
+	dsrcNtHeader->DataSet->FieldByName("VendorID")->Value =  ClientID;
+	dsetNtHeader->UpdateRecord();
+	dblkpcbbVendorID->KeyValue =  ClientID;
+	UpdateNtHeader();
+	checkedview();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::BtnAlignBottomClick(TObject *Sender)
+{
+	WindowState = wsMinimized ;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::dbgrdNoteTitleClick(TColumn *Column)
+{
+	if (dsetNote->IsEmpty() ) {
+    	return;
+	}
+	AnsiString qusort;
+	qusort =  Column->FieldName + " ASC";
+	if (dsetNote->Sort == "") {
+		dsetNote->Sort =  Column->FieldName + " ASC";
+	}
+	else if (dsetNote->Sort == qusort) {
+		dsetNote->Sort =  Column->FieldName + " DESC";
+	}
+	else
+	{
+		dsetNote->Sort =  Column->FieldName + " ASC";
+	}
+}
+//---------------------------------------------------------------------------
+
+void TfrmWholesaleReturnMng::FormView()
+{
+	AnsiString sql;
+	sql = "select * from BS_SYS_Formview where stgid = " + IntToStr(m_storageID) + " and ParentID = 4";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+	while (!query->Eof)
+	{
+		if (query->FieldByName("Name")->AsAnsiString == "查单" ) {
+			RzToolButton1->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "增单" ) {
+			BtnNew->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "保存" ) {
+			BtnSave->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "修改单头" ) {
+			tlbtnAddNote->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "删行" ) {
+			tlbtn2->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "统一" ) {
+			tlbtn3->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "现场收款" ) {
+			RzToolButton2->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "Excel导出" ) {
+			tlbtn4->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "预览" ) {
+			BtnClear->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "打印" ) {
+			tlbtn5->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "查书" ) {
+			BtnView->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		if (query->FieldByName("Name")->AsAnsiString == "最小化" ) {
+			BtnAlignBottom->Visible = query->FieldByName("state")->AsBoolean ;
+		}
+		query->Next();
+	}
+	sql = "select * from sys_printhead where modle = 1 and stgid = " + IntToStr(m_storageID) ;
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+
+	while (!query->Eof )
+	{
+		TMenuItem * item = new TMenuItem(this);
+		TMenuItem * item1 = new TMenuItem(this);
+		item->Caption = query->FieldByName("typename")->AsAnsiString;
+		item->Tag = query->FieldByName("id")->AsInteger ;
+		item->OnClick = MyClick;
+		pmprint->Items->Add(item);
+		item1->Caption = query->FieldByName("typename")->AsAnsiString;
+		item1->Tag = query->FieldByName("id")->AsInteger ;
+		item1->OnClick = MyClickPreview;
+		pmpreview->Items->Add(item1);
+		query->Next();
+	}
+}
+
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::MyClick(TObject *Sender)
+{
+	TMenuItem *item = dynamic_cast<TMenuItem*>(Sender);
+	if(item==NULL)
+		return;
+	Print(2,1,item->Tag);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::MyClickPreview(TObject *Sender)
+{
+	TMenuItem *item = dynamic_cast<TMenuItem*>(Sender);
+	if(item==NULL)
+		return;
+	Print(1,1,item->Tag);
+}
+//---------------------------------------------------------------------------
+void TfrmWholesaleReturnMng::ClientView()
+{
+	if (ClientID == -1) {
+		return;
+	}
+	String sql;
+	TADOQuery * aq = new TADOQuery(NULL);
+	aq->Connection = m_con;
+	sql = "exec USP_BS_Client_View 0," + IntToStr(ClientID)  ;
+	aq->Close();
+	aq->SQL->Clear();
+	aq->SQL->Add(sql);
+	aq->Open();
+	edtclient->Text = aq->FieldByName("Name")->AsAnsiString ;
+
+	sql = "select Salesman from CUST_CustomerInfo where id = " + IntToStr(ClientID);
+	aq->Close();
+	aq->SQL->Clear();
+	aq->SQL->Add(sql);
+	aq->Open();
+	sql = "select * from SYS_StaffInfo where Name = '" + aq->FieldByName("Salesman")->AsString + "' and stgID = " + IntToStr(m_storageID) + " and Career = 2";
+	aq->Close();
+	aq->SQL->Clear();
+	aq->SQL->Add(sql);
+	aq->Open();
+
+	dblkpcbbStaffID->KeyValue = aq->FieldByName("id")->AsInteger;
+
+	delete aq;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::edtclientKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r') {
+		if (edtclient->Text =="") {
+			MessageBoxA(0,"请选择单位名称！","提示",MB_ICONINFORMATION);
+			return;
+		}
+
+            AnsiString sql = "select Salesman from CUST_CustomerInfo where id = " + IntToStr(ClientID);
+			query->Close();
+			query->SQL->Clear();
+			query->SQL->Add(sql);
+			query->Open();
+			sql = "select * from SYS_StaffInfo where Name = '" + query->FieldByName("Salesman")->AsString + "' and stgID = " + IntToStr(m_storageID) + " and Career = 2";
+			query->Close();
+			query->SQL->Clear();
+			query->SQL->Add(sql);
+			query->Open();
+			if (!query->IsEmpty() ) {
+				int staff = query->FieldByName("ID")->AsInteger;
+				dblkpcbbStaffID->KeyValue = staff;
+				dsetNtHeader->Edit();
+				dsetNtHeader->FieldByName("StaffID")->AsInteger = staff;
+				dsetNtHeader->Post();
+			}
+			dsetNtHeader->Edit();
+			dsrcNtHeader->DataSet->FieldByName("VendorID")->Value =  ClientID;
+			dsetNtHeader->UpdateRecord();
+			dblkpcbbVendorID->KeyValue =  ClientID;
+			UpdateNtHeader();
+			checkedview();
+		//dbnbedtAddCosts->SetFocus();
+		//cbclient->Enabled = false;
+		edtclient->Enabled = false;
+		RzButton1->Enabled = false;
+		spselectClient->Enabled = false;
+		BtnSave->Click();
+	}
+}
+void TfrmWholesaleReturnMng::ClientTuiHuo()
+{
+ FLOAT yeartuihuo,timetuihuo;
+ yeartuihuo =0.00,
+ timetuihuo =0.00;
+ int totalamountall;
+	   sptuihuo1->Parameters->ParamByName("@clientID")->Value =  ClientID;
+	   sptuihuo1->Parameters->ParamByName("@timelv")->Value =  0.00;
+	   sptuihuo1->Parameters->ParamByName("@yearlv")->Value =  0.00;
+	   sptuihuo1->Parameters->ParamByName("@totaltuihuoall")->Value =  0;
+	   sptuihuo1->ExecProc();
+	   timetuihuo = sptuihuo1->Parameters->ParamByName("@timelv")->Value;
+	   yeartuihuo = sptuihuo1->Parameters->ParamByName("@yearlv")->Value;
+	   totalamountall = sptuihuo1->Parameters->ParamByName("@totaltuihuoall")->Value;
+
+	   edittuihuo->Text =  IntToStr(totalamountall);
+	   editlv1->Text = FormatFloat("0.00",yeartuihuo) + "%" ;
+	   editallyear->Text  = FormatFloat("0.00",timetuihuo)+ "%" ;
+
+	   if (yeartuihuo >= 100.00) {
+		 editlv1->Color = clRed ;
+	   }else
+	   {
+		editlv1->Color = cl3DLight  ;
+	   }
+
+	   if (timetuihuo >= 100.00) {
+		  editallyear->Color = clRed;
+	   }
+	   else
+	   {
+        editallyear->Color = cl3DLight ;
+
+	   }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N10Click(TObject *Sender)
+{
+	if (N10->Checked ) {
+		N13->Checked = false;
+		printmodle = 0;
+	}
+	else
+	{
+		N13->Checked = true;
+		printmodle = 1;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N13Click(TObject *Sender)
+{
+	if (N13->Checked ) {
+		N10->Checked = false;
+		printmodle = 1;
+	}
+	else
+	{
+		N10->Checked = true;
+		printmodle = 0;
+	}
+}
+//---------------------------------------------------------------------------
+void  TfrmWholesaleReturnMng::operterview(int operterid)
+{
+	AnsiString sql;
+	TADOQuery *aq = new TADOQuery(this);
+	aq->Connection = linfo.con ;
+	sql = "select name from sys_user where id = " + IntToStr(operterid);
+	aq->Close();
+	aq->SQL->Clear();
+	aq->SQL->Add(sql);
+	aq->Open();
+	lblOpName->Caption = aq->FieldByName("name")->AsString;
+	delete aq;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::membkExit(TObject *Sender)
+{
+	if (dsetNtHeader->RecordCount > 0) {
+    	AnsiString sql = "update BS_WsaleNoteHeader set Remarks = '" + membk->Text + "' where id = " + dsetNtHeader->FieldByName("id")->AsString ;
+		query->Close();
+		query->SQL->Clear();
+		query->SQL->Add(sql);
+		query->ExecSQL();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::membkKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	//
+	if (Key == '\r')
+	{
+		BtnSave->Click();
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmWholesaleReturnMng::SpeedButton1Click(TObject *Sender)
+{
+	if (GroupBox1->Visible) {
+		GroupBox1->Visible = false;
+	}
+	else
+	{
+    	GroupBox1->Visible = true;
+	}
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::chqikanClick(TObject *Sender)
+{
+	if (chqikan->Checked ) {
+		edqikan->Visible = true;
+		if (m_catalogSearchMode == 1) {
+			edtCatalog->MaxLength = 15;
+		}
+		else
+		{
+			edtCatalog->MaxLength = 0;
+		}
+	}
+	else
+	{
+		edqikan->Visible = false;
+		if (m_catalogSearchMode == 1) {
+			edtCatalog->MaxLength = 13;
+		}
+		else
+		{
+			edtCatalog->MaxLength = 0;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N14Click(TObject *Sender)
+{
+	lblCatalog->Caption = "作者";
+	m_catalogSearchMode=5;
+	edtCatalog->MaxLength = 0;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::edqikanKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r') {
+		if (m_catalogSearchMode == 6) {
+        	float price;
+				try {
+					price = StrToFloat(edtCatalog->Text.Trim());
+				} catch (...) {
+					MessageBox(0,"请输入正确的定价！","批销退货" ,MB_ICONEXCLAMATION);
+					return;
+				}
+			}
+
+        TfrmSelectCatalog* frm = new TfrmSelectCatalog(Application,m_con);
+		LandInfo li;
+		li.app = m_app;
+		li.con = m_con;
+		li.userID = m_userID;
+		li.storageID = m_storageID;
+		frm->Init(&li);
+		frm->DoModalType = 7; //一般发货退货模式
+		frm->WholeReturnfrm = this;
+		frm->qikan = chqikan->Checked ;
+		frm->qikanhao = edqikan->Text ;
+		frm->SetSearchMode(m_catalogSearchMode, edtCatalog->Text);
+		if (mrOk == frm->ShowModal())
+		{
+			int supplierID = -1,catalogID = -1;
+			if (frm->SelectAll) {
+				for (int i = 0; i < frm->lengthint  ; i++) {
+
+				if (!saleenable(frm->stkbkid[i])) {
+					return;
+				}
+				cbbkstackID->ItemIndex = cbbkstackID->Items->IndexOfObject((TObject*)frm->BKSKid[i]);
+				if (AddNote(frm->SupplierID[i],frm->BkcatalogiD[i])) {
+
+					Key = 0;
+					Perform(WM_NEXTDLGCTL, 0, 0);
+					historyview();
+
+				}
+				else
+				{
+				}
+
+				}
+
+			}else
+			{
+				frm->GetSelectResult(supplierID, catalogID);
+				if (!retailreturn(catalogID)) {
+					return;
+				}
+				if (supplierID >= 0 && catalogID >= 0)
+				{
+					cbbkstackID->ItemIndex = cbbkstackID->Items->IndexOfObject((TObject*)frm->BSKid);
+
+					TLocateOptions   Opts;
+					Opts.Clear();
+					Opts   <<   loPartialKey;
+					String   str   = AnsiString(frm->BKinfoid);
+
+					if ( !dsetNote->Locate("BkInfoID",str,Opts))
+					{
+						if (!saleenable(frm->BKinfoid)) {
+							return;
+						}
+						if (AddNote(supplierID, catalogID))
+						{
+							if (addnotereturnvalue == -2) {
+								MessageBox(0,"不允许负库存销售！","批销" ,MB_ICONEXCLAMATION);
+								edtCatalog->Text = "";
+								edqikan->Text = "";
+								addnotereturnvalue = 0;
+							}
+							else
+							{
+								Key=0;
+								historyview();
+								if (chfoceset->Checked) {
+									if (chfsamount->Checked ) {
+										dbnbedtAmount->SetFocus();
+									}
+									else if (chfsdiscount->Checked ) {
+										dbnbedtDiscount->SetFocus();
+									}
+									else if (chfsluru->Checked) {
+										edtCatalog->SetFocus();
+									}
+								}
+								else
+								{
+									dbnbedtAmount ->SetFocus();
+								}
+							}
+							editprice->Text =  FormatFloat("0.00", dsetNote->FieldByName("price")->AsFloat * dbnbedtDiscount->Value * 0.01);
+						}
+						else
+							ShowMessage("库存无该书!");
+					}
+					else
+					{
+						dbgrdNote->SelectedRows->CurrentRowSelected = true;
+						dbgrdNote->SetFocus();
+						dbnbedtAmount->SetFocus();
+					}
+				}
+			}
+		}
+		delete frm;
+
+		edtCatalog->Text = "";
+		edqikan->Text = "";
+		if (dblkpcbbVendorID->Text == "") {
+			dblkpcbbVendorID->KeyValue = dsetVendor->FieldByName("ID")->AsInteger ;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::chfsluruClick(TObject *Sender)
+{
+	if (chfsluru->Checked ) {
+		chfoceset->Checked = true;
+	}
+	else if (chfsamount->Checked ) {
+		chfoceset->Checked = true;
+	}
+	else if (chfsdiscount->Checked ) {
+		chfoceset->Checked = true;
+	}
+	else
+	{
+		chfoceset->Checked = false;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::editpriceKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r') {
+		if (dsetNote->IsEmpty() ) {
+			return;
+		}
+		float fajia;
+		float discount;
+		try {
+			fajia = StrToFloat(editprice->Text);
+			discount =  fajia*100/dsetNote->FieldByName("price")->AsFloat;
+			dbnbedtDiscount->Value =  discount;
+
+			editprice->Text = FormatFloat("0.00",fajia);
+			dsetNote->Edit();
+			dsetNote->FieldByName("Discount")->AsFloat = discount;
+			dsetNote->Post();
+			UpdateNote();
+
+			historyview();
+		} catch (...) {
+			return;
+		}
+		edtCatalog->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmWholesaleReturnMng::N15Click(TObject *Sender)
+{
+	if (dsetNote->IsEmpty() ) {
+        return;
+	}
+	Tfrmbookhistory *frm = new Tfrmbookhistory(Application,m_con,m_storageID,dsetNote->FieldByName("BkcatalogID")->AsInteger,m_userID );
+	frm->ShowModal();
+	delete frm;
+}
+void TfrmWholesaleReturnMng::lock(int htype)
+{
+
+     if (htype) {   //已锁定了的
+              BtnSave->Enabled = false;
+              tlbtn1->Enabled = false;
+              tlbtnAddNote->Enabled = false;
+              tlbtn2->Enabled = false;
+              tlbtn3->Enabled = false;
+              RzToolButton2->Enabled = false;
+              dbnbedtAmount->Enabled = false;
+
+              dbnbedtDiscount->Enabled = false;
+              edtCatalog->Enabled = false;
+
+              chqikan->Enabled = false;
+              RzButton1->Enabled = false;
+
+              selectmenu->AutoPopup = false;
+            //  imglock->Visible = true;
+            lblock->Caption="已锁定";
+              membk->Enabled = false;
+              editprice->Enabled = false;
+              dblkpcbbStaffID->Enabled = false;
+              dbnbedtAddCosts->Enabled = false;
+              dtpdate->Enabled = false;
+
+       }else
+       {  selectmenu->AutoPopup = true;
+         membk->Enabled = true;
+              editprice->Enabled = true;
+              dblkpcbbStaffID->Enabled = true;
+              dbnbedtAddCosts->Enabled = true;
+              dtpdate->Enabled = true;
+         //     BtnSave->Enabled = true;
+              tlbtn1->Enabled = true;
+              tlbtnAddNote->Enabled = true;
+              tlbtn2->Enabled = true;
+              tlbtn3->Enabled = true;
+              RzToolButton2->Enabled = true;
+              dbnbedtAmount->Enabled = true;
+
+              dbnbedtDiscount->Enabled = true;
+              edtCatalog->Enabled = true;
+
+              chqikan->Enabled = true;
+                 if (newclient) {
+                  RzButton1->Enabled = true;
+                }else RzButton1->Enabled = false;
+
+              //imglock->Visible = false;
+              lblock->Caption="";
+             disablenewsupplierornewbook();
+       }
+
+
+
+
+
+
+
+}
+void TfrmWholesaleReturnMng::checknewsupplier()
+{
+   AnsiString sql;
+   sql = "select * from sys_lock_table where lockname in('bookcatalog','client') and stgid ="+IntToStr(linfo.storageID);
+    TADOQuery *aq = new TADOQuery(Application);
+    aq->Connection = m_con;
+    aq->Close();
+    aq->SQL->Clear();
+    aq->SQL->Add(sql);
+    aq->Open();
+    aq->First();
+    if (aq->FieldByName("lockname")->AsAnsiString=="bookcatalog") {
+        bookcatalogadd=aq->FieldByName("lockadd")->AsBoolean;
+        bcatalogmodify=aq->FieldByName("lockmodify")->AsBoolean;
+    }else
+    {
+       client =aq->FieldByName("lockadd")->AsBoolean;
+    }
+
+    aq->Next();
+    if (aq->FieldByName("lockname")->AsAnsiString=="bookcatalog") {
+        bookcatalogadd=aq->FieldByName("lockadd")->AsBoolean;
+        bcatalogmodify=aq->FieldByName("lockmodify")->AsBoolean;
+    }else
+    {
+       client =aq->FieldByName("lockadd")->AsBoolean;
+    }
+    delete aq;
+}
+void TfrmWholesaleReturnMng::disablenewsupplierornewbook()
+{
+
+     //bool  supplier,bookcatalogadd,bcatalogmodify;
+     if (client) {
+        RzButton1->Enabled = false;
+     }
+
+}
+//---------------------------------------------------------------------------
+
+

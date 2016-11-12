@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009-10-29 10:13:11.312.cpp,E:\20091023\source\marketadmin\Unit1.cpp=E:\20091023\source\marketadmin\DiscountPlan.cpp</Transaction>
+    <Transaction>2009-10-29 10:13:11.312.h,E:\20091023\source\marketadmin\Unit1.h=E:\20091023\source\marketadmin\DiscountPlan.h</Transaction>
+    <Transaction>2009-10-29 10:13:11.312.dfm,E:\20091023\source\marketadmin\Unit1.dfm=E:\20091023\source\marketadmin\DiscountPlan.dfm</Transaction>
+    <Transaction>2009-11-02 11:52:33.017.cpp,E:\20091023\source\marketadmin\Unit1.cpp=E:\20091023\source\marketadmin\DiscountChange.cpp</Transaction>
+    <Transaction>2009-11-02 11:52:33.017.h,E:\20091023\source\marketadmin\Unit1.h=E:\20091023\source\marketadmin\DiscountChange.h</Transaction>
+    <Transaction>2009-11-02 11:52:33.017.dfm,E:\20091023\source\marketadmin\Unit1.dfm=E:\20091023\source\marketadmin\DiscountChange.dfm</Transaction>
+    <Transaction>2010-01-09 14:15:18.859.cpp,D:\work\hechuang\source\marketadmin\DiscountPlan.cpp=D:\work\hechuang\source\marketadmin\WsaleDiscount.cpp</Transaction>
+    <Transaction>2010-01-09 14:15:18.859.h,D:\work\hechuang\source\marketadmin\DiscountPlan.h=D:\work\hechuang\source\marketadmin\WsaleDiscount.h</Transaction>
+    <Transaction>2010-01-09 14:15:18.859.dfm,D:\work\hechuang\source\marketadmin\DiscountPlan.dfm=D:\work\hechuang\source\marketadmin\WsaleDiscount.dfm</Transaction>
+    <Transaction>2010-01-12 15:50:31.406.cpp,D:\work\fenhenchuan\source\marketadmin\Unit1.cpp=D:\work\fenhenchuan\source\marketadmin\MemberTypeDiscount.cpp</Transaction>
+    <Transaction>2010-01-12 15:50:31.406.h,D:\work\fenhenchuan\source\marketadmin\Unit1.h=D:\work\fenhenchuan\source\marketadmin\MemberTypeDiscount.h</Transaction>
+    <Transaction>2010-01-12 15:50:31.406.dfm,D:\work\fenhenchuan\source\marketadmin\Unit1.dfm=D:\work\fenhenchuan\source\marketadmin\MemberTypeDiscount.dfm</Transaction>
+    <Transaction>2010-01-19 11:08:49.453.cpp,D:\work\hechuang\source\marketadmin\DiscountPlan.cpp=D:\work\hechuang\source\marketadmin\WsaleDiscountPlan.cpp</Transaction>
+    <Transaction>2010-01-19 11:08:49.453.h,D:\work\hechuang\source\marketadmin\DiscountPlan.h=D:\work\hechuang\source\marketadmin\WsaleDiscountPlan.h</Transaction>
+    <Transaction>2010-01-19 11:08:49.453.dfm,D:\work\hechuang\source\marketadmin\DiscountPlan.dfm=D:\work\hechuang\source\marketadmin\WsaleDiscountPlan.dfm</Transaction>
+    <Transaction>2010-08-21 09:34:23.484.cpp,D:\work\retail\11sourcebk\marketadmin\Unit1.cpp=D:\work\retail\11sourcebk\marketadmin\Membertypeadddot.cpp</Transaction>
+    <Transaction>2010-08-21 09:34:23.484.h,D:\work\retail\11sourcebk\marketadmin\Unit1.h=D:\work\retail\11sourcebk\marketadmin\Membertypeadddot.h</Transaction>
+    <Transaction>2010-08-21 09:34:23.484.dfm,D:\work\retail\11sourcebk\marketadmin\Unit1.dfm=D:\work\retail\11sourcebk\marketadmin\Membertypeadddot.dfm</Transaction>
+    <Transaction>2010-11-26 11:35:19.786.cpp,D:\work\jiaocai\11sourcebk\marketadmin\DiscountCtrlForm.cpp=</Transaction>
+    <Transaction>2010-11-26 11:35:19.786.dfm,D:\work\jiaocai\11sourcebk\marketadmin\DiscountCtrlForm.dfm=</Transaction>
+    <Transaction>2010-11-26 12:07:12.131.cpp,D:\work\jiaocai\11sourcebk\marketadmin\DiscountChange.cpp=</Transaction>
+    <Transaction>2010-11-26 12:07:12.131.dfm,D:\work\jiaocai\11sourcebk\marketadmin\DiscountChange.dfm=</Transaction>
+    <Transaction>2011-02-28 16:03:40.208.cpp,E:\work\jiaocai\11sourcebk\marketadmin\RetailSalesForm.cpp=</Transaction>
+    <Transaction>2011-02-28 16:03:40.250.dfm,E:\work\jiaocai\11sourcebk\marketadmin\RetailSalesForm.dfm=</Transaction>
+  </Transactions>
+</BorlandProject>

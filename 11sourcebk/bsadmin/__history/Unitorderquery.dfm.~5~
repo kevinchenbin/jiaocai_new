@@ -1,0 +1,304 @@
+object frmorderquery: Tfrmorderquery
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu, biMinimize]
+  Caption = #26597#21333
+  ClientHeight = 438
+  ClientWidth = 507
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Panel1: TPanel
+    Left = 0
+    Top = 0
+    Width = 507
+    Height = 438
+    Align = alClient
+    BevelInner = bvLowered
+    Color = 16180174
+    ParentBackground = False
+    TabOrder = 0
+    object spselectClient: TSpeedButton
+      Left = 474
+      Top = 35
+      Width = 20
+      Height = 20
+      Flat = True
+      Glyph.Data = {
+        36040000424D3604000000000000360000002800000010000000100000000100
+        2000000000000004000000000000000000000000000000000000FF00FF00CCCC
+        CC00C0C0C000E5E5E500FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00CCCCCC006699
+        99006666990099999900E5E5E500FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF0066CC
+        FF003399CC006666990099999900E5E5E500FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00CCCC
+        FF0066CCFF003399CC006666990099999900E5E5E500FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00CCCCFF0066CCFF003399CC006666990099999900E5E5E500FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00CCCCFF0066CCFF003399CC0066669900CCCCCC00FFCCCC00CC99
+        9900CC999900CC999900CCCC9900E5E5E500FF00FF00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00CCCCFF0066CCFF00B2B2B200CC999900CCCC9900F2EA
+        BF00FFFFCC00F2EABF00F2EABF00CC999900ECC6D900FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00E5E5E500CC999900FFCC9900FFFFCC00FFFF
+        CC00FFFFCC00FFFFFF00FFFFFF00FFFFFF00CC999900E5E5E500FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FFCCCC00CCCC9900FFFFCC00F2EABF00FFFF
+        CC00FFFFCC00FFFFFF00FFFFFF00FFFFFF00F2EABF00CCCC9900FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00CCCC9900FFCC9900F2EABF00F2EABF00FFFF
+        CC00FFFFCC00FFFFCC00FFFFFF00FFFFFF00F2EABF00CC999900FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00CC999900F2EABF00F2EABF00F2EABF00F2EA
+        BF00FFFFCC00FFFFCC00FFFFCC00FFFFCC00FFFFCC00CC999900FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00CCCC9900F2EABF00FFFFCC00F2EABF00F2EA
+        BF00F2EABF00FFFFCC00FFFFCC00FFFFCC00F2EABF00CC999900FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FFCCCC00CCCC9900FFFFFF00FFFFFF00F2EA
+        BF00F2EABF00F2EABF00F2EABF00FFFFCC00CCCC9900CCCC9900FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00E5E5E500CC999900ECC6D900FFFFFF00FFFF
+        CC00F2EABF00F2EABF00F2EABF00FFCC9900CC999900E5E5E500FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FFCCCC00CC999900FFCCCC00F2EA
+        BF00F2EABF00F2EABF00CCCC9900CC999900FFCCCC00FF00FF00FF00FF00FF00
+        FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00FF00E5E5E500CCCC9900CC99
+        9900CC999900CC999900CC999900E5E5E500FF00FF00FF00FF00}
+      OnClick = spselectClientClick
+    end
+    object dtpstart: TDateTimePicker
+      Left = 77
+      Top = 7
+      Width = 84
+      Height = 21
+      Date = 40362.764915000000000000
+      Time = 40362.764915000000000000
+      TabOrder = 0
+      OnChange = dtpstartChange
+    end
+    object chstart: TCheckBox
+      Left = 5
+      Top = 11
+      Width = 69
+      Height = 17
+      Caption = #36215#22987#26102#38388
+      TabOrder = 1
+    end
+    object dtpend: TDateTimePicker
+      Left = 249
+      Top = 7
+      Width = 85
+      Height = 21
+      Date = 40362.764915000000000000
+      Time = 40362.764915000000000000
+      TabOrder = 2
+      OnChange = dtpendChange
+    end
+    object chend: TCheckBox
+      Left = 173
+      Top = 11
+      Width = 74
+      Height = 17
+      Caption = #32467#26463#26102#38388
+      TabOrder = 3
+    end
+    object chclient: TCheckBox
+      Left = 5
+      Top = 34
+      Width = 65
+      Height = 17
+      Caption = #23458#25143
+      TabOrder = 4
+    end
+    object edclient: TEdit
+      Left = 77
+      Top = 34
+      Width = 71
+      Height = 21
+      TabOrder = 5
+      OnKeyPress = edclientKeyPress
+    end
+    object edtclient: TEdit
+      Left = 149
+      Top = 34
+      Width = 322
+      Height = 21
+      ReadOnly = True
+      TabOrder = 6
+      OnChange = edtclientChange
+    end
+    object chcode: TCheckBox
+      Left = 5
+      Top = 61
+      Width = 74
+      Height = 17
+      Caption = #21333#21495
+      TabOrder = 7
+    end
+    object edcode: TEdit
+      Left = 77
+      Top = 61
+      Width = 394
+      Height = 21
+      NumbersOnly = True
+      TabOrder = 8
+      OnChange = edcodeChange
+    end
+    object DBGrid1: TDBGrid
+      Left = 5
+      Top = 117
+      Width = 497
+      Height = 318
+      DataSource = ds
+      FixedColor = 16180174
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clNavy
+      Font.Height = -11
+      Font.Name = 'Tahoma'
+      Font.Style = []
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgMultiSelect]
+      ParentFont = False
+      PopupMenu = PopupMenu1
+      TabOrder = 9
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clNavy
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
+      OnDblClick = DBGrid1DblClick
+      OnKeyPress = DBGrid1KeyPress
+      Columns = <
+        item
+          Expanded = False
+          FieldName = 'clientname'
+          Title.Alignment = taCenter
+          Title.Caption = #23458#25143#21517#31216
+          Width = 120
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'NtCode'
+          Title.Alignment = taCenter
+          Title.Caption = #21333#21495
+          Width = 89
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'HdTime'
+          Title.Alignment = taCenter
+          Title.Caption = #26085#26399
+          Width = 73
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'TotalAmount'
+          Title.Alignment = taCenter
+          Title.Caption = #25968#37327
+          Width = 52
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'FixedPrice'
+          Title.Alignment = taCenter
+          Title.Caption = #30721#27915
+          Width = 76
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'DiscountedPrice'
+          Title.Alignment = taCenter
+          Title.Caption = #23454#27915
+          Width = 76
+          Visible = True
+        end>
+    end
+    object Button1: TButton
+      Left = 325
+      Top = 86
+      Width = 75
+      Height = 25
+      Caption = #26597#35810
+      TabOrder = 10
+      OnClick = Button1Click
+    end
+    object Button2: TButton
+      Left = 406
+      Top = 86
+      Width = 75
+      Height = 25
+      Caption = #36864#20986
+      TabOrder = 11
+      OnClick = Button2Click
+    end
+    object chinorder: TCheckBox
+      Left = 5
+      Top = 88
+      Width = 97
+      Height = 17
+      Caption = #20869#37096#35746#21333
+      TabOrder = 12
+      Visible = False
+    end
+    object chuser: TCheckBox
+      Left = 350
+      Top = 11
+      Width = 58
+      Height = 17
+      Caption = #25805#20316#21592
+      TabOrder = 13
+    end
+    object cbuser: TComboBox
+      Left = 410
+      Top = 7
+      Width = 84
+      Height = 21
+      ItemHeight = 13
+      TabOrder = 14
+    end
+    object chshenhei: TCheckBox
+      Left = 120
+      Top = 88
+      Width = 97
+      Height = 17
+      Caption = #21482#26597#35810#24050#23457#26680
+      Checked = True
+      State = cbChecked
+      TabOrder = 15
+      Visible = False
+    end
+  end
+  object fcon: TADOConnection
+    Left = 192
+    Top = 192
+  end
+  object ds: TDataSource
+    DataSet = query
+    Left = 336
+    Top = 184
+  end
+  object query: TADOQuery
+    Parameters = <>
+    Left = 376
+    Top = 288
+  end
+  object PopupMenu1: TPopupMenu
+    Left = 152
+    Top = 248
+    object N1: TMenuItem
+      Caption = #20840#36873
+      OnClick = N1Click
+    end
+    object N2: TMenuItem
+      Caption = #25171#21360
+      OnClick = N2Click
+    end
+  end
+end

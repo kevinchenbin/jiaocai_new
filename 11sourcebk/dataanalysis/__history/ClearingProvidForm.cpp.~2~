@@ -1,0 +1,398 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "ClearingProvidForm.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "MDIChild"
+#pragma link "RzButton"
+#pragma link "RzGrids"
+#pragma link "RzLabel"
+#pragma link "RzPanel"
+#pragma link "DBGridEh"
+#pragma link "GridsEh"
+#pragma resource "*.dfm"
+TfrmClearingProvid *frmClearingProvid;
+//---------------------------------------------------------------------------
+__fastcall TfrmClearingProvid::TfrmClearingProvid(TComponent* Owner)
+	: TfrmMDIChild(Owner)
+{        m_module = MTData;
+	dtp1->Date=dtp1->Date .CurrentDate();
+	dtp2->Date=dtp2->Date .CurrentDate();
+	this->WindowState = wsMaximized ;
+
+}
+//---------------------------------------------------------------------------
+
+void TfrmClearingProvid::Init(TApplication* app, TADOConnection* con)
+{          TfrmMDIChild::Init(app, con);
+
+		  query->Connection = con;
+		  dsCUS->Connection=con;
+          fcon = con;
+		  if (dsCUS->Active) {
+				dsCUS->Active=false;
+		  }
+		  String sql="select ID,Name from CUST_CustomerInfo where Type= 1 order by name" ;
+
+		 dsCUS->CommandText=sql;
+		 dsCUS->Active=true;
+
+		 dsCUS->First();
+		 while (!dsCUS->Eof) {
+		 cbbType->AddItem(dsCUS->FieldByName("Name")->AsString ,(TObject*)dsCUS->FieldByName("ID")->AsInteger );
+		 dsCUS->Next();
+		 }
+		 TADOQuery * aq;
+		aq = new TADOQuery(this);
+		aq->Connection = con;
+		aq->Close();
+		aq->SQL->Clear();
+		aq->SQL->Add("select * from sys_bsset where name ='xiaoshudian'");
+		aq->Open();
+		storageformat =  "￥" + aq->FieldByName("bk")->AsAnsiString ;
+		aq->Close();
+		aq->SQL->Clear();
+		aq->SQL->Add("select * from sys_bsset where name ='retailxiaoshudian'");
+		aq->Open();
+		retaiformat =  "￥" + aq->FieldByName("bk")->AsAnsiString ;
+		aq->Close();
+		aq->SQL->Clear();
+		aq->SQL->Add("select * from sys_bsset where name ='salexiaoshudian'");
+		aq->Open();
+		saleformat =  "￥" + aq->FieldByName("bk")->AsAnsiString ;
+
+		sql = "select ID,Name from SYS_StorageInfo ";
+		aq->Close();
+		aq->SQL->Clear();
+		aq->SQL->Add(sql);
+		aq->Open();
+		while (!aq->Eof )
+		{
+			cbstorage->AddItem(aq->FieldByName("Name")->AsString ,(TObject*)aq->FieldByName("ID")->AsInteger );
+			aq->Next();
+		}
+		cbstorage->ItemIndex = cbstorage->Items->IndexOfObject((TObject*)stgid);
+		sql = "select Master from SYS_StorageInfo where id = " + IntToStr(stgid);
+        aq->Close();
+		aq->SQL->Clear();
+		aq->SQL->Add(sql);
+		aq->Open();
+		if (aq->FieldByName("Master")->AsBoolean ) {
+			chstorage->Enabled = true;
+			cbstorage->Enabled = true;
+		}
+		else
+		{
+			chstorage->Enabled = false;
+			cbstorage->Enabled = false;
+		}
+
+		delete aq;
+		DBGridEh1->Columns->Items[2]->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[3]->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[5]->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[6]->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[8]->DisplayFormat =  retaiformat;
+		DBGridEh1->Columns->Items[9]->DisplayFormat =  retaiformat;
+		DBGridEh1->Columns->Items[11]->DisplayFormat =  saleformat;
+		DBGridEh1->Columns->Items[12]->DisplayFormat =  saleformat;
+		DBGridEh1->Columns->Items[13]->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[14]->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[2]->Footer->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[3]->Footer->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[5]->Footer->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[6]->Footer->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[8]->Footer->DisplayFormat =  retaiformat;
+		DBGridEh1->Columns->Items[9]->Footer->DisplayFormat =  retaiformat;
+		DBGridEh1->Columns->Items[11]->Footer->DisplayFormat =  saleformat;
+		DBGridEh1->Columns->Items[12]->Footer->DisplayFormat =  saleformat;
+		DBGridEh1->Columns->Items[13]->Footer->DisplayFormat =  storageformat;
+		DBGridEh1->Columns->Items[14]->Footer->DisplayFormat =  storageformat;
+}
+
+
+void __fastcall TfrmClearingProvid::RzToolButton1Click(TObject *Sender)
+{
+		 if (cbbType->Text == "") {
+			Query();
+		 }
+		 else
+		 {
+			int supplierid;
+			try {
+				supplierid = int(cbbType->Items->Objects[cbbType->ItemIndex]);
+			} catch (...) {
+            	return;
+			}
+
+			Query(supplierid);
+		 }
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmClearingProvid::FormClose(TObject *Sender, TCloseAction &Action)
+
+{
+	dsCUS->Active=false;
+	Action = caFree;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmClearingProvid::RzToolButton3Click(TObject *Sender)
+{
+	  Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmClearingProvid::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Shift.Contains(ssCtrl)&& Key == 70 ) {    //查询
+		RzToolButton1->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key == 78 ) {    //最小化
+		BtnAlignBottom->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key == 81 ) {    //退出
+		RzToolButton3->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key ==90) {   //恢复窗口
+		WindowState = wsNormal  ;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmClearingProvid::BtnAlignBottomClick(TObject *Sender)
+{
+	WindowState = wsMinimized ;
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmClearingProvid::SpeedButton1Click(TObject *Sender)
+{
+	Query();
+}
+//---------------------------------------------------------------------------
+void TfrmClearingProvid::Query(int supplierid)
+
+{
+	AnsiString sql;
+	sql = "EXEC USP_jisuan_analysis 0,";
+	sql = sql + IntToStr(supplierid) + ",";
+	if (cbstart->Checked) {
+		sql = sql + "'"+ DateToStr(dtp1->Date) + "',";
+	}
+	else
+	{
+		sql = sql + "null,";
+	}
+	if (cbend->Checked ) {
+		sql = sql + "'" + DateToStr(dtp2->Date) + "',";
+	}
+	else
+	{
+		sql = sql + "null,";
+	}
+
+	if (chstorage->Checked) {
+    	int fstgid;
+		try {
+			fstgid = (int)cbstorage->Items->Objects[cbstorage->ItemIndex];
+		} catch (...) {
+			MessageBox(0,"请选择正确的店号!","提示",MB_ICONEXCLAMATION);
+			return;
+		}
+		sql = sql + IntToStr(fstgid);
+	}
+	else
+	{
+    	sql = sql + "null";
+	}
+
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	try {
+		query->Open() ;
+	} catch (Exception &E) {
+		//ShowMessage(E.Message);
+	}
+}
+//---------------------------------------------------------------------------
+void TfrmClearingProvid::Query()
+
+{
+	AnsiString sql;
+	sql = "EXEC USP_jisuan_analysis 0,null,";
+	if (cbstart->Checked) {
+		sql = sql + "'" + DateToStr(dtp1->Date) + "',";
+	}
+	else
+	{
+		sql = sql + "null,";
+	}
+	if (cbend->Checked ) {
+		sql = sql + "'" + DateToStr(dtp2->Date) + "',";
+	}
+	else
+	{
+		sql = sql + "null,"  ;
+	}
+
+	if (chstorage->Checked) {
+    	int fstgid;
+		try {
+			fstgid = (int)cbstorage->Items->Objects[cbstorage->ItemIndex];
+		} catch (...) {
+			MessageBox(0,"请选择正确的店号!","提示",MB_ICONEXCLAMATION);
+			return;
+		}
+		sql = sql + IntToStr(fstgid);
+	}
+	else
+	{
+    	sql = sql + "null";
+	}
+
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	try {
+		query->Open();
+	} catch (Exception &E) {
+		//ShowMessage(E.Message);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmClearingProvid::DBGridEh1TitleClick(TColumnEh *Column)
+{
+	if (query->IsEmpty() ) {
+    	return;
+	}
+	AnsiString qusort;
+	qusort =  Column->FieldName + " ASC";
+	if (query->Sort == "") {
+		query->Sort =  Column->FieldName + " ASC";
+	}
+	else if (query->Sort == qusort) {
+		query->Sort =  Column->FieldName + " DESC";
+	}
+	else
+	{
+		query->Sort =  Column->FieldName + " ASC";
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmClearingProvid::dtp1Change(TObject *Sender)
+{
+	cbstart->Checked = true;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmClearingProvid::dtp2Change(TObject *Sender)
+{
+	cbend->Checked = true;
+}
+//---------------------------------------------------------------------------
+bool TfrmClearingProvid::DbgridToExcel(TDBGridEh* dbg)
+{
+    	if (dbg->DataSource ->DataSet->IsEmpty() ) {
+        return false;
+	}
+	AnsiString temptext,path;
+
+	savedlg->FileName = this->Caption;
+	if (savedlg->Execute())
+	{
+		String DBPath,Name;
+		DBPath = ExtractFilePath(savedlg->FileName .c_str()  );
+		Name = ExtractFileName(savedlg->FileName .c_str() );
+		DBPath = DBPath + Name + ".csv";
+		path =  DBPath;
+	}
+	else
+	{
+		return false;
+	}
+	int  iFileHandle;
+	int  iFileLength;
+	if(FileExists(path))
+	   if (DeleteFileA(path))
+			iFileHandle = FileCreate(path.c_str());
+	   else
+			return false;
+	else
+		iFileHandle = FileCreate(path.c_str());
+
+	for(int q=0;q<dbg->FieldCount ;++q)
+	{
+		if (dbg->Columns->Items[q]->Visible == true) {
+			temptext = temptext + dbg->Columns ->Items [q]->Title ->Caption + ",";
+		}
+	}
+	iFileLength   =   FileSeek(iFileHandle,0,2);
+	FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+
+	dbg->DataSource ->DataSet->DisableControls();
+	dbg->DataSource ->DataSet ->First();
+	while(!dbg->DataSource ->DataSet->Eof)
+	{
+		temptext = "\n";
+		for(int j=1;j<dbg->Columns ->Count+1  ;j++)
+		{
+			if (dbg->Columns->Items[j-1]->Visible == true) {
+				if (dbg->Columns ->Items [j-1]->FieldName == "ISBN") {
+					if (dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString != "") {
+						temptext = temptext + "'" + dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+					}
+					else
+					{
+                    	temptext = temptext + dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+					}
+				}
+				else if (dbg->Columns ->Items [j-1]->FieldName == "BookName") {
+					AnsiString bookname;
+					int len;
+					bookname = dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+					bookname = StringReplace(bookname , ",",".",TReplaceFlags()<<rfReplaceAll);
+					temptext = temptext + bookname + ",";
+				}
+				else
+				{
+					temptext = temptext + dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+				}
+			}
+		}
+		iFileLength   =   FileSeek(iFileHandle,0,2);
+		FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+		dbg->DataSource ->DataSet ->Next() ;
+	}
+	dbg->DataSource ->DataSet->EnableControls();
+
+	temptext = "\n";
+        AnsiString text;
+	for(int q=0;q<dbg->FieldCount ;++q)
+	{
+		if (dbg->Columns->Items[q]->Visible == true) {
+			text = dbg->GetFooterValue(q,dbg->Columns->Items [q]);
+			text = StringReplace(text , ",","",TReplaceFlags()<<rfReplaceAll);
+			text = StringReplace(text , "-","'-",TReplaceFlags()<<rfReplaceAll);
+			temptext = temptext + text + ",";
+		}
+	}
+	FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+
+	FileClose(iFileHandle);
+
+	MessageBox(0,"导出完毕！","提示" ,MB_OK);
+	return false;
+}
+//---------------------------------------------------------------------------
+

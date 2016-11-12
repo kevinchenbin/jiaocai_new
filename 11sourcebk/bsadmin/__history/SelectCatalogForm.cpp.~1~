@@ -1,0 +1,915 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "SelectCatalogForm.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "ModalDialog"
+#pragma link "RzButton"
+#pragma link "RzLabel"
+#pragma link "RzDBGrid"
+#pragma link "RzEdit"
+#pragma link "RzPanel"
+#pragma resource "*.dfm"
+
+TfrmSelectCatalog *frmSelectCatalog;
+//---------------------------------------------------------------------------
+__fastcall TfrmSelectCatalog::TfrmSelectCatalog(TComponent* Owner,TADOConnection* con)
+	: TfrmModalDialog(Owner)
+	, m_searchMode(0)
+	, m_supplierID(-1)
+	, m_catalogID(-1)
+	, m_ok(false)
+{
+	dsetQry->Connection = con;
+	aquery->Connection = con;
+	fcon = con;
+	MutilSelectModal = false;
+	TADOQuery *aq = new TADOQuery(this);
+	aq->Connection = con;
+	AnsiString sql;
+	sql = "select * from SYS_BSSET where name = 'pxnobkinfotuihuo'" ;
+	aq->Close();
+	aq->SQL->Clear();
+	aq->SQL->Add(sql);
+	aq->Open();
+	nobkinforsale = aq->FieldByName("value")->AsBoolean ;
+
+	sql = "select ID,PresentNum,FullName from BS_PressInfo";
+	aq->Close();
+	aq->SQL->Clear();
+	aq->SQL->Add(sql);
+	aq->Open();
+	while (!aq->Eof )
+	{
+		cbpress->AddItem(aq->FieldByName("FullName")->AsAnsiString,(TObject*)aq->FieldByName("id")->AsInteger );
+        aq->Next();
+	}
+	delete aq;
+	addbkinfo = false;
+}
+//---------------------------------------------------------------------------
+void TfrmSelectCatalog::SetSearchMode(int searchMode, String text)
+{
+   SearchCont = text;
+   m_searchMode =  searchMode;
+}
+
+
+void TfrmSelectCatalog::QryBkInfo()
+{
+	m_supplierID = -1;
+	m_catalogID = -1;
+	m_ok = false;
+	String sql,sqlgroup;
+	bool Display,Mutisupplier;
+   //查询业务设置库存为0的是否显示
+	sql = "select value from sys_bsset where name = 'storagezero'";
+	aquery->Close();
+	aquery->SQL->Clear();
+	aquery->SQL->Add(sql);
+	aquery->Open();
+	Display = aquery->FieldByName("value")->AsBoolean ;
+	//是否显示多供应商
+	sql = "select value from sys_bsset where name = 'mutisupplier'";
+	aquery->Close();
+	aquery->SQL->Clear();
+	aquery->SQL->Add(sql);
+	aquery->Open();
+	Mutisupplier = aquery->FieldByName("value")->AsBoolean ;
+	//是否允许无批销退货
+ 	sql = "select value from sys_bsset where name = 'nokucunpxth'";
+	aquery->Close();
+	aquery->SQL->Clear();
+	aquery->SQL->Add(sql);
+	aquery->Open();
+	nokucpxth = aquery->FieldByName("value")->AsBoolean ;
+
+	 //1条码 2为自编码 3为书名  4 ISBN 5 作者
+	 Display = true;
+	switch (DoModalType) {
+	case 1://零售
+	case 2://批销
+	case 6://零售退货
+	case 7://批销退货
+	case 9://库存调整
+	case 10://虚拟盘点
+	case 12://样/赠书处理
+		if (Mutisupplier) {
+			sql = " select BS_BookCatalog.ID,BS_BookCatalog.Author,BS_BookCatalog.kanzhong,STK_BookInfo.ID as bkinfoid,STK_BookInfo.SupplierID,BS_BookCatalog.Name,BS_BookCatalog.year,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.Presscount,BS_BookCatalog.ISBN,BS_BookCatalog.duokantext,CUST_CustomerInfo.Name as SupplierName,STK_BookInfo.Amount,STK_BookstackInfo.Name as BkstackName,BS_BookCatalog.Price ,BS_PressInfo.fullname,STK_BookstackInfo.Name as BKStName,STK_BookstackInfo.ID as BSKID,"
+			  " CASE WHEN BS_BookCatalog.Price <> 0 THEN STK_BookInfo.cbprice*100/BS_BookCatalog.Price else 0 end as discount "
+			  " from BS_BookCatalog  join STK_BookInfo on STK_BookInfo.BkcatalogID=BS_BookCatalog.ID "
+			  " left join CUST_CustomerInfo on STK_BookInfo.SupplierID=CUST_CustomerInfo.ID "
+			  " join STK_BookstackInfo on STK_BookInfo.BkstackID=STK_BookstackInfo.ID "
+			  " left join BS_PressInfo ON BS_BookCatalog.PressID = BS_PressInfo.ID "
+			  " where  BS_BookCatalog.Unavailable=1 and STK_BookstackInfo.StgID = " + IntToStr(m_storageID) ;
+		}
+		else
+		{
+			sql = "select A.* from (select BS_BookCatalog.ID,STK_BookstackInfo.StgID,BS_BookCatalog.Author,BS_BookCatalog.kanzhong,STK_BookInfo.ID as bkinfoid,STK_BookInfo.SupplierID,BS_BookCatalog.year,BS_BookCatalog.Name,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.Presscount,BS_BookCatalog.ISBN,BS_BookCatalog.duokantext,CUST_CustomerInfo.Name as SupplierName,STK_BookInfo.Amount,STK_BookstackInfo.Name as BkstackName,BS_BookCatalog.Price ,BS_PressInfo.fullname,STK_BookstackInfo.Name as BKStName,STK_BookstackInfo.ID as BSKID,"
+              " CASE WHEN BS_BookCatalog.Price <> 0 THEN STK_BookInfo.cbprice*100/BS_BookCatalog.Price else 0 end as discount "
+			  " from BS_BookCatalog  join STK_BookInfo on STK_BookInfo.BkcatalogID=BS_BookCatalog.ID "
+			  " left join CUST_CustomerInfo on STK_BookInfo.SupplierID=CUST_CustomerInfo.ID "
+			  " join STK_BookstackInfo on STK_BookInfo.BkstackID=STK_BookstackInfo.ID "
+			  " left join BS_PressInfo ON BS_BookCatalog.PressID = BS_PressInfo.ID "
+			  " where  BS_BookCatalog.Unavailable=1 and STK_BookstackInfo.StgID = " + IntToStr(m_storageID) ;
+		}
+		if ((DoModalType == 1 || DoModalType == 2) && !Display) {
+			sql = sql + " and STK_BookInfo.amount > 0 ";
+		}
+		dbgrdQry->Columns->Items[16]->Visible = false;
+		this->Caption = "多货源选择";
+		break;
+	case 3://入库
+	case 4://订单
+	case 5://采购
+	case 8://入库退货
+	case 11://智能入库
+		sql = "select BS_BookCatalog.ID,BS_BookCatalog.Author,BS_BookCatalog.Name,BS_BookCatalog.kanzhong,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.year,BS_BookCatalog.duokantext,BS_BookCatalog.ISBN,BS_BookCatalog.Price,BS_BookCatalog.Presscount ,BS_PressInfo.fullname,sum(STK_BookInfo.amount) as Amount,Order_lock.unarrivenum "
+			  " from BS_BookCatalog left join BS_PressInfo ON BS_BookCatalog.PressID = BS_PressInfo.ID left join (select * from stk_bookinfo where stgid = " + IntToStr(m_storageID) + " ) as STK_BookInfo on STK_BookInfo.BkcatalogID = BS_BookCatalog.id left join Order_lock on BS_BookCatalog.id  = Order_lock.bkcatalogid "
+			  " where  BS_BookCatalog.Unavailable=1 " ;
+		sqlgroup = " group by BS_BookCatalog.ID,BS_BookCatalog.Author,BS_BookCatalog.year,BS_BookCatalog.Name,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.ISBN,BS_BookCatalog.Price ,BS_BookCatalog.duokantext,BS_PressInfo.fullname,BS_BookCatalog.Presscount,Order_lock.unarrivenum,BS_BookCatalog.kanzhong,Order_lock.unarrivenum" ;
+		this->Caption = "一号多书";
+		dbgrdQry->Columns->Items[7]->Visible = false;
+		dbgrdQry->Columns->Items[8]->Visible = false;
+		dbgrdQry->Columns->Items[15]->Visible = false;
+		break;
+	default:
+		;
+	}
+	sql1 = "select BS_BookCatalog.ID,BS_BookCatalog.Author,BS_BookCatalog.kanzhong,BS_BookCatalog.year,BS_BookCatalog.Name,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.duokantext,BS_BookCatalog.ISBN,BS_BookCatalog.Price,BS_BookCatalog.Presscount,BS_PressInfo.fullname,sum(STK_BookInfo.amount) as Amount,Order_lock.unarrivenum "
+			  " from BS_BookCatalog left join BS_PressInfo ON BS_BookCatalog.PressID = BS_PressInfo.ID  left join STK_BookInfo on STK_BookInfo.BkcatalogID = BS_BookCatalog.id left join Order_lock on BS_BookCatalog.id  = Order_lock.bkcatalogid "
+			  " where   BS_BookCatalog.Unavailable=1 " ;
+	if (qikan) {
+		sql = sql + " and BS_BookCatalog.PressCount like '%" + qikanhao + "%' and BS_BookCatalog.type = 1 ";
+		sql1 = sql1 + " and BS_BookCatalog.PressCount like '%" + qikanhao + "%' and BS_BookCatalog.type = 1 ";
+		dbgrdQry->Columns->Items[12]->Visible = true;
+		dbgrdQry->Columns->Items[11]->Title->Caption = "刊号";
+		dbgrdQry->Columns->Items[13]->Visible = true;
+		dbgrdQry->Columns->Items[13]->Width = 40;
+        dbgrdQry->Columns->Items[10]->Visible = true;
+	}
+	switch (m_searchMode)
+	{
+	case 1://条码
+
+		   if (SearchCont.Length()==10 || SearchCont.Length()==13 ) {
+				SearchCont = SearchCont.Delete(SearchCont.Length(),1);
+				sql = sql + "  and (BS_BookCatalog.Barcode like '%" + SearchCont + "%' or BS_BookCatalog.ISBN like '%" + SearchCont + "%') ";
+				sql1 = sql1 + "  and (BS_BookCatalog.Barcode like '%" + SearchCont + "%' or BS_BookCatalog.ISBN like '%" + SearchCont + "%') ";
+		   }
+		   else
+		   {
+				sql = sql + "  and (BS_BookCatalog.Barcode like '%" + SearchCont + "%' or BS_BookCatalog.ISBN like '%" + SearchCont + "%') ";
+				sql1 = sql1 + "  and (BS_BookCatalog.Barcode like '%" + SearchCont + "%' or BS_BookCatalog.ISBN like '%" + SearchCont + "%') ";
+		   }
+		if (!Display) {
+		   sql = sql + " and STK_BookInfo.Amount > 0 " ;
+		}
+		if (Supplier != "") {           //退货时
+			sql = sql + " and CUST_CustomerInfo.Name like '%" + Supplier + "%'";
+		}
+		if (!Mutisupplier && DoModalType!=3 && DoModalType!=4 && DoModalType!=5 && DoModalType!=8 && DoModalType!=11) {
+			sql = sql + " ) AS A "
+			" WHERE bkinfoid  IN (SELECT TOP 1 ID FROM stk_bookinfo WHERE BkcatalogID=A.ID and stgid = A.StgID ORDER BY Amount desc )";
+		}
+		sql = sql+ sqlgroup;
+		dsetQry->Active = false;
+		dsetQry->CommandText = sql;
+		try {
+			dsetQry->Active = true;
+			if (dsetQry->RecordCount == 0 && DoModalType == 7 && nokucpxth) {
+				sqlgroup = " group by BS_BookCatalog.ID,BS_BookCatalog.year,BS_BookCatalog.Author,BS_BookCatalog.Name,BS_BookCatalog.Barcode,BS_BookCatalog.duokantext,BS_BookCatalog.UserDefCode,BS_BookCatalog.ISBN,BS_BookCatalog.Price ,BS_PressInfo.fullname,BS_BookCatalog.Presscount,BS_BookCatalog.kanzhong,Order_lock.unarrivenum" ;
+				sql1 = sql1 +  sqlgroup;
+				addbkinfo = true;
+				dsetQry->Active = false;
+				dsetQry->CommandText = sql1;
+				dsetQry->Active = true;
+			}
+		} catch (...) {
+		}
+
+		break;
+	case 2://自编码
+
+			sql = sql + "  and BS_BookCatalog.UserDefCode like '%" + SearchCont + "%'";
+			sql1 = sql1 + "  and BS_BookCatalog.UserDefCode like '%" + SearchCont + "%'";
+		if (!Display) {
+
+		   sql = sql + " and STK_BookInfo.Amount > 0 " ;
+
+		}
+				if (Supplier != "") {
+			sql = sql + " and  CUST_CustomerInfo.Name like %" + Supplier + "%";
+			sql1 = sql1 + " and  CUST_CustomerInfo.Name like %" + Supplier + "%";
+		}
+		if (!Mutisupplier && DoModalType!=3 && DoModalType!=4 && DoModalType!=5 && DoModalType!=8 && DoModalType!=11) {
+			sql = sql + " ) AS A "
+			" WHERE bkinfoid  IN (SELECT TOP 1 ID FROM stk_bookinfo WHERE BkcatalogID=A.ID and stgid = A.StgID ORDER BY Amount desc )";
+		}
+		sql = sql+ sqlgroup;
+		dsetQry->Active = false;
+		dsetQry->CommandText = sql;
+		try {
+			dsetQry->Active = true;
+			if (dsetQry->RecordCount == 0 && DoModalType == 7 && nokucpxth) {
+				sqlgroup = " group by BS_BookCatalog.ID,BS_BookCatalog.year,BS_BookCatalog.Author,BS_BookCatalog.Name,BS_BookCatalog.Barcode,BS_BookCatalog.duokantext,BS_BookCatalog.UserDefCode,BS_BookCatalog.ISBN,BS_BookCatalog.Price ,BS_PressInfo.fullname,BS_BookCatalog.Presscount,BS_BookCatalog.kanzhong,Order_lock.unarrivenum" ;
+				sql1 = sql1 +  sqlgroup;
+				addbkinfo = true;
+				dsetQry->Active = false;
+				dsetQry->CommandText = sql1;
+				dsetQry->Active = true;
+			}
+		} catch (...) {
+		}
+		break;
+	case 3://书名
+
+			sql = sql +  " and  BS_BookCatalog.Name like '%" + SearchCont + "%'";
+			sql1 = sql1 +  " and  BS_BookCatalog.Name like '%" + SearchCont + "%'";
+		if (!Display) {
+
+		   sql = sql + " and STK_BookInfo.Amount > 0 " ;
+
+		}
+				if (Supplier != "") {
+			sql = sql + " and  CUST_CustomerInfo.Name like %" + Supplier + "%";
+			sql1 = sql1 + " and  CUST_CustomerInfo.Name like %" + Supplier + "%";
+		}
+		if (!Mutisupplier && DoModalType!=3 && DoModalType!=4 && DoModalType!=5 && DoModalType!=8 && DoModalType!=11) {
+			sql = sql + " ) AS A "
+			" WHERE bkinfoid  IN (SELECT TOP 1 ID FROM stk_bookinfo WHERE BkcatalogID=A.ID and stgid = A.StgID ORDER BY Amount desc )";
+		}
+		sql = sql+ sqlgroup;
+		dsetQry->Active = false;
+		dsetQry->CommandText = sql;
+		try {
+			dsetQry->Active = true;
+			if (dsetQry->RecordCount == 0 && DoModalType == 7 && nokucpxth) {
+				sqlgroup = " group by BS_BookCatalog.ID,BS_BookCatalog.year,BS_BookCatalog.Author,BS_BookCatalog.Name,BS_BookCatalog.duokantext,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.ISBN,BS_BookCatalog.Price ,BS_PressInfo.fullname,BS_BookCatalog.Presscount,BS_BookCatalog.kanzhong,Order_lock.unarrivenum" ;
+				sql1 = sql1 +  sqlgroup;
+				addbkinfo = true;
+				dsetQry->Active = false;
+				dsetQry->CommandText = sql1;
+				dsetQry->Active = true;
+			}
+		} catch (...) {
+		}
+		break;
+	case 4: //ISBN
+
+		sql = sql + "  and BS_BookCatalog.ISBN='" + SearchCont + "'";
+		sql1 = sql1 + "  and BS_BookCatalog.ISBN='" + SearchCont + "'";
+		if (!Display) {
+			sql = sql + " and STK_BookInfo.Amount > 0 " ;
+		}
+
+				if (Supplier != "") {
+			sql = sql + " and  CUST_CustomerInfo.Name like %" + Supplier + "%";
+			sql1 = sql1 + " and  CUST_CustomerInfo.Name like %" + Supplier + "%";
+		}
+		if (!Mutisupplier && DoModalType!=3 && DoModalType!=4 && DoModalType!=5 && DoModalType!=8 && DoModalType!=11) {
+			sql = sql + " ) AS A "
+			" WHERE bkinfoid  IN (SELECT TOP 1 ID FROM stk_bookinfo WHERE BkcatalogID=A.ID and stgid = A.StgID ORDER BY Amount desc )";
+		}
+		sql = sql+ sqlgroup;
+		dsetQry->Active = false;
+		dsetQry->CommandText = sql;
+		try {
+			dsetQry->Active = true;
+			if (dsetQry->RecordCount == 0 && DoModalType == 7 && nokucpxth) {
+				sqlgroup = " group by BS_BookCatalog.ID,BS_BookCatalog.year,BS_BookCatalog.Author,BS_BookCatalog.duokantext,BS_BookCatalog.Name,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.ISBN,BS_BookCatalog.Price ,BS_PressInfo.fullname,BS_BookCatalog.Presscount,BS_BookCatalog.kanzhong,Order_lock.unarrivenum" ;
+				sql1 = sql1 +  sqlgroup;
+				addbkinfo = true;
+				dsetQry->Active = false;
+				dsetQry->CommandText = sql1;
+				dsetQry->Active = true;
+			}
+		} catch (...) {
+		}
+		break;
+	case 5://作者
+
+		if (SearchCont == "") {
+			sql = sql +  " and (BS_BookCatalog.Author like'%" + SearchCont + "%' or BS_BookCatalog.Author is null) ";
+			sql1 = sql1 +  " and (BS_BookCatalog.Author like'%" + SearchCont + "%' or BS_BookCatalog.Author is null) ";
+		}
+		else
+		{
+			sql = sql +  " and BS_BookCatalog.Author like'%" + SearchCont + "%'";
+			sql1 = sql1 +  " and BS_BookCatalog.Author like'%" + SearchCont + "%'";
+		}
+
+		if (!Display) {
+
+		sql = sql + "and STK_BookInfo.Amount > 0 " ;
+
+		}
+
+				if (Supplier != "") {
+			sql = sql + " and  CUST_CustomerInfo.Name like %" + Supplier + "%";
+		}
+		if (!Mutisupplier && DoModalType!=3 && DoModalType!=4 && DoModalType!=5 && DoModalType!=8 && DoModalType!=11) {
+			sql = sql + " ) AS A "
+			" WHERE bkinfoid  IN (SELECT TOP 1 ID FROM stk_bookinfo WHERE BkcatalogID=A.ID and stgid = A.StgID ORDER BY Amount desc )";
+		}
+		sql = sql+ sqlgroup;
+		dsetQry->Active = false;
+		dsetQry->CommandText = sql;
+		try {
+			dsetQry->Active = true;
+			if (dsetQry->RecordCount == 0 && DoModalType == 7 && nokucpxth) {
+				sqlgroup = " group by BS_BookCatalog.ID,BS_BookCatalog.year,BS_BookCatalog.Author,BS_BookCatalog.duokantext,BS_BookCatalog.Name,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.ISBN,BS_BookCatalog.Price ,BS_PressInfo.fullname,BS_BookCatalog.Presscount,BS_BookCatalog.kanzhong,Order_lock.unarrivenum" ;
+				sql1 = sql1 +  sqlgroup;
+				addbkinfo = true;
+				dsetQry->Active = false;
+				dsetQry->CommandText = sql1;
+				dsetQry->Active = true;
+			}
+		} catch (...) {
+		}
+		break;
+	case 6://定价
+
+		sql = sql +  " and BS_BookCatalog.price=" + SearchCont;
+		sql1 = sql1 +  " and BS_BookCatalog.price=" + SearchCont;
+		if (!Display) {
+
+		sql = sql + "and STK_BookInfo.Amount > 0 " ;
+
+		}
+				if (Supplier != "") {
+			sql = sql + " and  CUST_CustomerInfo.Name like %" + Supplier + "%";
+		}
+		if (!Mutisupplier && DoModalType!=3 && DoModalType!=4 && DoModalType!=5 && DoModalType!=8 && DoModalType!=11) {
+			sql = sql + " ) AS A "
+			" WHERE bkinfoid  IN (SELECT TOP 1 ID FROM stk_bookinfo WHERE BkcatalogID=A.ID and stgid = A.StgID ORDER BY Amount desc )";
+		}
+		sql = sql+ sqlgroup;
+		dsetQry->Active = false;
+		dsetQry->CommandText = sql;
+		try {
+			dsetQry->Active = true;
+			if (dsetQry->RecordCount == 0 && DoModalType == 7 && nokucpxth) {
+				sqlgroup = " group by BS_BookCatalog.ID,BS_BookCatalog.year,BS_BookCatalog.Author,BS_BookCatalog.duokantext,BS_BookCatalog.Name,BS_BookCatalog.Barcode,BS_BookCatalog.UserDefCode,BS_BookCatalog.ISBN,BS_BookCatalog.Price ,BS_PressInfo.fullname,BS_BookCatalog.Presscount,BS_BookCatalog.kanzhong,Order_lock.unarrivenum" ;
+				sql1 = sql1 +  sqlgroup;
+				addbkinfo = true;
+				dsetQry->Active = false;
+				dsetQry->CommandText = sql1;
+				dsetQry->Active = true;
+			}
+		} catch (...) {
+		}
+		break;
+	default:
+		break;
+	}
+
+
+   if (dsetQry->Active && dsetQry->RecordCount > 1)//查找到多条记录
+	{
+		dbgrdQry->SetFocus();
+		m_ok = true;
+		findbook = true;
+	}
+	else if (dsetQry->Active && dsetQry->RecordCount == 1)//查找到一条记录
+	{
+		if (DoModalType == 1 || DoModalType == 2 || DoModalType == 6 || (DoModalType == 7 && !addbkinfo) ||DoModalType==9 ||DoModalType==10 ||DoModalType==12) {
+			BSKid =  dsetQry->FieldByName("BSKID")->AsInteger ;
+			BKinfoid = dsetQry->FieldByName("bkinfoid")->AsInteger;
+			Amount = dsetQry->FieldByName("Amount")->AsInteger;
+		}
+		m_ok = true;
+		findbook = true;
+		PostMessage(Handle, WM_CLOSE, 0, 0);
+		//ModalResult = mrOk;
+	}
+	else if (dsetQry->Active && dsetQry->RecordCount < 1)//未找到记录
+	{
+		m_ok = false;
+		findbook = false;
+		PostMessage(Handle, WM_CLOSE, 0, 0);
+
+	}
+	else//查找出错
+	{
+
+	}
+
+	if (DoModalType == 1 || DoModalType == 2 || DoModalType == 6 || (DoModalType == 7 && !addbkinfo) ||DoModalType==9|| DoModalType ==10 ||DoModalType ==12) {
+        dbgrdQry->Columns->Items[7]->Visible = true;
+		dbgrdQry->Columns->Items[7]->Field = dsetQry->FieldByName("discount");
+		dbgrdQry->Columns->Items[8]->Visible = true;
+		dbgrdQry->Columns->Items[8]->Field = dsetQry->FieldByName("SupplierName");
+		dbgrdQry->Columns->Items[15]->Visible = true;
+		dbgrdQry->Columns->Items[15]->Field = dsetQry->FieldByName("BKStName");
+		((TFloatField *)dbgrdQry->DataSource->DataSet->FieldByName("discount"))->DisplayFormat = "0.00%";
+	}
+}
+
+void TfrmSelectCatalog::Init(LandInfo* li)
+{
+	TfrmModalDialog::Init(li);
+}
+
+
+void TfrmSelectCatalog::Qry()
+{
+    AnsiString sql;
+	if (dsetQry->Active && dsetQry->RecordCount > 1)//查找到多条记录
+	{
+		dbgrdQry->SetFocus();
+		m_ok = true;
+		findbook = true;
+	}
+	else if (dsetQry->Active && dsetQry->RecordCount == 1)//查找到一条记录
+	{
+		if (DoModalType == 1 || DoModalType == 2 || DoModalType == 6 || (DoModalType == 7 && !addbkinfo) ||DoModalType==9 ||DoModalType==10 ||DoModalType==12) {
+			BSKid =  dsetQry->FieldByName("BSKID")->AsInteger ;
+			BKinfoid = dsetQry->FieldByName("bkinfoid")->AsInteger;
+			Amount = dsetQry->FieldByName("Amount")->AsInteger;
+		}
+		m_ok = true;
+		findbook = true;
+		PostMessage(Handle, WM_CLOSE, 0, 0);
+		//ModalResult = mrOk;
+	}
+	else if (dsetQry->Active && dsetQry->RecordCount < 1)//未找到记录
+	{
+		m_ok = false;
+		findbook = false;
+		PostMessage(Handle, WM_CLOSE, 0, 0);
+	}
+	else//查找出错
+	{
+
+	}
+}
+
+
+
+
+void TfrmSelectCatalog::GetSelectResult(int& SupplierID, int& BkcatalogID)
+{
+	SupplierID = m_supplierID;
+	BkcatalogID = m_catalogID;
+}
+
+void __fastcall TfrmSelectCatalog::dbgrdQryKeyPress(TObject *Sender, wchar_t &Key)
+{
+	//
+	if (Key == '\r')
+	{
+		if (DoModalType == 1 || DoModalType == 2 || DoModalType == 6 || (DoModalType == 7 && !addbkinfo) ||DoModalType == 9||DoModalType==10 || DoModalType==12) {
+			BSKid =  dsetQry->FieldByName("BSKID")->AsInteger ;
+			BKinfoid = dsetQry->FieldByName("bkinfoid")->AsInteger;
+			Amount =  dsetQry->FieldByName("Amount")->AsInteger;
+		}
+		ModalResult = mrOk;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::dsetQryAfterScroll(TDataSet *DataSet)
+{
+	//
+	m_catalogID = DataSet->FieldByName("ID")->AsInteger;
+	if (DoModalType== 1 || DoModalType == 2 || DoModalType== 6 || (DoModalType == 7 && !addbkinfo) || DoModalType==9||DoModalType==10) {
+		m_supplierID = DataSet->FieldByName("SupplierID")->AsInteger;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::dsetQryAfterOpen(TDataSet *DataSet)
+{
+	//
+	m_catalogID = DataSet->FieldByName("ID")->AsInteger;
+	if (DoModalType == 1 || DoModalType == 2 || DoModalType== 6 || (DoModalType == 7 && !addbkinfo) || DoModalType==9 ||DoModalType==10 || DoModalType==12) {
+		m_supplierID = DataSet->FieldByName("SupplierID")->AsInteger;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::edtSearchKeyPress(TObject *Sender, wchar_t &Key)
+{
+	//
+	if (Key == '\r')
+	{
+		QryBkInfo();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::FormClose(TObject *Sender, TCloseAction &Action)
+{
+	if (dsetQry->Active == true && dsetQry->RecordCount == 1) {
+		ModalResult = mrOk;
+	}
+	dsetQry->Active = false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::FormShow(TObject *Sender)
+{
+	SelectAll = false;
+	QryBkInfo();
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmSelectCatalog::BtnExitClick(TObject *Sender)
+{
+	 Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::BtnselectallClick(TObject *Sender)
+{
+  int Recount;
+  Recount = dsetQry->RecordCount ;
+  SupplierID = new int[Recount];
+  BkcatalogiD = new int[Recount];
+  BKSKid = new int[Recount];
+  stkbkid = new int[Recount];
+  skAmount = new int[Recount];
+  lengthint = Recount;
+  dsetQry->First();
+  for (int i = 0; i < dsetQry->RecordCount  ; i++) {
+
+	 if (DoModalType == 1 || DoModalType == 2 || DoModalType== 6 || (DoModalType == 7 && !addbkinfo)||DoModalType==9 ||DoModalType==10 ||DoModalType==12) {
+		SupplierID[i] = dsetQry->FieldByName("SupplierID")->AsInteger;
+		BKSKid[i] =  dsetQry->FieldByName("BSKID")->AsInteger ;
+		stkbkid[i] = dsetQry->FieldByName("bkinfoid")->AsInteger;
+		skAmount[i] =  dsetQry->FieldByName("Amount")->AsInteger;
+	 }
+
+	 BkcatalogiD[i] = dsetQry->FieldByName("ID")->AsInteger;
+	 dsetQry->Next();
+  }
+  SelectAll = true;
+  ModalResult = mrOk;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::BtnPropertiesClick(TObject *Sender)
+{
+		 if (DoModalType == 1 || DoModalType == 2 || DoModalType == 6 || (DoModalType == 7 && !addbkinfo)||DoModalType == 9||DoModalType==10 || DoModalType == 12) {
+			BSKid =  dsetQry->FieldByName("BSKID")->AsInteger ;
+			BKinfoid = dsetQry->FieldByName("bkinfoid")->AsInteger;
+			Amount =  dsetQry->FieldByName("Amount")->AsInteger;
+			//	m_supplierID = dsetQry->FieldByName("SupplierID")->AsInteger;
+		}
+
+		 if (MutilSelectModal) {
+		   ModalResult = mrCancel ;
+		 }else
+		 {
+			ModalResult = mrOk ;
+		 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::dbgrdQryDblClick(TObject *Sender)
+{
+	  //	 ModalResult = mrOk;
+	  int supplierid;
+	int cataid;
+	 if (MutilSelectModal) {
+			if (DoModalType == 1 || DoModalType == 2 || DoModalType == 6 || (DoModalType == 7 && !addbkinfo)||DoModalType == 9||DoModalType==10|| DoModalType==12) {
+				supplierid = dsetQry->FieldByName("SupplierID")->AsInteger;
+				BSKid =  dsetQry->FieldByName("BSKID")->AsInteger ;
+				BKinfoid = dsetQry->FieldByName("bkinfoid")->AsInteger;
+				Amount =  dsetQry->FieldByName("Amount")->AsInteger;
+			}
+
+			cataid = dsetQry->FieldByName("ID")->AsInteger;
+			switch (DoModalType) {
+				case 1:    //零售模式
+				//	Retailfrm = (TfrmretailMng*)frm;
+				 if (!Retailfrm->retailreturn(cataid)) {
+					return;
+				 }
+				 if (!Retailfrm->saleenable(BKinfoid) ) {
+					return;
+				 }
+				 Retailfrm->cbbkstackID->ItemIndex = Retailfrm->cbbkstackID->Items->IndexOfObject((TObject*)BSKid);
+				 Retailfrm->AddNote(supplierid,cataid);
+				break;
+				case 2: //批销
+					if (!Wholefrm->retailreturn(cataid) ) {
+						return;
+					}
+					if (!Wholefrm->saleenable(BKinfoid) ) {
+						return;
+					}
+					Wholefrm->cbbkstackID->ItemIndex = Wholefrm->cbbkstackID->Items->IndexOfObject((TObject*)BSKid);
+					Wholefrm->AddNote(supplierid,cataid);
+
+				break;
+				case 3: //入库
+				  Storagefrm->AddNote(cataid);
+				  Storagefrm->yjpxdiscount();
+				break;
+				case 4: //订单
+					if (order->chongfutishi(cataid) ) {
+						order->AddNote(0,cataid) ;
+					}
+				break;
+				case 5://采购
+				   Procurefrm->AddNote(supplierid,cataid);
+				break;
+				case 6: //零售退货
+				  if (!RetailReturnfrm->retailreturn(cataid)) {
+					return;
+				  }
+				  if (!RetailReturnfrm->saleenable(BKinfoid) ) {
+					return;
+				 }
+				  RetailReturnfrm->cbbkstackID->ItemIndex = RetailReturnfrm->cbbkstackID->Items->IndexOfObject((TObject*)BSKid);
+				  RetailReturnfrm->AddNote(supplierid,cataid);
+				break;
+				case 7: //批销退货
+					if (!WholeReturnfrm->retailreturn(cataid) ) {
+						return;
+					}
+					if (!addbkinfo) {
+                    	if (!WholeReturnfrm->saleenable(BKinfoid) ) {
+							return;
+						}
+						WholeReturnfrm->cbbkstackID->ItemIndex = WholeReturnfrm->cbbkstackID->Items->IndexOfObject((TObject*)BSKid);
+						WholeReturnfrm->AddNote(supplierid,cataid);
+					}
+					else
+					{
+						WholeReturnfrm->AddNote(0,cataid);
+					}
+
+				break;
+				case 8: //入库退货
+				  StorageReturnfrm->AddNote(cataid);
+				break;
+				case 9://  库存调整
+				   StockAdjust->AddNote(supplierid,cataid,BKinfoid,Amount);
+				break;
+				case 10: //虚拟盘点
+				   stockcheckxuyi->AddNote(supplierid,cataid,BSKid,BKinfoid);
+				break;
+				case 11: //智能入库
+				  ZNStorageMng->AddNote(supplierid,cataid);
+				  ZNStorageMng->yjpxdiscount();
+				break;
+				case 12: //样/赠书处理
+				  Ysbooksale->AddNote(BKinfoid);
+				break;
+				default:
+				;
+			}
+	 }
+	 else
+	 {
+		if (DoModalType == 1 || DoModalType == 2 || DoModalType == 6 || (DoModalType == 7 && !addbkinfo)||DoModalType == 9||DoModalType==10 || DoModalType == 12) {
+			BSKid =  dsetQry->FieldByName("BSKID")->AsInteger ;
+			BKinfoid = dsetQry->FieldByName("bkinfoid")->AsInteger;
+			Amount =  dsetQry->FieldByName("Amount")->AsInteger;
+			//	m_supplierID = dsetQry->FieldByName("SupplierID")->AsInteger;
+		}
+		ModalResult = mrOk ;
+	 }
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::BtnWeekViewClick(TObject *Sender)
+{
+   MutilSelectModal = true;
+}
+//---------------------------------------------------------------------------
+
+
+
+void __fastcall TfrmSelectCatalog::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_F4)
+	{
+	  BtnProperties->Click();
+	}
+	if (Key == VK_F6) {
+		 BtnWeekView->Click();
+	}
+		if (Key == VK_F7) {
+		Btnselectall->Click();
+	}
+	   //	if (Key == VK_ESC) {
+	  // BtnExit->Click();
+	//}
+}
+//---------------------------------------------------------------------------
+
+void TfrmSelectCatalog::Filter()
+
+{
+	AnsiString filterstr;
+	if (chkucun->Checked ) {
+		if (kcmin->Text != "") {
+			filterstr = filterstr + " Amount >= " + kcmin->Text ;
+		}
+		if (kcmax->Text != "") {
+			if (filterstr == "") {
+				filterstr = filterstr + " Amount <= " + kcmax->Text ;
+			}
+			else
+			{
+				filterstr = filterstr + " and Amount <= " + kcmax->Text ;
+			}
+		}
+	}
+	if (chprice->Checked ) {
+		if (edpricemin->Text != "") {
+			if (filterstr == "") {
+				filterstr = filterstr + " Price >= " + edpricemin->Text ;
+			}
+			else
+			{
+				filterstr = filterstr + " and Price >= " + edpricemin->Text ;
+			}
+		}
+		if (edpricemax->Text != "") {
+			if (filterstr == "") {
+				filterstr = filterstr + " Price <= " + edpricemax->Text ;
+			}
+			else
+			{
+				filterstr = filterstr + " and Price <= " + edpricemax->Text ;
+			}
+		}
+	}
+	if (chpress->Checked && cbpress->Text != "") {
+		if (filterstr == "") {
+			filterstr = filterstr + " fullname = '" + cbpress->Text + "'";
+		}
+		else
+		{
+			filterstr = filterstr + " and fullname = '" + cbpress->Text + "'";
+		}
+	}
+	if (chauthor->Checked && edauthor->Text != "") {
+    	if (filterstr == "") {
+			filterstr = filterstr + " Author like '%" + edauthor->Text + "%'";
+		}
+		else
+		{
+			filterstr = filterstr + " and Author like '%" + edauthor->Text + "%'";
+		}
+	}
+	dsetQry->Active = false;
+	dsetQry->Filtered = true;
+	dsetQry->Filter = filterstr ;
+	dsetQry->Active = true;
+	if (DoModalType == 1 || DoModalType == 2 || DoModalType == 6 || (DoModalType == 7 && !addbkinfo) ||DoModalType==9|| DoModalType ==10 ||DoModalType ==12) {
+		((TFloatField *)dbgrdQry->DataSource->DataSet->FieldByName("discount"))->DisplayFormat = "0.00%";
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::edqueryKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r') {
+    	TADOQuery *aq = new TADOQuery(this);
+		aq->Connection = fcon;
+		AnsiString sql;
+
+		sql = "select ID,PresentNum,FullName from BS_PressInfo where FullName like '%" + edquery->Text + "%'";
+		aq->Close();
+		aq->SQL->Clear();
+		aq->SQL->Add(sql);
+		aq->Open();
+		cbpress->Clear();
+		while (!aq->Eof )
+		{
+			cbpress->AddItem(aq->FieldByName("FullName")->AsAnsiString,(TObject*)aq->FieldByName("ID")->AsInteger );
+			aq->Next();
+		}
+		aq->Next();
+		cbpress->ItemIndex = cbpress->Items->IndexOfObject((TObject*)aq->FieldByName("ID")->AsInteger );
+		if (!aq->IsEmpty() ) {
+			chpress->Checked = true;
+		}
+		delete aq;
+		cbpress->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::kcminChange(TObject *Sender)
+{
+	if (kcmin->Text != "") {
+		chkucun->Checked = true;
+	}
+	else if (kcmax->Text != "") {
+		chkucun->Checked = true;
+	}
+	else
+	{
+    	chkucun->Checked = false;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::edpriceminChange(TObject *Sender)
+{
+	if (edpricemin->Text != "") {
+		chprice->Checked = true;
+	}
+	else if (edpricemax->Text != "") {
+		chprice->Checked = true;
+	}
+	else
+	{
+    	chprice->Checked = false;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::kcminKeyPress(TObject *Sender, wchar_t &Key)
+{
+	if (Key == '\r') {
+		Filter();
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TfrmSelectCatalog::edpriceminKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if ((Key < '0' || Key > '9') && (Key != '\b') && (Key != '.') && (Key != '\r') ) {
+		Key = NULL;
+	}
+	if (Key == '\r') {
+    	Filter();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::cbpressChange(TObject *Sender)
+{
+	if (cbpress->Text == "") {
+		chpress->Checked = false;
+	}
+	else
+	{
+    	chpress->Checked = true;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::edauthorChange(TObject *Sender)
+{
+	if (edauthor->Text != "") {
+		chauthor->Checked = true;
+	}
+	else
+	{
+		chauthor->Checked = false;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::edauthorKeyPress(TObject *Sender, wchar_t &Key)
+
+{
+	if (Key == '\r') {
+    	Filter();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::BtnViewClick(TObject *Sender)
+{
+	Filter();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TfrmSelectCatalog::dbgrdQryTitleClick(TColumn *Column)
+{
+	if (dsetQry->IsEmpty() ) {
+    	return;
+	}
+	AnsiString qusort;
+	qusort =  Column->FieldName + " ASC";
+	if (dsetQry->Sort == "") {
+		dsetQry->Sort =  Column->FieldName + " ASC";
+	}
+	else if (dsetQry->Sort == qusort) {
+		dsetQry->Sort =  Column->FieldName + " DESC";
+	}
+	else
+	{
+		dsetQry->Sort =  Column->FieldName + " ASC";
+	}
+}
+//---------------------------------------------------------------------------
+

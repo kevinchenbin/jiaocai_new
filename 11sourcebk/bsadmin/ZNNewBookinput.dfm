@@ -1,0 +1,1165 @@
+object frmnewbook: Tfrmnewbook
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  Caption = #26032#20070#24405#20837
+  ClientHeight = 482
+  ClientWidth = 529
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  KeyPreview = True
+  OldCreateOrder = False
+  Position = poMainFormCenter
+  OnClose = FormClose
+  OnKeyDown = FormKeyDown
+  PixelsPerInch = 96
+  TextHeight = 13
+  object RzToolbar1: TRzToolbar
+    Left = 0
+    Top = 0
+    Width = 529
+    Height = 29
+    Images = ImageList1
+    BorderInner = fsNone
+    BorderOuter = fsGroove
+    BorderSides = [sdTop]
+    BorderWidth = 0
+    Color = clInactiveCaptionText
+    GradientColorStyle = gcsMSOffice
+    TabOrder = 0
+    VisualStyle = vsClassic
+    ToolbarControls = (
+      BtnSave
+      BtnExit)
+    object BtnSave: TRzToolButton
+      Left = 4
+      Top = 2
+      Width = 52
+      Hint = 'Save'
+      DisabledIndex = 1
+      ImageIndex = 0
+      ShowCaption = True
+      UseToolbarShowCaption = False
+      Caption = #20445#23384
+      OnClick = BtnSaveClick
+    end
+    object BtnExit: TRzToolButton
+      Left = 56
+      Top = 2
+      Width = 79
+      Hint = 'Exit'
+      DisabledIndex = 3
+      ImageIndex = 2
+      ShowCaption = True
+      UseToolbarShowCaption = False
+      Caption = #36864#20986'(ESC)'
+      OnClick = BtnExitClick
+    end
+  end
+  object Panel1: TPanel
+    Left = 0
+    Top = 29
+    Width = 529
+    Height = 453
+    Align = alClient
+    BevelInner = bvLowered
+    TabOrder = 1
+    object Label1: TLabel
+      Left = 17
+      Top = 15
+      Width = 60
+      Height = 13
+      Caption = #32463#33829#31867#21035#65306
+    end
+    object RzLine1: TRzLine
+      Left = 4
+      Top = 35
+      Width = 405
+      Height = 20
+    end
+    object pcwenju: TPageControl
+      Left = 17
+      Top = 57
+      Width = 357
+      Height = 153
+      ActivePage = TabSheet1
+      Style = tsButtons
+      TabOrder = 4
+      Visible = False
+      object TabSheet1: TTabSheet
+        Caption = #22522#26412#23646#24615
+        object Label30: TLabel
+          Left = 6
+          Top = 14
+          Width = 24
+          Height = 13
+          Caption = #26465#30721
+        end
+        object Label32: TLabel
+          Left = 6
+          Top = 42
+          Width = 26
+          Height = 13
+          Caption = #21697#21517
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clRed
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Label33: TLabel
+          Left = 6
+          Top = 74
+          Width = 26
+          Height = 13
+          Caption = #23450#20215
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clRed
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object editwenjutiaomao: TEdit
+          Left = 36
+          Top = 10
+          Width = 91
+          Height = 19
+          Ctl3D = False
+          NumbersOnly = True
+          ParentCtl3D = False
+          TabOrder = 0
+          OnKeyPress = editwenjutiaomaoKeyPress
+        end
+        object editwenjuname: TEdit
+          Left = 36
+          Top = 38
+          Width = 241
+          Height = 19
+          Ctl3D = False
+          ParentCtl3D = False
+          TabOrder = 1
+          OnKeyPress = editwenjunameKeyPress
+        end
+        object editwenjuself: TEdit
+          Left = 276
+          Top = 38
+          Width = 70
+          Height = 19
+          Ctl3D = False
+          Enabled = False
+          ParentCtl3D = False
+          ReadOnly = True
+          TabOrder = 2
+        end
+        object editwenjuprice: TEdit
+          Left = 35
+          Top = 70
+          Width = 91
+          Height = 19
+          Alignment = taRightJustify
+          Ctl3D = False
+          ParentCtl3D = False
+          TabOrder = 3
+          Text = #65509'0.00'
+          OnKeyPress = editwenjupriceKeyPress
+        end
+      end
+    end
+    object pcqikan: TPageControl
+      Left = 17
+      Top = 57
+      Width = 420
+      Height = 165
+      ActivePage = TabSheet2
+      Style = tsButtons
+      TabOrder = 5
+      Visible = False
+      object TabSheet2: TTabSheet
+        Caption = #22522#26412#23646#24615
+        object Label2: TLabel
+          Left = 16
+          Top = 16
+          Width = 24
+          Height = 13
+          Caption = #26465#30721
+        end
+        object Label3: TLabel
+          Left = 256
+          Top = 15
+          Width = 23
+          Height = 13
+          Caption = 'ISSN'
+        end
+        object Label4: TLabel
+          Left = 16
+          Top = 43
+          Width = 26
+          Height = 13
+          Caption = #21002#21517
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clRed
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Label5: TLabel
+          Left = 16
+          Top = 68
+          Width = 26
+          Height = 13
+          Caption = #23450#20215
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clRed
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Label6: TLabel
+          Left = 18
+          Top = 97
+          Width = 24
+          Height = 13
+          Caption = #26399#21495
+          Visible = False
+        end
+        object Label31: TLabel
+          Left = 201
+          Top = 70
+          Width = 48
+          Height = 13
+          Caption = #21457#34892#21333#20301
+        end
+        object editqikanmao: TEdit
+          Left = 73
+          Top = 14
+          Width = 175
+          Height = 19
+          Ctl3D = False
+          NumbersOnly = True
+          ParentCtl3D = False
+          TabOrder = 0
+          OnKeyPress = editqikanmaoKeyPress
+        end
+        object editqikanname: TEdit
+          Left = 74
+          Top = 41
+          Width = 237
+          Height = 19
+          Ctl3D = False
+          ParentCtl3D = False
+          TabOrder = 1
+          OnKeyPress = editqikannameKeyPress
+        end
+        object editqikanissn: TEdit
+          Left = 284
+          Top = 13
+          Width = 105
+          Height = 19
+          Ctl3D = False
+          Enabled = False
+          ParentCtl3D = False
+          TabOrder = 5
+          OnKeyPress = editqikanissnKeyPress
+        end
+        object editqikanself: TEdit
+          Left = 310
+          Top = 41
+          Width = 79
+          Height = 19
+          Ctl3D = False
+          Enabled = False
+          ParentCtl3D = False
+          ReadOnly = True
+          TabOrder = 6
+        end
+        object editqikanprice: TEdit
+          Left = 74
+          Top = 66
+          Width = 121
+          Height = 19
+          Alignment = taRightJustify
+          Ctl3D = False
+          ParentCtl3D = False
+          TabOrder = 2
+          Text = #65509'0.00'
+          OnKeyPress = editqikanpriceKeyPress
+        end
+        object editqikanqihao: TEdit
+          Left = 74
+          Top = 93
+          Width = 121
+          Height = 19
+          Alignment = taRightJustify
+          Ctl3D = False
+          ParentCtl3D = False
+          TabOrder = 4
+          Visible = False
+          OnKeyPress = editqikanqihaoKeyPress
+        end
+        object editqikanfaxing: TEdit
+          Left = 258
+          Top = 66
+          Width = 131
+          Height = 19
+          Ctl3D = False
+          ParentCtl3D = False
+          TabOrder = 3
+          OnKeyPress = editqikanfaxingKeyPress
+        end
+      end
+    end
+    object RzDBGrid1: TRzDBGrid
+      Left = 13
+      Top = 256
+      Width = 508
+      Height = 185
+      DataSource = ds
+      DefaultDrawing = True
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit]
+      TabOrder = 0
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
+      OnCellClick = RzDBGrid1CellClick
+      Columns = <
+        item
+          Expanded = False
+          FieldName = 'ISBN'
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'barcode'
+          Title.Caption = #26465#30721
+          Visible = False
+        end
+        item
+          Expanded = False
+          FieldName = 'name'
+          Title.Caption = #20070#21517
+          Width = 130
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'userdefcode'
+          Title.Caption = #33258#32534#30721
+          Width = 90
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'price'
+          Title.Caption = #23450#20215
+          Width = 60
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'abbreviatedname'
+          Title.Caption = #20986#29256#31038
+          Width = 60
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'author'
+          Title.Caption = #20316#32773
+          Width = 50
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'ID'
+          Visible = False
+        end
+        item
+          Expanded = False
+          FieldName = 'pid'
+          Visible = False
+        end
+        item
+          Expanded = False
+          FieldName = 'smallbooktypeid'
+          Visible = False
+        end>
+    end
+    object rzcbinput: TRzCheckBox
+      Left = 24
+      Top = 228
+      Width = 70
+      Height = 15
+      BiDiMode = bdLeftToRight
+      Caption = ' '#36830#32493#24405#20837
+      ParentBiDiMode = False
+      State = cbUnchecked
+      TabOrder = 1
+    end
+    object PageControlBook: TPageControl
+      Left = 17
+      Top = 58
+      Width = 416
+      Height = 164
+      ActivePage = tsbase
+      ParentShowHint = False
+      ShowHint = False
+      Style = tsButtons
+      TabOrder = 2
+      object tsbase: TTabSheet
+        Caption = #22522#26412#23646#24615
+        object Label8: TLabel
+          Left = 3
+          Top = 10
+          Width = 24
+          Height = 13
+          Caption = #26465#30721
+        end
+        object Label9: TLabel
+          Left = 211
+          Top = 10
+          Width = 23
+          Height = 13
+          Caption = 'ISBN'
+        end
+        object SpeedButton2: TSpeedButton
+          Left = 367
+          Top = 6
+          Width = 28
+          Height = 21
+          Caption = '10'
+          Flat = True
+          OnClick = SpeedButton1Click
+        end
+        object Label10: TLabel
+          Left = 3
+          Top = 34
+          Width = 26
+          Height = 13
+          Caption = #20070#21517
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clRed
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Label11: TLabel
+          Left = 3
+          Top = 59
+          Width = 26
+          Height = 13
+          Caption = #23450#20215
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clRed
+          Font.Height = -11
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object Label12: TLabel
+          Left = 208
+          Top = 59
+          Width = 24
+          Height = 13
+          Caption = #20316#32773
+        end
+        object Label13: TLabel
+          Left = 3
+          Top = 85
+          Width = 24
+          Height = 13
+          Caption = #31867#21035
+        end
+        object Label14: TLabel
+          Left = 198
+          Top = 85
+          Width = 36
+          Height = 13
+          Caption = #20986#29256#31038
+        end
+        object Label15: TLabel
+          Left = 3
+          Top = 112
+          Width = 48
+          Height = 13
+          Caption = #20986#29256#26085#26399
+        end
+        object Label16: TLabel
+          Left = 210
+          Top = 113
+          Width = 24
+          Height = 13
+          Caption = #29256#27425
+        end
+        object Label21: TLabel
+          Left = 245
+          Top = 117
+          Width = 12
+          Height = 13
+          Caption = #31532
+        end
+        object Label22: TLabel
+          Left = 382
+          Top = 112
+          Width = 12
+          Height = 13
+          Caption = #29256
+        end
+        object editcode: TEdit
+          Left = 33
+          Top = 7
+          Width = 147
+          Height = 19
+          Ctl3D = False
+          MaxLength = 13
+          NumbersOnly = True
+          ParentCtl3D = False
+          TabOrder = 0
+          OnKeyPress = editcodeKeyPress
+        end
+        object editisbn: TEdit
+          Left = 244
+          Top = 7
+          Width = 121
+          Height = 19
+          Ctl3D = False
+          ParentCtl3D = False
+          TabOrder = 1
+          OnKeyPress = editisbnKeyPress
+        end
+        object editbookname: TEdit
+          Left = 33
+          Top = 32
+          Width = 291
+          Height = 19
+          Ctl3D = False
+          ImeName = #20013#25991' ('#31616#20307') - '#25628#29399#25340#38899#36755#20837#27861
+          ParentCtl3D = False
+          TabOrder = 2
+          OnKeyPress = editbooknameKeyPress
+        end
+        object editbookself: TEdit
+          Left = 322
+          Top = 32
+          Width = 71
+          Height = 19
+          Ctl3D = False
+          ParentCtl3D = False
+          ReadOnly = True
+          TabOrder = 3
+        end
+        object editprice: TEdit
+          Left = 33
+          Top = 57
+          Width = 79
+          Height = 19
+          Alignment = taRightJustify
+          Ctl3D = False
+          ParentCtl3D = False
+          TabOrder = 4
+          Text = #65509'0.00'
+          OnKeyPress = editpriceKeyPress
+        end
+        object editauthor: TEdit
+          Left = 244
+          Top = 57
+          Width = 150
+          Height = 19
+          Ctl3D = False
+          ImeName = #20013#25991' ('#31616#20307') - '#25628#29399#25340#38899#36755#20837#27861
+          ParentCtl3D = False
+          TabOrder = 5
+          OnKeyPress = editauthorKeyPress
+        end
+        object rcbtype: TComboBox
+          Left = 33
+          Top = 82
+          Width = 147
+          Height = 21
+          BevelInner = bvNone
+          BevelOuter = bvNone
+          Color = clCream
+          Ctl3D = False
+          ItemHeight = 13
+          ParentCtl3D = False
+          TabOrder = 6
+          OnKeyPress = rcbtypeKeyPress
+        end
+        object rcbpress: TComboBox
+          Left = 288
+          Top = 82
+          Width = 107
+          Height = 21
+          Ctl3D = False
+          ItemHeight = 13
+          ParentCtl3D = False
+          TabOrder = 7
+          OnKeyPress = rcbpressKeyPress
+        end
+        object datapressday: TDateTimePicker
+          Left = 57
+          Top = 109
+          Width = 121
+          Height = 21
+          Date = 40146.605024768520000000
+          Time = 40146.605024768520000000
+          TabOrder = 8
+          OnKeyPress = datapressdayKeyPress
+        end
+        object sedpresscount: TRzSpinEdit
+          Left = 245
+          Top = 109
+          Width = 135
+          Height = 21
+          Value = 1.000000000000000000
+          TabOrder = 9
+          OnKeyPress = sedpresscountKeyPress
+        end
+        object edquery: TEdit
+          Left = 245
+          Top = 81
+          Width = 43
+          Height = 21
+          ImeName = #20013#25991' ('#31616#20307') - '#25628#29399#25340#38899#36755#20837#27861
+          TabOrder = 10
+          OnKeyPress = edqueryKeyPress
+        end
+      end
+      object tsdetail: TTabSheet
+        Caption = #25193#23637#23646#24615
+        ImageIndex = 1
+        object Label17: TLabel
+          Left = 3
+          Top = 33
+          Width = 48
+          Height = 13
+          Caption = #21360'        '#27425
+        end
+        object Label18: TLabel
+          Left = 208
+          Top = 59
+          Width = 24
+          Height = 13
+          Caption = #35013#24103
+        end
+        object Label19: TLabel
+          Left = 3
+          Top = 85
+          Width = 48
+          Height = 13
+          Caption = #19995'        '#20070
+        end
+        object Label20: TLabel
+          Left = 3
+          Top = 59
+          Width = 48
+          Height = 13
+          Caption = #24320'        '#26412
+        end
+        object Label23: TLabel
+          Left = 208
+          Top = 85
+          Width = 24
+          Height = 13
+          Caption = #23383#25968
+        end
+        object Label24: TLabel
+          Left = 3
+          Top = 10
+          Width = 47
+          Height = 13
+          Caption = 'ISBN'#20998#31867
+        end
+        object Label25: TLabel
+          Left = 208
+          Top = 33
+          Width = 24
+          Height = 13
+          Caption = #38468#20214
+        end
+        object Label26: TLabel
+          Left = 208
+          Top = 10
+          Width = 24
+          Height = 13
+          Caption = #35793#32773
+        end
+        object Label27: TLabel
+          Left = 3
+          Top = 110
+          Width = 48
+          Height = 13
+          Caption = #22791'        '#27880
+        end
+        object Label28: TLabel
+          Left = 165
+          Top = 33
+          Width = 12
+          Height = 13
+          Caption = #27425
+        end
+        object Label29: TLabel
+          Left = 86
+          Top = 33
+          Width = 12
+          Height = 13
+          Caption = #31532
+        end
+        object edwords: TEdit
+          Left = 253
+          Top = 83
+          Width = 126
+          Height = 19
+          Ctl3D = False
+          NumbersOnly = True
+          ParentCtl3D = False
+          TabOrder = 0
+          OnKeyPress = edwordsKeyPress
+        end
+        object edISBNtype: TEdit
+          Left = 56
+          Top = 6
+          Width = 121
+          Height = 19
+          Ctl3D = False
+          ImeName = #20013#25991' ('#31616#20307') - '#25628#29399#25340#38899#36755#20837#27861
+          ParentCtl3D = False
+          TabOrder = 1
+          OnKeyPress = edISBNtypeKeyPress
+        end
+        object edbook: TEdit
+          Left = 56
+          Top = 83
+          Width = 121
+          Height = 19
+          Ctl3D = False
+          ImeName = #20013#25991' ('#31616#20307') - '#25628#29399#25340#38899#36755#20837#27861
+          ParentCtl3D = False
+          TabOrder = 2
+          OnKeyPress = edbookKeyPress
+        end
+        object edaffix: TEdit
+          Left = 253
+          Top = 31
+          Width = 126
+          Height = 19
+          Ctl3D = False
+          ImeName = #20013#25991' ('#31616#20307') - '#25628#29399#25340#38899#36755#20837#27861
+          ParentCtl3D = False
+          TabOrder = 3
+          OnKeyPress = edaffixKeyPress
+        end
+        object edyizhe: TEdit
+          Left = 253
+          Top = 6
+          Width = 126
+          Height = 19
+          Ctl3D = False
+          ImeName = #20013#25991' ('#31616#20307') - '#25628#29399#25340#38899#36755#20837#27861
+          ParentCtl3D = False
+          TabOrder = 4
+          OnKeyPress = edyizheKeyPress
+        end
+        object cbformat: TComboBox
+          Left = 57
+          Top = 56
+          Width = 121
+          Height = 21
+          ItemHeight = 13
+          ItemIndex = 0
+          TabOrder = 5
+          Text = #21313#20845#24320
+          OnKeyPress = cbformatKeyPress
+          Items.Strings = (
+            #21313#20845#24320
+            #19977#21313#20108#24320
+            #20845#21313#22235#24320)
+        end
+        object cbbind: TComboBox
+          Left = 252
+          Top = 56
+          Width = 127
+          Height = 21
+          ItemHeight = 13
+          ItemIndex = 0
+          TabOrder = 6
+          Text = #31934#35013
+          OnKeyPress = cbbindKeyPress
+          Items.Strings = (
+            #31934#35013
+            #24179#35013
+            #31616#35013)
+        end
+        object edbk: TEdit
+          Left = 57
+          Top = 108
+          Width = 322
+          Height = 19
+          Ctl3D = False
+          ImeName = #20013#25991' ('#31616#20307') - '#25628#29399#25340#38899#36755#20837#27861
+          ParentCtl3D = False
+          TabOrder = 7
+          OnKeyPress = edbkKeyPress
+        end
+        object edprintcount: TRzSpinEdit
+          Left = 104
+          Top = 29
+          Width = 56
+          Height = 21
+          TabOrder = 8
+          OnKeyPress = edprintcountKeyPress
+        end
+      end
+    end
+    object cbsaletype: TComboBox
+      Left = 80
+      Top = 12
+      Width = 92
+      Height = 21
+      Color = clWhite
+      Ctl3D = False
+      DoubleBuffered = True
+      ItemHeight = 13
+      ItemIndex = 0
+      ParentCtl3D = False
+      ParentDoubleBuffered = False
+      TabOrder = 3
+      Text = #22270#20070
+      OnChange = cbsaletypeChange
+      Items.Strings = (
+        #22270#20070
+        #26399#21002
+        #25991#20855)
+    end
+    object dg: TDBGrid
+      Left = 13
+      Top = 256
+      Width = 505
+      Height = 185
+      DataSource = dsinsert
+      Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit]
+      TabOrder = 6
+      TitleFont.Charset = DEFAULT_CHARSET
+      TitleFont.Color = clWindowText
+      TitleFont.Height = -11
+      TitleFont.Name = 'Tahoma'
+      TitleFont.Style = []
+      OnCellClick = dgCellClick
+    end
+  end
+  object ImageList1: TImageList
+    Left = 528
+    Top = 152
+    Bitmap = {
+      494C010106000A00040010001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      0000000000003600000028000000400000002000000001002000000000000020
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600CC996600CC99
+      6600CC996600CC996600CC996600CC996600CC996600CC996600CC996600CC99
+      6600CC996600CC996600CC996600CC9966000000000099999900999999009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      9900999999009999990099999900999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00CC9966000000000099999900FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      00009933000099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      99009999990099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000CC996600CC996600CC996600CC996600CC996600CC996600CC996600CC99
+      6600CC99660099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC0099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      00009933000099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      99009999990099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000CC996600CC996600CC996600CC996600CC996600CC996600CC996600CC99
+      6600CC99660099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC0099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      00009933000099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      99009999990099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000CC996600CC996600CC996600CC996600CC996600CC996600CC996600CC99
+      6600CC99660099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC0099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      00009933000099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      99009999990099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000CC996600CC996600CC996600CC996600CC996600CC996600CC996600CC99
+      6600CC99660099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC0099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      00009933000099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      99009999990099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000CC996600CC996600CC996600CC996600CC996600CC996600CC996600CC99
+      6600CC99660099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC0099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      00009933000099330000FFFFFF00CC9966000000000099999900FFFFFF009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      99009999990099999900FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00CC9966000000000099999900FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF00FFFFFF00FFFFFF00FFFFFF00999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000000000000000000000000000CC996600CC996600CC99
+      6600CC996600CC996600CC996600CC996600CC996600CC996600CC996600CC99
+      6600CC996600CC996600CC996600CC9966000000000099999900999999009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      9900999999009999990099999900999999000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000E2EFF100000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      00000000000000000000E2EFF100000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000993300009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      0000993300009933000099330000000000000000000000000000999999009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      990099999900999999009999990000000000000000000000000000000000E2EF
+      F100E5E5E500CCCCCC00E5E5E500E2EFF1000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000E2EF
+      F10000000000CCCCCC00E5E5E500E2EFF1000000000000000000000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      000099330000E5E5E500CC66000099330000E5E5E500E5E5E500E5E5E5009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC0099999900E5E5E500CCCCCC0099999900E5E5E500E5E5E500E5E5E5009999
+      9900CCCCCC00CCCCCC00999999000000000000000000E2EFF100E5E5E500B2B2
+      B200CC9999009966660099666600B2B2B200CCCCCC00E5E5E500E2EFF1000000
+      00000000000000000000000000000000000000000000E2EFF10000000000B2B2
+      B200999999009999990099999900B2B2B200CCCCCC0000000000E2EFF1000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      000099330000E5E5E500CC66000099330000E5E5E500E5E5E500E5E5E5009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC0099999900E5E5E500CCCCCC0099999900E5E5E500E5E5E500E5E5E5009999
+      9900CCCCCC00CCCCCC009999990000000000E5E5E500CC99990099666600CC99
+      9900CC999900FFFFFF00996666009999990099999900B2B2B200E5E5E5000000
+      0000000000000000000000000000000000000000000099999900999999009999
+      990099999900FFFFFF00999999009999990099999900B2B2B200000000000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      000099330000E5E5E500CC66000099330000E5E5E500E5E5E500E5E5E5009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC0099999900E5E5E500CCCCCC0099999900E5E5E500E5E5E500E5E5E5009999
+      9900CCCCCC00CCCCCC00999999000000000099666600CC999900FFCC9900FFCC
+      9900FFCCCC00FFFFFF0099666600336699003366990033669900E2EFF1000000
+      0000000000000000000000000000000000009999990099999900C0C0C000C0C0
+      C000CCCCCC00FFFFFF0099999900999999009999990099999900E2EFF1000000
+      0000000000000000000000000000000000000000000099330000CC660000CC66
+      000099330000E5E5E500E5E5E500E5E5E500E5E5E500E5E5E500E5E5E5009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC0099999900E5E5E500E5E5E500E5E5E500E5E5E500E5E5E500E5E5E5009999
+      9900CCCCCC00CCCCCC00999999000000000099666600FFCC9900FFCC9900FFCC
+      9900FFCCCC00FFFFFF009966660066CCCC0066CCCC000099CC00FFFFFF00FFCC
+      CC000000000000000000000000000000000099999900C0C0C000C0C0C000C0C0
+      C000CCCCCC00FFFFFF0099999900C0C0C000C0C0C00099999900FFFFFF00CCCC
+      CC00000000000000000000000000000000000000000099330000CC660000CC66
+      0000CC660000993300009933000099330000993300009933000099330000CC66
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC00CCCCCC00999999009999990099999900999999009999990099999900CCCC
+      CC00CCCCCC00CCCCCC00999999000000000099666600FFCC9900FFCC9900FFCC
+      9900FFCCCC00FFFFFF009966660066CCCC0066CCFF003399CC00FFCCCC00CC66
+      00000000000000000000000000000000000099999900C0C0C000C0C0C000C0C0
+      C000CCCCCC00FFFFFF0099999900C0C0C000CCCCCC0099999900CCCCCC009999
+      9900000000000000000000000000000000000000000099330000CC660000CC66
+      0000CC660000CC660000CC660000CC660000CC660000CC660000CC660000CC66
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCCCC00CCCC
+      CC00CCCCCC00CCCCCC00999999000000000099666600FFCC9900CC999900CC99
+      6600FFCCCC00FFFFFF009966660099CCCC0099CCFF00B2B2B200FF660000CC66
+      00000000000000000000000000000000000099999900C0C0C000999999009999
+      9900CCCCCC00FFFFFF0099999900CCCCCC00CCCCCC00B2B2B200999999009999
+      9900000000000000000000000000000000000000000099330000CC660000CC66
+      0000993300009933000099330000993300009933000099330000993300009933
+      0000CC660000CC66000099330000000000000000000099999900CCCCCC00CCCC
+      CC00999999009999990099999900999999009999990099999900999999009999
+      9900CCCCCC00CCCCCC00999999000000000099666600FFCC990099666600FFFF
+      FF00FFCCCC00FFFFFF009966660099CCCC00C0C0C000CC660000CC660000CC66
+      0000CC660000CC660000CC6600000000000099999900C0C0C00066666600FFFF
+      FF00CCCCCC00FFFFFF0099999900CCCCCC00C0C0C00099999900999999009999
+      9900999999009999990099999900000000000000000099330000CC6600009933
+      0000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099330000CC66000099330000000000000000000099999900CCCCCC009999
+      9900FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099999900CCCCCC00999999000000000099666600FFCC9900CC9999009966
+      6600FFCCCC00FFFFFF009966660000000000CC660000CC660000CC660000CC66
+      0000CC660000CC660000CC6600000000000099999900C0C0C000999999006666
+      6600CCCCCC00FFFFFF0099999900E5E5E5009999990099999900999999009999
+      9900999999009999990099999900000000000000000099330000CC6600009933
+      0000FFFFFF00993300009933000099330000993300009933000099330000FFFF
+      FF0099330000CC66000099330000000000000000000099999900CCCCCC009999
+      9900FFFFFF00999999009999990099999900999999009999990099999900FFFF
+      FF0099999900CCCCCC00999999000000000099666600FFCC9900FFCC9900FFCC
+      9900FFCCCC00FFFFFF009966660000000000CC999900CC660000CC660000CC66
+      0000CC660000CC660000CC6600000000000099999900C0C0C000C0C0C000C0C0
+      C000CCCCCC00FFFFFF0099999900E5E5E5009999990099999900999999009999
+      9900999999009999990099999900000000000000000099330000CC6600009933
+      0000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099330000CC66000099330000000000000000000099999900CCCCCC009999
+      9900FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099999900CCCCCC00999999000000000099666600FFCC9900FFCC9900FFCC
+      9900FFCCCC00FFFFFF0099666600CCCCCC00E2EFF100CC999900FF660000CC66
+      00000000000000000000000000000000000099999900C0C0C000C0C0C000C0C0
+      C000CCCCCC00FFFFFF0099999900CCCCCC00E2EFF10099999900999999009999
+      9900000000000000000000000000000000000000000099330000E5E5E5009933
+      0000FFFFFF00993300009933000099330000993300009933000099330000FFFF
+      FF00993300009933000099330000000000000000000099999900E5E5E5009999
+      9900FFFFFF00999999009999990099999900999999009999990099999900FFFF
+      FF009999990099999900999999000000000099666600FFCC9900FFCC9900FFCC
+      9900FFCCCC00FFFFFF009966660099CCCC000000000099CCCC00FFCC9900CC66
+      00000000000000000000000000000000000099999900C0C0C000C0C0C000C0C0
+      C000CCCCCC00FFFFFF0099999900CCCCCC00E5E5E500CCCCCC00C0C0C0009999
+      9900000000000000000000000000000000000000000099330000CC6600009933
+      0000FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099330000CC66000099330000000000000000000099999900CCCCCC009999
+      9900FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
+      FF0099999900CCCCCC00999999000000000099666600CC999900FFCC9900FFCC
+      9900FFCCCC00FFFFFF0099666600CCCCCC00000000003399CC0000000000FFCC
+      9900000000000000000000000000000000009999990099999900C0C0C000C0C0
+      C000CCCCCC00FFFFFF0099999900CCCCCC00E5E5E5009999990000000000C0C0
+      C000000000000000000000000000000000000000000099330000993300009933
+      0000993300009933000099330000993300009933000099330000993300009933
+      0000993300009933000099330000000000000000000099999900999999009999
+      9900999999009999990099999900999999009999990099999900999999009999
+      99009999990099999900999999000000000000000000C0C0C000CC996600CC99
+      9900CCCC9900FFFFFF00996666000099CC000099CC000099CC00000000000000
+      00000000000000000000000000000000000000000000C0C0C000999999009999
+      9900C0C0C000FFFFFF0099999900999999009999990099999900000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      0000000000000000000000000000000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000CCCC
+      CC00CC9999009966660099666600000000000000000000000000000000000000
+      000000000000000000000000000000000000000000000000000000000000CCCC
+      CC00999999009999990099999900000000000000000000000000000000000000
+      000000000000000000000000000000000000424D3E000000000000003E000000
+      2800000040000000200000000100010000000000000100000000000000000000
+      000000000000000000000000FFFFFF00FFFFFFFF000000008000800000000000
+      8000800000000000800080000000000080008000000000008000800000000000
+      8000800000000000800080000000000080008000000000008000800000000000
+      8000800000000000800080000000000080008000000000008000800000000000
+      80008000000000008000800000000000FFFFFFFFFDFFFDFFC001C001E0FFE8FF
+      80018001801FA05F80018001001F803F80018001001F001F80018001000F000F
+      80018001000F000F80018001000F000F80018001000100018001800101010001
+      800180010101000180018001000F000F80018001008F000F8001800100AF002F
+      80018001803F803FFFFFFFFFE1FFE1FF}
+  end
+  object aquery: TADOQuery
+    LockType = ltBatchOptimistic
+    Parameters = <>
+    Left = 416
+    Top = 400
+  end
+  object ds: TDataSource
+    DataSet = aquery
+    Left = 376
+    Top = 328
+  end
+  object aqinsert: TADOQuery
+    Parameters = <
+      item
+        Name = '@type'
+        DataType = ftInteger
+        Value = Null
+      end>
+    SQL.Strings = (
+      
+        'select ID,isbn,name,userdefcode,price,barcode,date,Unavailable,t' +
+        'ype,presscount,bk from bs_bookcatalog where type = :Type'
+      'and unavailable =1')
+    Left = 256
+    Top = 24
+  end
+  object dsinsert: TDataSource
+    DataSet = aqinsert
+    Left = 248
+    Top = 328
+  end
+end

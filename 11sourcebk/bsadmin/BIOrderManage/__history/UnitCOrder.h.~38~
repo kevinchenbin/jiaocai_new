@@ -1,0 +1,200 @@
+//---------------------------------------------------------------------------
+
+#ifndef UnitCOrderH
+#define UnitCOrderH
+//---------------------------------------------------------------------------
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include "RzButton.hpp"
+#include "RzPanel.hpp"
+#include <ExtCtrls.hpp>
+#include "DBGridEh.hpp"
+#include "GridsEh.hpp"
+#include "RzDBEdit.hpp"
+#include "RzEdit.hpp"
+#include "RzLabel.hpp"
+#include <Buttons.hpp>
+#include <ComCtrls.hpp>
+#include <DBCtrls.hpp>
+#include <Mask.hpp>
+#include <pngimage.hpp>
+#include <ImgList.hpp>
+#include <ADODB.hpp>
+#include <DB.hpp>
+#include <DBGrids.hpp>
+#include <Grids.hpp>
+#include <Menus.hpp>
+#include "pdtypes.h"
+//---------------------------------------------------------------------------
+class TfrmCOrder : public TForm
+{
+__published:	// IDE-managed Components
+	TRzToolbar *RzToolbar1;
+	TRzToolButton *BtnDelete;
+	TRzToolButton *BtnExport;
+	TRzToolButton *BtnExit;
+	TRzToolButton *BtnPrint;
+	TRzToolButton *BtnClear;
+	TRzToolButton *BtnView;
+	TRzToolButton *BtnAlignBottom;
+	TRzToolButton *BtnView1;
+	TRzToolButton *BtnOK1;
+	TPanel *Panel1;
+	TSpeedButton *SpeedButton1;
+	TLabel *Label1;
+	TLabel *Label17;
+	TLabel *labstate;
+	TImage *imagelock;
+	TLabel *lblock;
+	TDBGridEh *dgdetail;
+	TGroupBox *GroupBox2;
+	TLabel *Label11;
+	TLabel *Label12;
+	TLabel *Label13;
+	TLabel *Label14;
+	TRzLabel *lblCatalog;
+	TLabel *Label10;
+	TLabel *Label20;
+	TSpeedButton *spnewbook;
+	TLabel *Label24;
+	TLabel *Label25;
+	TEdit *edtCatalog;
+	TEdit *editamount;
+	TEdit *editdiscount;
+	TEdit *editstockamount;
+	TEdit *Edit1;
+	TEdit *edqikan;
+	TEdit *edituseamount;
+	TEdit *editdetailbk;
+	TEdit *edclientbk;
+	TRzStatusBar *RzStatusBar1;
+	TRzLabel *lbl11;
+	TRzLabel *lblOpName;
+	TGroupBox *GroupBox1;
+	TLabel *Label2;
+	TLabel *Label4;
+	TLabel *label5;
+	TLabel *Label6;
+	TLabel *Label7;
+	TLabel *Label8;
+	TLabel *Label9;
+	TLabel *Label15;
+	TDateTimePicker *dtpdate;
+	TDBEdit *dbeditdanhao;
+	TDateTimePicker *dtpfahuo;
+	TDBEdit *dbeditaddcost;
+	TComboBox *cbtype;
+	TEdit *edtclient;
+	TMemo *membk;
+	TDBNavigator *dbn;
+	TImageList *ImageList1;
+	TLabel *Label3;
+	TEdit *Edit2;
+	TLabel *Label21;
+	TEdit *Edit3;
+	TLabel *Label26;
+	TEdit *Edit4;
+	TLabel *Label27;
+	TEdit *Edit5;
+	TEdit *Edit6;
+	TPopupMenu *pm1;
+	TMenuItem *N14;
+	TPanel *Panel2;
+	TSpeedButton *SpeedButton2;
+	TLabel *Label28;
+	TLabel *Label29;
+	TGroupBox *GroupBox3;
+	TLabel *Label30;
+	TLabel *Label31;
+	TLabel *Label32;
+	TRzLabel *RzLabel1;
+	TLabel *Label34;
+	TLabel *Label35;
+	TSpeedButton *SpeedButton3;
+	TEdit *Edit7;
+	TEdit *Edit8;
+	TEdit *Edit9;
+	TEdit *Edit11;
+	TEdit *Edit12;
+	TDBGrid *DBGrid1;
+	TGroupBox *GroupBox4;
+	TLabel *Label41;
+	TLabel *Label43;
+	TLabel *Label44;
+	TLabel *Label45;
+	TLabel *Label46;
+	TLabel *Label48;
+	TLabel *Label49;
+	TDBEdit *DBEdit1;
+	TDBEdit *DBEdit2;
+	TDBNavigator *DBNavigator1;
+	TEdit *editbackinfo;
+	TADOQuery *aqhd;
+	TDataSource *dshd;
+	TDBEdit *DBEdit3;
+	TDBEdit *DBEdit4;
+	TDBEdit *DBEdit5;
+	TDBEdit *DBEdit6;
+	TLabel *Label42;
+	TDBEdit *DBEdit7;
+	TLabel *Label50;
+	TDBEdit *DBEdit8;
+	TLabel *Label51;
+	TDBEdit *DBEdit9;
+	TLabel *Label52;
+	TDBEdit *DBEdit10;
+	TDBMemo *DBMemo1;
+	TLabel *Label47;
+	TLabel *Label53;
+	TDBEdit *DBEdit11;
+	TDBEdit *DBEdit12;
+	TLabel *Label54;
+	TDBEdit *DBEdit13;
+	TLabel *Label55;
+	TDBEdit *DBEdit14;
+	TDataSource *dsdetail;
+	TADOQuery *aqdetail;
+	TLabel *Label16;
+	TEdit *editclient;
+	TADOStoredProc *sp;
+	TLabel *Label18;
+	TDBEdit *DBEdit15;
+	TLabel *Label19;
+	TDBEdit *DBEdit16;
+	TMenuItem *N1;
+	TMenuItem *N2;
+	TADOQuery *aquery;
+	void __fastcall BtnExitClick(TObject *Sender);
+	void __fastcall BtnAlignBottomClick(TObject *Sender);
+	void __fastcall BtnView1Click(TObject *Sender);
+	void __fastcall BtnViewClick(TObject *Sender);
+	void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+	void __fastcall DBGrid1CellClick(TColumn *Column);
+	void __fastcall DBMemo1Change(TObject *Sender);
+	void __fastcall DBMemo1KeyPress(TObject *Sender, wchar_t &Key);
+	void __fastcall DBNavigator1Click(TObject *Sender, TNavigateBtn Button);
+	void __fastcall editclientKeyPress(TObject *Sender, wchar_t &Key);
+	void __fastcall editbackinfoKeyPress(TObject *Sender, wchar_t &Key);
+	void __fastcall N14Click(TObject *Sender);
+	void __fastcall BtnExportClick(TObject *Sender);
+	void __fastcall N2Click(TObject *Sender);
+
+private:	// User declarations
+	TADOConnection *fcon;
+	int UserID;
+	AnsiString UserName;
+	int StgID;
+public:		// User declarations
+	__fastcall TfrmCOrder(TComponent* Owner);
+	void RefashHead(AnsiString wheres);
+	void RefashOrderDetail(int HeaderID);
+	void init(LandInfo* li);
+		void __fastcall DBGrid1DrawColumnCell(TObject *Sender, const TRect &Rect, int DataCol,
+		  TColumn *Column, Grids::TGridDrawState State);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TfrmCOrder *frmCOrder;
+//---------------------------------------------------------------------------
+#endif

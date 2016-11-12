@@ -1,0 +1,338 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "unitBorder.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "RzButton"
+#pragma link "RzPanel"
+#pragma resource "*.dfm"
+TBfrmunitorder *Bfrmunitorder;
+//---------------------------------------------------------------------------
+__fastcall TBfrmunitorder::TBfrmunitorder(TComponent* Owner,TADOConnection *con,int headerid)
+	: TForm(Owner)
+{
+	fcon = con;
+	query->Connection = con;
+	headid = headerid;
+   //	BtnView->Click();
+	DBGrid1->OnDrawColumnCell=DBGrid1DrawColumnCell;
+}
+//---------------------------------------------------------------------------
+void __fastcall TBfrmunitorder::DBGrid1DrawColumnCell(TObject *Sender, const TRect &Rect,
+		  int DataCol, TColumn *Column, Grids::TGridDrawState State)
+{
+	if (DBGrid1->DataSource->DataSet->FieldByName("xuhao")->AsInteger%2  == 0) {
+		//DBGrid1->Canvas->Brush->Color = clBtnFace;
+		DBGrid1->Canvas->FillRect(Rect);
+		DBGrid1->Canvas->Font->Color = clBlue ;
+		//DBGrid1->Canvas->Font->Style =  TFontStyles()<<fsBold;
+		DBGrid1->DefaultDrawColumnCell(Rect,DataCol,Column,State);
+	}
+	if (DBGrid1->DataSource->DataSet->FieldByName("xuhao")->AsInteger%2  == 1 ) {
+		//DBGrid1->Canvas->Brush->Color = clBtnFace;
+		DBGrid1->Canvas->FillRect(Rect);
+		DBGrid1->Canvas->Font->Color = clBlack ;
+		//DBGrid1->Canvas->Font->Style =  TFontStyles()<<fsBold;
+		DBGrid1->DefaultDrawColumnCell(Rect,DataCol,Column,State);
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBfrmunitorder::BtnExportClick(TObject *Sender)
+{
+	if (query->IsEmpty() ) {
+		return;
+	}
+	DbgridToExcel(DBGrid1);
+}
+//---------------------------------------------------------------------------
+//Excel导出函数
+bool TBfrmunitorder::DbgridToExcel(TDBGrid* dbg)
+{
+	AnsiString temptext,path  ;
+	if (DBGrid1->Columns->Items[16]->Visible) {
+		savedlg->FileName = rkcode + "客户订单";
+	}
+	else
+	{
+		savedlg->FileName = rkcode + "无订单入库";
+	}
+	if (savedlg->Execute())
+	{
+		String DBPath,Name;
+		DBPath = Sysutils::ExtractFilePath(savedlg->FileName .c_str()  );
+		Name = Sysutils::ExtractFileName(savedlg->FileName .c_str() );
+		DBPath = DBPath + Name + ".xls";
+		path =  DBPath;
+	}
+	else
+	{
+		return false;
+	}
+
+	if(FileExists(path))
+		try {
+			DeleteFileA(path);
+		} catch (...) {
+			return false;
+		}
+	int n;
+
+	Variant  v,vSheet,R,xWorkbook;
+	v   =Variant::CreateObject("Excel.Application");
+	v.OlePropertySet("Visible",false);
+	v.OlePropertyGet("WorkBooks").OleFunction("Add");
+	xWorkbook = v.OlePropertyGet("ActiveWorkBook");
+	vSheet =  xWorkbook.OlePropertyGet("ActiveSheet");
+
+	n = 0;
+
+	int t1= 0;
+	temptext = "\n";
+	for(int q=0;q<dbg->FieldCount ;++q)
+	{
+		if (dbg->Columns->Items[q]->Visible == true) {
+			t1++;
+			temptext = "'"+ dbg->Columns ->Items [q]->Title ->Caption;
+			v.OlePropertyGet("Cells",1+n,(t1)).OlePropertySet("Value",temptext .c_str() );
+		}
+	}
+
+	int t2 = dbg->DataSource ->DataSet ->RecordCount ;
+
+	dbg->DataSource ->DataSet ->First();
+	dbg->DataSource ->DataSet->DisableControls();
+	for(int   i=2+n;i<=t2+1+n ;i++)
+	{
+		t1=0;
+		temptext = "\n";
+		for(int j=1;j<dbg->Columns ->Count+1  ;j++)
+		{
+			if (dbg->Columns->Items[j-1]->Visible == true) {
+				if (dbg->Columns ->Items [j-1]->FieldName == "isbn") {
+					t1++;
+					temptext = "'"+ dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+					v.OlePropertyGet("Cells",i,t1).OlePropertySet("Value",temptext .c_str() );
+					//mptext = temptext + "'" + dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+				}
+				else if (dbg->Columns ->Items [j-1]->FieldName == "id" || dbg->Columns ->Items [j-1]->FieldName == "backdot"){
+
+				}
+				else
+				{
+					t1++;
+					temptext = dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+					v.OlePropertyGet("Cells",i,t1).OlePropertySet("Value",temptext .c_str() );  // AsString .c_str()
+				}
+			}
+		}
+		dbg->DataSource ->DataSet ->Next() ;
+	}
+	R = vSheet.OlePropertyGet("Range",vSheet.OlePropertyGet("Cells",n+1,1),vSheet.OlePropertyGet("Cells",t2+n+1,t1)); //取得合并的区域
+	R.OlePropertyGet("Borders",2).OlePropertySet("linestyle",1);
+	R.OlePropertyGet("Borders",4).OlePropertySet("linestyle",1);
+	dbg->DataSource ->DataSet->EnableControls();
+
+	try {
+		xWorkbook.OleFunction("SaveAs",path.c_str());
+	} catch (Exception &E) {
+		//ShowMessage(E.Message);
+	}
+	return false;
+}
+//---------------------------------------------------------------------------}
+
+void __fastcall TBfrmunitorder::BtnSaveClick(TObject *Sender)
+{
+	query->UpdateBatch(arAll);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBfrmunitorder::BtnViewClick(TObject *Sender)
+{   AnsiString sql;
+	if (ISBNET==1) {  //B网
+
+	/*sql = "select distinct DENSE_RANK() over (order by BS_BookCatalog.id) as xuhao,BS_OrderNote.id,BS_BookCatalog.isbn,BS_BookCatalog.name,BS_BookCatalog.price,BS_BookCatalog.author,BS_BookCatalog.presscount,BS_OrderNoteHeader.HdTime,BS_StorageNote.amount as stgamount, "
+			" BS_PressInfo.AbbreviatedName,dbo.UF_BS_GetClientName(BS_OrderNoteHeader.VendorID) as clientname,BS_OrderNote.Amount,BS_OrderNote.SendAmount,BS_OrderNote.UnsendAmount,order_lock.stkamount,BS_OrderNote.localnum,order_lock.usableamount,sys_user.name as opname,sys_user1.name as dingname "
+			" from BS_StorageNote left join STK_BookInfo on BS_StorageNote.BkInfoID = STK_BookInfo.id "
+			" left join BS_OrderNote on STK_BookInfo.BkcatalogID = BS_OrderNote.BkcatalogID "
+			" left join BS_OrderNoteHeader on BS_OrderNote.OrderNtHeaderID = BS_OrderNoteHeader.id "
+			" left join BS_BookCatalog on BS_OrderNote.BkcatalogID = BS_BookCatalog.id "
+			" left join BS_PressInfo on BS_BookCatalog.pressid = BS_PressInfo.id "
+			" left join order_lock on BS_BookCatalog.id = order_lock.bkcatalogid "
+			" left join BS_ProcureNote on cast(BS_OrderNote.id as nvarchar(15)) = BS_ProcureNote.orderid "
+			" left join BS_ProcureNoteHeader on BS_ProcureNoteHeader.ID = BS_ProcureNote.ProcureNtHeaderID "
+			" left join sys_user on sys_user.id = BS_ProcureNoteHeader.OperatorID "
+			" left join sys_user as sys_user1 on BS_OrderNoteHeader.OperatorID = sys_user1.id "
+			" where BS_OrderNote.state = 0 and BS_OrderNoteHeader.type = 0 and BS_StorageNote.StgNtHeaderID = " + IntToStr(headid) ; */
+	sql = "select distinct DENSE_RANK() over (order by BS_BookCatalog.id) as xuhao,BS_OrderNote.id,BS_BookCatalog.isbn,BS_BookCatalog.name,BS_BookCatalog.price,BS_BookCatalog.author,BS_BookCatalog.presscount,BS_OrderNoteHeader.HdTime,BS_StorageNote.amount as stgamount, "
+			" BS_PressInfo.AbbreviatedName,dbo.UF_BS_GetClientName(BS_OrderNoteHeader.VendorID) as clientname,BS_OrderNote.Amount,BS_OrderNote.SendAmount,BS_OrderNote.UnsendAmount,order_lock.stkamount,BS_OrderNote.localnum,order_lock.usableamount,sys_user.name as opname,sys_user1.name as dingname "
+			" from BS_StorageNote left join STK_BookInfo on BS_StorageNote.BkInfoID = STK_BookInfo.id "
+			" left join BS_OrderNote on STK_BookInfo.BkcatalogID = BS_OrderNote.BkcatalogID "
+			" left join BS_OrderNoteHeader on BS_OrderNote.OrderNtHeaderID = BS_OrderNoteHeader.id "
+			" left join BS_BookCatalog on BS_OrderNote.BkcatalogID = BS_BookCatalog.id "
+			" left join BS_PressInfo on BS_BookCatalog.pressid = BS_PressInfo.id "
+			" left join order_lock on BS_BookCatalog.id = order_lock.bkcatalogid "
+			" left join BS_ProcureNote on cast(BS_OrderNote.id as nvarchar(15)) = BS_ProcureNote.orderid "
+			" left join BS_ProcureNoteHeader on BS_ProcureNoteHeader.ID = BS_ProcureNote.ProcureNtHeaderID "
+			" left join sys_user on sys_user.id = BS_ProcureNoteHeader.OperatorID "
+			" left join sys_user as sys_user1 on BS_OrderNoteHeader.OperatorID = sys_user1.id "
+			" where (BS_OrderNote.BkcatalogID in(select bkcatalogid from BS_OrderNote where state = 0 and UnsendAmount > localnum ) or order_lock.usableamount < 0) and BS_OrderNote.state = 0 and BS_OrderNoteHeader.type = 0 and BS_StorageNote.StgNtHeaderID = " + IntToStr(headid) ;
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Open();
+
+
+
+	}  else if (ISBNET==2 ) {   //C网
+
+	 /*	 sql="select st.bkcatalogid,st.amount,a.amount rukuamount into #temp_01 "
+" from BS_StorageNote a "
+" left join BS_StorageNoteHeader b on a.StgNtHeaderID=b.id "
+" left join stk_bookinfo st on a.bkinfoid = st.id   "
+" where st.stgid = 3 and b.id= :StgheadID  and a.amount<>0 "
+" select DENSE_RANK() over (order by bookid) as xuhao, "
+" isbn,name,price,author, "
+" presscount,cdh.HdTime,#temp_01.rukuamount  stgamount,press AbbreviatedName,cdh.OrderUser,cd.amount,cd.sended SendAmount,cd.amount-cd.sended UnsendAmount, "
+" #temp_01.amount stkamount,locknum localnum,kykc usableamount,'' opname,'' dingname,cdh.orderuser clientname "
+" from C_Order_Detail cd left join  C_BS_OrderNoteHeader cdh on cdh.id=cd.OrderNtHeaderID "
+" join #temp_01 on cd.catalogid = #temp_01.bkcatalogid "
+" where cdh.statea not in(1,4,5) ";
+" drop table #temp_01;";  */
+
+   	sql ="exec C_GetCOrderDetailNotmanzu :stgheaderid,0";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Parameters->ParamByName("StgheadID")->Value= headid;
+	query->Open();
+
+
+
+	}
+
+	DBGrid1->Columns->Items[1]->Visible = true;
+	DBGrid1->Columns->Items[2]->Visible = true;
+	DBGrid1->Columns->Items[3]->Visible = true;
+	DBGrid1->Columns->Items[4]->Visible = true;
+	DBGrid1->Columns->Items[13]->Visible = true;
+	DBGrid1->Columns->Items[14]->Visible = true;
+	DBGrid1->Columns->Items[15]->Visible = true;
+	DBGrid1->Columns->Items[16]->Visible = true;
+	DBGrid1->Columns->Items[17]->Visible = true;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBfrmunitorder::BtnZoomInClick(TObject *Sender)
+{
+	AnsiString sql;
+	if (ISBNET==1) {  //B网
+
+
+	sql = "select distinct DENSE_RANK() over (order by BS_BookCatalog.id) as xuhao,BS_BookCatalog.isbn,BS_BookCatalog.name,BS_BookCatalog.price,BS_BookCatalog.author,BS_BookCatalog.presscount,BS_StorageNote.amount as stgamount, "
+			" BS_PressInfo.AbbreviatedName,sum(STK_BookInfo.amount) as stkamount "
+			" from BS_StorageNote left join STK_BookInfo on BS_StorageNote.BkInfoID = STK_BookInfo.id "
+			" left join BS_BookCatalog on STK_BookInfo.BkcatalogID = BS_BookCatalog.id "
+			" left join BS_PressInfo on BS_BookCatalog.pressid = BS_PressInfo.id "
+			" where BS_StorageNote.StgNtHeaderID = " + IntToStr(headid) + " and STK_BookInfo.BkcatalogID not in(select BS_OrderNote.BkcatalogID from  BS_OrderNote left join BS_OrderNoteHeader "
+			" on BS_OrderNote.OrderNtHeaderID = BS_OrderNoteHeader.id left join BS_StorageNoteHeader "
+			" on BS_StorageNoteHeader.stgid = BS_OrderNoteHeader.stgid "
+			" where BS_StorageNoteHeader.id = " + IntToStr(headid) + " and BS_OrderNote.state = 0 and BS_OrderNoteHeader.type = 0 and BS_OrderNote.UnsendAmount > 0) "
+			" group by BS_BookCatalog.id,BS_BookCatalog.isbn,BS_BookCatalog.name,BS_BookCatalog.price,BS_BookCatalog.author,BS_BookCatalog.presscount,BS_StorageNote.amount,BS_PressInfo.AbbreviatedName";
+
+	}else if (ISBNET==2 ) {   //C网
+	/* sql=" select distinct DENSE_RANK() over (order by BS_BookCatalog.id) as xuhao,BS_BookCatalog.isbn,BS_BookCatalog.name,BS_BookCatalog.price,BS_BookCatalog.author,BS_BookCatalog.presscount,BS_StorageNote.amount as stgamount, "
+		 "	BS_PressInfo.AbbreviatedName,sum(STK_BookInfo.amount) as stkamount "
+		 "	 from BS_StorageNote left join STK_BookInfo on BS_StorageNote.BkInfoID = STK_BookInfo.id  "
+		 "	 left join BS_BookCatalog on STK_BookInfo.BkcatalogID = BS_BookCatalog.id  "
+		 "	 left join BS_PressInfo on BS_BookCatalog.pressid = BS_PressInfo.id  "
+		 "	 where BS_StorageNote.StgNtHeaderID = :StgheadID and STK_BookInfo.BkcatalogID not in( "
+		 "    select bookid from C_Order_Detail cd left join  C_BS_OrderNoteHeader cdh on cdh.id=cd.OrderNtHeaderID "
+		 " where cdh.statea not in(1,4,5)) group by BS_BookCatalog.id,BS_BookCatalog.isbn,BS_BookCatalog.name,BS_BookCatalog.price,BS_BookCatalog.author,BS_BookCatalog.presscount,BS_StorageNote.amount,BS_PressInfo.AbbreviatedName ";
+		  */
+	sql ="exec C_GetCOrderDetailNotmanzu :stgheaderid,1";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Parameters->ParamByName("StgheadID")->Value= headid;
+	query->Open();
+
+	}
+
+	DBGrid1->Columns->Items[1]->Visible = false;
+	DBGrid1->Columns->Items[2]->Visible = false;
+	DBGrid1->Columns->Items[3]->Visible = false;
+	DBGrid1->Columns->Items[4]->Visible = false;
+	DBGrid1->Columns->Items[13]->Visible = false;
+	DBGrid1->Columns->Items[14]->Visible = false;
+	DBGrid1->Columns->Items[15]->Visible = false;
+	DBGrid1->Columns->Items[16]->Visible = false;
+	DBGrid1->Columns->Items[17]->Visible = false;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBfrmunitorder::BtnZoomOutClick(TObject *Sender)
+{
+	AnsiString sql;
+		if (ISBNET==1) {  //B网
+
+	sql = "select distinct DENSE_RANK() over (order by BS_BookCatalog.id) as xuhao,BS_OrderNote.id,BS_BookCatalog.isbn,BS_BookCatalog.name,BS_BookCatalog.price,BS_BookCatalog.author,BS_BookCatalog.presscount,BS_OrderNoteHeader.HdTime,BS_StorageNote.amount as stgamount, "
+			" BS_PressInfo.AbbreviatedName,dbo.UF_BS_GetClientName(BS_OrderNoteHeader.VendorID) as clientname,BS_OrderNote.Amount,BS_OrderNote.SendAmount,BS_OrderNote.UnsendAmount,order_lock.stkamount,BS_OrderNote.localnum,order_lock.usableamount,sys_user.name as opname,sys_user1.name as dingname "
+			" from BS_StorageNote left join STK_BookInfo on BS_StorageNote.BkInfoID = STK_BookInfo.id "
+			" left join BS_OrderNote on STK_BookInfo.BkcatalogID = BS_OrderNote.BkcatalogID "
+			" left join BS_OrderNoteHeader on BS_OrderNote.OrderNtHeaderID = BS_OrderNoteHeader.id "
+			" left join BS_BookCatalog on BS_OrderNote.BkcatalogID = BS_BookCatalog.id "
+			" left join BS_PressInfo on BS_BookCatalog.pressid = BS_PressInfo.id "
+			" left join order_lock on BS_BookCatalog.id = order_lock.bkcatalogid "
+			" left join BS_ProcureNote on cast(BS_OrderNote.id as nvarchar(15)) = BS_ProcureNote.orderid "
+			" left join BS_ProcureNoteHeader on BS_ProcureNoteHeader.ID = BS_ProcureNote.ProcureNtHeaderID "
+			" left join sys_user on sys_user.id = BS_ProcureNoteHeader.OperatorID "
+			" left join sys_user as sys_user1 on BS_OrderNoteHeader.OperatorID = sys_user1.id "
+			" where BS_OrderNote.state = 0 and BS_OrderNoteHeader.type = 0 and order_lock.stkamount > order_lock.UnsendAmount and BS_StorageNote.StgNtHeaderID = " + IntToStr(headid) ;
+
+		}else if (ISBNET==2) {  //C网
+	   /*	sql=" select st.bkcatalogid,st.amount,a.amount rukuamount into #temp_02
+" from BS_StorageNote a left join BS_StorageNoteHeader b on a.StgNtHeaderID=b.id
+" left join stk_bookinfo st on a.bkinfoid = st.id where st.stgid = 3 and b.id= @StgheadID  and a.amount<>0
+
+" select DENSE_RANK() over (order by bookid) as xuhao,
+" isbn,name,price,author,presscount,cdh.HdTime,#temp_02.rukuamount  stgamount,press AbbreviatedName,cdh.OrderUser,cd.amount,cd.sended SendAmount,cd.amount-cd.sended UnsendAmount,"
+" #temp_02.amount stkamount,locknum localnum,kykc usableamount,'' opname,'' dingname,cdh.orderuser clientname "
+" from C_Order_Detail cd left join  C_BS_OrderNoteHeader cdh on cdh.id=cd.OrderNtHeaderID  "
+" join #temp_02 on cd.catalogid = #temp_02.bkcatalogid where cdh.statea not in(1,4,5) and kykc>(cd.amount-cd.sended) "
+" drop table #temp_02;";  */
+		sql ="exec C_GetCOrderDetailNotmanzu :stgheaderid,2";
+	query->Close();
+	query->SQL->Clear();
+	query->SQL->Add(sql);
+	query->Parameters->ParamByName("stgheaderid")->Value= headid;
+	query->Open();
+   }
+	DBGrid1->Columns->Items[1]->Visible = true;
+	DBGrid1->Columns->Items[2]->Visible = true;
+	DBGrid1->Columns->Items[3]->Visible = true;
+	DBGrid1->Columns->Items[4]->Visible = true;
+	DBGrid1->Columns->Items[13]->Visible = true;
+	DBGrid1->Columns->Items[14]->Visible = true;
+	DBGrid1->Columns->Items[15]->Visible = true;
+	DBGrid1->Columns->Items[16]->Visible = true;
+	DBGrid1->Columns->Items[17]->Visible = true;
+
+
+
+
+
+
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TBfrmunitorder::FormShow(TObject *Sender)
+{
+ BtnView->Click();
+}
+//---------------------------------------------------------------------------
+

@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009-07-19 21:16:15.421.cpp,G:\work\book\source\financeadmin\Unit3.cpp=G:\work\book\source\financeadmin\SupplyInitForm.cpp</Transaction>
+    <Transaction>2009-07-19 21:16:15.421.h,G:\work\book\source\financeadmin\Unit3.h=G:\work\book\source\financeadmin\SupplyInitForm.h</Transaction>
+    <Transaction>2009-07-19 21:16:15.421.dfm,G:\work\book\source\financeadmin\Unit3.dfm=G:\work\book\source\financeadmin\SupplyInitForm.dfm</Transaction>
+    <Transaction>2009-07-19 21:33:01.156.cpp,G:\work\book\source\financeadmin\Unit3.cpp=G:\work\book\source\financeadmin\PaymentClearForm.cpp</Transaction>
+    <Transaction>2009-07-19 21:33:01.156.h,G:\work\book\source\financeadmin\Unit3.h=G:\work\book\source\financeadmin\PaymentClearForm.h</Transaction>
+    <Transaction>2009-07-19 21:33:01.156.dfm,G:\work\book\source\financeadmin\Unit3.dfm=G:\work\book\source\financeadmin\PaymentClearForm.dfm</Transaction>
+    <Transaction>2009-07-19 21:33:23.265.cpp,G:\work\book\source\financeadmin\Unit1.cpp=</Transaction>
+    <Transaction>2009-07-19 21:33:23.265.dfm,G:\work\book\source\financeadmin\Unit1.dfm=</Transaction>
+    <Transaction>2009-07-19 21:33:26.234.cpp,G:\work\book\source\financeadmin\Unit2.cpp=</Transaction>
+    <Transaction>2009-07-19 21:33:26.234.dfm,G:\work\book\source\financeadmin\Unit2.dfm=</Transaction>
+    <Transaction>2009-07-19 21:41:09.468.cpp,G:\work\book\source\financeadmin\PaymentClearForm.cpp=</Transaction>
+    <Transaction>2009-07-19 21:41:09.468.dfm,G:\work\book\source\financeadmin\PaymentClearForm.dfm=</Transaction>
+    <Transaction>2009-07-19 21:41:38.031.cpp,G:\work\book\source\financeadmin\Unit3.cpp=G:\work\book\source\financeadmin\PayMentClearForm.cpp</Transaction>
+    <Transaction>2009-07-19 21:41:38.031.h,G:\work\book\source\financeadmin\Unit3.h=G:\work\book\source\financeadmin\PayMentClearForm.h</Transaction>
+    <Transaction>2009-07-19 21:41:38.031.dfm,G:\work\book\source\financeadmin\Unit3.dfm=G:\work\book\source\financeadmin\PayMentClearForm.dfm</Transaction>
+    <Transaction>2009-07-24 10:28:24.359.cpp,G:\work\book\source\financeadmin\Unit1.cpp=G:\work\book\source\financeadmin\PayGather.cpp</Transaction>
+    <Transaction>2009-07-24 10:28:24.359.h,G:\work\book\source\financeadmin\Unit1.h=G:\work\book\source\financeadmin\PayGather.h</Transaction>
+    <Transaction>2009-07-24 10:28:24.359.dfm,G:\work\book\source\financeadmin\Unit1.dfm=G:\work\book\source\financeadmin\PayGather.dfm</Transaction>
+    <Transaction>2009-07-24 10:32:36.906.cpp,G:\work\book\source\financeadmin\PayGather.cpp=G:\work\book\source\financeadmin\PayGatherForm.cpp</Transaction>
+    <Transaction>2009-07-24 10:32:36.906.h,G:\work\book\source\financeadmin\PayGather.h=G:\work\book\source\financeadmin\PayGatherForm.h</Transaction>
+    <Transaction>2009-07-24 10:32:36.906.dfm,G:\work\book\source\financeadmin\PayGather.dfm=G:\work\book\source\financeadmin\PayGatherForm.dfm</Transaction>
+    <Transaction>2009-07-24 11:57:10.468.cpp,G:\work\book\source\financeadmin\Unit1.cpp=G:\work\book\source\financeadmin\PaydetailForm.cpp</Transaction>
+    <Transaction>2009-07-24 11:57:10.468.h,G:\work\book\source\financeadmin\Unit1.h=G:\work\book\source\financeadmin\PaydetailForm.h</Transaction>
+    <Transaction>2009-07-24 11:57:10.468.dfm,G:\work\book\source\financeadmin\Unit1.dfm=G:\work\book\source\financeadmin\PaydetailForm.dfm</Transaction>
+    <Transaction>2009-07-24 17:40:23.640.cpp,G:\work\book\source\financeadmin\Unit1.cpp=G:\work\book\source\financeadmin\PayDocQueryForm.cpp</Transaction>
+    <Transaction>2009-07-24 17:40:23.640.h,G:\work\book\source\financeadmin\Unit1.h=G:\work\book\source\financeadmin\PayDocQueryForm.h</Transaction>
+    <Transaction>2009-07-24 17:40:23.640.dfm,G:\work\book\source\financeadmin\Unit1.dfm=G:\work\book\source\financeadmin\PayDocQueryForm.dfm</Transaction>
+    <Transaction>2009-07-24 22:39:16.515.cpp,G:\work\book\source\financeadmin\Unit1.cpp=G:\work\book\source\financeadmin\CUSInitForm.cpp</Transaction>
+    <Transaction>2009-07-24 22:39:16.515.h,G:\work\book\source\financeadmin\Unit1.h=G:\work\book\source\financeadmin\CUSInitForm.h</Transaction>
+    <Transaction>2009-07-24 22:39:16.515.dfm,G:\work\book\source\financeadmin\Unit1.dfm=G:\work\book\source\financeadmin\CUSInitForm.dfm</Transaction>
+    <Transaction>2009-07-24 22:40:24.453.cpp,G:\work\book\source\financeadmin\Unit2.cpp=G:\work\book\source\financeadmin\CUSPayMentClearForm.cpp</Transaction>
+    <Transaction>2009-07-24 22:40:24.453.h,G:\work\book\source\financeadmin\Unit2.h=G:\work\book\source\financeadmin\CUSPayMentClearForm.h</Transaction>
+    <Transaction>2009-07-24 22:40:24.453.dfm,G:\work\book\source\financeadmin\Unit2.dfm=G:\work\book\source\financeadmin\CUSPayMentClearForm.dfm</Transaction>
+    <Transaction>2009-07-24 22:41:11.390.cpp,G:\work\book\source\financeadmin\Unit3.cpp=G:\work\book\source\financeadmin\CUSPayGatherForm.cpp</Transaction>
+    <Transaction>2009-07-24 22:41:11.390.h,G:\work\book\source\financeadmin\Unit3.h=G:\work\book\source\financeadmin\CUSPayGatherForm.h</Transaction>
+    <Transaction>2009-07-24 22:41:11.390.dfm,G:\work\book\source\financeadmin\Unit3.dfm=G:\work\book\source\financeadmin\CUSPayGatherForm.dfm</Transaction>
+    <Transaction>2009-07-24 22:41:58.968.cpp,G:\work\book\source\financeadmin\Unit4.cpp=G:\work\book\source\financeadmin\CUSDocQueryForm.cpp</Transaction>
+    <Transaction>2009-07-24 22:41:58.968.h,G:\work\book\source\financeadmin\Unit4.h=G:\work\book\source\financeadmin\CUSDocQueryForm.h</Transaction>
+    <Transaction>2009-07-24 22:41:58.968.dfm,G:\work\book\source\financeadmin\Unit4.dfm=G:\work\book\source\financeadmin\CUSDocQueryForm.dfm</Transaction>
+    <Transaction>2009-07-24 22:43:07.859.cpp,G:\work\book\source\financeadmin\Unit5.cpp=G:\work\book\source\financeadmin\CUSPayDetailForm.cpp</Transaction>
+    <Transaction>2009-07-24 22:43:07.859.h,G:\work\book\source\financeadmin\Unit5.h=G:\work\book\source\financeadmin\CUSPayDetailForm.h</Transaction>
+    <Transaction>2009-07-24 22:43:07.859.dfm,G:\work\book\source\financeadmin\Unit5.dfm=G:\work\book\source\financeadmin\CUSPayDetailForm.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

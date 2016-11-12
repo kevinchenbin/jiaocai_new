@@ -1,0 +1,62 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{af43a988-1aa4-461b-b476-bdb32e58a7d5}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="book.cbproj">
+				<Dependencies>bsquery\bsquery.cbproj;bsadmin\bsadmin.cbproj</Dependencies>
+			</Projects>
+			<Projects Include="bsquery\bsquery.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="bsadmin\bsadmin.cbproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<BorlandProject>
+					<Default.Personality/>
+				</BorlandProject>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target DependsOnTargets="bsquery;bsadmin" Name="book">
+			<MSBuild Projects="book.cbproj"/>
+		</Target>
+		<Target DependsOnTargets="bsquery:Clean;bsadmin:Clean" Name="book:Clean">
+			<MSBuild Targets="Clean" Projects="book.cbproj"/>
+		</Target>
+		<Target DependsOnTargets="bsquery:Make;bsadmin:Make" Name="book:Make">
+			<MSBuild Targets="Make" Projects="book.cbproj"/>
+		</Target>
+		<Target Name="bsquery">
+			<MSBuild Projects="bsquery\bsquery.cbproj"/>
+		</Target>
+		<Target Name="bsquery:Clean">
+			<MSBuild Targets="Clean" Projects="bsquery\bsquery.cbproj"/>
+		</Target>
+		<Target Name="bsquery:Make">
+			<MSBuild Targets="Make" Projects="bsquery\bsquery.cbproj"/>
+		</Target>
+		<Target Name="bsadmin">
+			<MSBuild Projects="bsadmin\bsadmin.cbproj"/>
+		</Target>
+		<Target Name="bsadmin:Clean">
+			<MSBuild Targets="Clean" Projects="bsadmin\bsadmin.cbproj"/>
+		</Target>
+		<Target Name="bsadmin:Make">
+			<MSBuild Targets="Make" Projects="bsadmin\bsadmin.cbproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="book;bsquery;bsadmin"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="book:Clean;bsquery:Clean;bsadmin:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="book:Make;bsquery:Make;bsadmin:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

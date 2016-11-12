@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009/08/20 21:01:48.861.cpp,E:\dev_source\pddata\book_v1\source\customer\SelectMemberForm.cpp=</Transaction>
+    <Transaction>2009/08/20 21:01:48.861.dfm,E:\dev_source\pddata\book_v1\source\customer\SelectMemberForm.dfm=</Transaction>
+    <Transaction>2009/08/20 21:02:39.013.cpp,E:\dev_source\pddata\book_v1\source\customer\Unit1.cpp=E:\dev_source\pddata\book_v1\source\customer\SelectMemberForm.cpp</Transaction>
+    <Transaction>2009/08/20 21:02:39.013.h,E:\dev_source\pddata\book_v1\source\customer\Unit1.h=E:\dev_source\pddata\book_v1\source\customer\SelectMemberForm.h</Transaction>
+    <Transaction>2009/08/20 21:02:39.013.dfm,E:\dev_source\pddata\book_v1\source\customer\Unit1.dfm=E:\dev_source\pddata\book_v1\source\customer\SelectMemberForm.dfm</Transaction>
+    <Transaction>2009/08/20 21:18:09.709.cpp,E:\dev_source\pddata\book_v1\source\customer\SelectMemberForm.cpp=</Transaction>
+    <Transaction>2009/08/20 21:18:09.709.dfm,E:\dev_source\pddata\book_v1\source\customer\SelectMemberForm.dfm=</Transaction>
+    <Transaction>2009/08/20 21:58:29.869.cpp,E:\dev_source\pddata\book_v1\source\customer\Unit1.cpp=E:\dev_source\pddata\book_v1\source\customer\SelectCustomerForm.cpp</Transaction>
+    <Transaction>2009/08/20 21:58:29.869.h,E:\dev_source\pddata\book_v1\source\customer\Unit1.h=E:\dev_source\pddata\book_v1\source\customer\SelectCustomerForm.h</Transaction>
+    <Transaction>2009/08/20 21:58:29.869.dfm,E:\dev_source\pddata\book_v1\source\customer\Unit1.dfm=E:\dev_source\pddata\book_v1\source\customer\SelectCustomerForm.dfm</Transaction>
+    <Transaction>2009-09-15 13:50:07.609.cpp,E:\work\source\customer\MemberForm.cpp=</Transaction>
+    <Transaction>2009-09-15 13:50:07.609.dfm,E:\work\source\customer\MemberForm.dfm=</Transaction>
+    <Transaction>2009-09-15 13:50:10.140.cpp,E:\work\source\customer\MemberVoucherForm.cpp=</Transaction>
+    <Transaction>2009-09-15 13:50:10.140.dfm,E:\work\source\customer\MemberVoucherForm.dfm=</Transaction>
+    <Transaction>2009-09-15 13:50:36.125.cpp,E:\work\source\customer\SelectMemberForm.cpp=</Transaction>
+    <Transaction>2009-09-15 13:50:36.125.dfm,E:\work\source\customer\SelectMemberForm.dfm=</Transaction>
+    <Transaction>2009-09-15 13:50:39.234.cpp,E:\work\source\customer\SelectCustomerForm.cpp=</Transaction>
+    <Transaction>2009-09-15 13:50:39.234.dfm,E:\work\source\customer\SelectCustomerForm.dfm=</Transaction>
+  </Transactions>
+</BorlandProject>

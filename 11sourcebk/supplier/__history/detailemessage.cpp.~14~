@@ -1,0 +1,549 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "detailemessage.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "RzButton"
+#pragma link "RzDBEdit"
+#pragma link "RzEdit"
+#pragma link "RzLabel"
+#pragma link "RzPanel"
+#pragma link "RzCmboBx"
+#pragma resource "*.dfm"
+TDetaileForm *DetaileForm;
+//---------------------------------------------------------------------------
+__fastcall TDetaileForm::TDetaileForm(TComponent* Owner,int type,int savamod,String id,TADOConnection *cnn)
+	: TForm(Owner)
+{
+	modsave = savamod;
+	Type = type;
+	ID = id;
+	aqinit->Connection = cnn;
+	aqdetail->Connection = cnn;
+	if (Type == 1) {
+		if (modsave == 1) {
+			this->Caption = "新供应商资料录入" ;
+		}
+		else
+		{
+			this->Caption = "供应商资料修改" ;
+		}
+		Label12->Visible = false;
+		Label13->Visible = false;
+		edlogname->Visible = false;
+		edpassword->Visible = false;
+	}
+	if (Type == 2) {
+		if (modsave == 1) {
+			this->Caption = "新客户资料录入" ;
+		}
+		else
+		{
+			this->Caption = "客户资料修改" ;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+void TDetaileForm::Initsalesman()
+{  	//初始化销售人员
+   AnsiString sql ,value;
+   sql = "select * from SYS_StaffInfo where Career = 1";
+   if (Type==2) {
+		sql = "select * from SYS_StaffInfo where Career = 2";
+        RzLabel9->Caption = "业务员：";
+   }
+   aqinit->Close();
+   aqinit->SQL->Clear();
+   aqinit->SQL->Add(sql);
+   aqinit->Open();
+   while(!aqinit->Eof )
+   {
+	 CBsale->AddItem(aqinit->FieldByName("Name")->AsString ,(TObject*)aqinit->FieldByName("ID")->AsInteger );
+	 aqinit->Next();
+   }
+}
+void TDetaileForm::InitLocalinfo()
+{
+	//初始化地区
+   AnsiString sql ,value;
+   sql = "select ID,local from SYS_local";
+   aqinit->Close();
+   aqinit->SQL->Clear();
+   aqinit->SQL->Add(sql);
+   aqinit->Open();
+   while(!aqinit->Eof)
+   {
+	 CBlocal->Add(aqinit->FieldByName("local")->AsString);
+	 aqinit->Next();
+   }
+}
+void TDetaileForm::InitType()
+{
+	//初始化地区
+   AnsiString sql ,value;
+   sql = "select ID,Name from CUST_Customertype where type = " + IntToStr(Type) ;
+   aqinit->Close();
+   aqinit->SQL->Clear();
+   aqinit->SQL->Add(sql);
+   aqinit->Open();
+   while(!aqinit->Eof)
+   {
+	 cbtype->AddItem(aqinit->FieldByName("Name")->AsString,(TObject*)aqinit->FieldByName("ID")->AsInteger);
+	 aqinit->Next();
+   }
+}
+void __fastcall TDetaileForm::FormShow(TObject *Sender)
+{
+	dbedtName->SetFocus();
+	if (modsave == 2) {
+    	edtphone->SetFocus();
+	}
+	AnsiString sql;
+
+	Initsalesman();
+	InitLocalinfo();
+	InitType();
+
+	if (modsave == 2) {
+		sql = "select * from CUST_CustomerInfo where ID = " + ID;
+        aqinit->Close();
+		aqinit->SQL->Clear();
+		aqinit->SQL->Add(sql);
+		aqinit->Open();
+		dbedtName->Text = aqinit->FieldByName("Name")->AsString;
+		dbeditContact->Text = aqinit->FieldByName("Contact")->AsString;
+		edtphone->Text = aqinit->FieldByName("Telephone")->AsString;
+		edtfax->Text = aqinit->FieldByName("Fax")->AsString;
+		dbedit->Text = aqinit->FieldByName("Address")->AsString;
+		edtcode->Text = aqinit->FieldByName("Code")->AsString;
+		CBlocal->Text = aqinit->FieldByName("Local")->AsString;
+		CBsale->Text = aqinit->FieldByName("Salesman")->AsString;
+		edemail->Text = aqinit->FieldByName("Email")->AsString ;
+		edsecondcontact->Text = aqinit->FieldByName("secondlyContact")->AsString ;
+		edpostaddress->Text = aqinit->FieldByName("postAddress")->AsString ;
+		edmsnaddress->Text = aqinit->FieldByName("MSNAddress")->AsString ;
+		edwebaddress->Text = aqinit->FieldByName("WEBAddress")->AsString ;
+		edbank->Text = aqinit->FieldByName("bank")->AsString ;
+		edbankaccount->Text = aqinit->FieldByName("bankAccount")->AsString ;
+		edqq->Text = aqinit->FieldByName("QQCode")->AsString ;
+		edlogname->Text = aqinit->FieldByName("logname")->AsString ;
+		edpassword->Text = aqinit->FieldByName("logpassword")->AsString ;
+		cbtype->ItemIndex = cbtype->Items->IndexOfObject((TObject*)aqinit->FieldByName("customertype")->AsInteger );
+
+
+                sql="exec getclientyefuguanlian "+ID+",0";
+                aqinit->SQL->Clear();
+	      	aqinit->SQL->Add(sql);
+	      	aqinit->Open();
+                if (aqinit->FieldByName("result")->AsInteger==1)
+                {
+                  dbedtName->Enabled = false;
+                }
+
+
+
+
+	  //	dbedtName->Enabled = false;
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TDetaileForm::BtnSaveClick(TObject *Sender)
+{
+	AnsiString sql,sdf;
+
+    if (dbedtName->Text == "") {
+		MessageBox(0,"请输入单位名称！","信息错误" ,MB_ICONWARNING);
+		return;
+	}
+	if (modsave == 1) {
+        if (Type == 1) {
+			sql = "select * from CUST_CustomerInfo where type = 1 and Name = '" + dbedtName->Text.Trim() + "'";
+			aqdetail->Close();
+			aqdetail->SQL->Clear();
+			aqdetail->SQL->Add(sql);
+			aqdetail->Open();
+			if (aqdetail->RecordCount > 0) {
+				MessageBox(0,"该供应商已经录入，请确认！","录入重复" ,MB_ICONWARNING);
+				return;
+			}else {    //类似名称提示
+                         sql = "select * from CUST_CustomerInfo where type = 1 and Name like '%" + dbedtName->Text.Trim() + "%'";
+			aqdetail->Close();
+			aqdetail->SQL->Clear();
+			aqdetail->SQL->Add(sql);
+			aqdetail->Open();
+                        if (aqdetail->RecordCount > 0) {
+                             AnsiString msg="系统存在类似供应商：";
+                           while(!aqdetail->Eof)
+                           {
+
+                              msg = msg + aqdetail->FieldByName("name")->AsAnsiString;
+
+
+                              aqdetail->Next();
+                           }
+                           msg=msg+"请注意";
+                            MessageBox(0,msg.c_str(),"提示" ,MB_ICONWARNING);
+
+
+                        }
+
+
+
+
+
+                        }
+		}else if (type==2) {    //客户
+
+                      sql = "select * from CUST_CustomerInfo where type = 2 and Name = '" + dbedtName->Text.Trim() + "'";
+			aqdetail->Close();
+			aqdetail->SQL->Clear();
+			aqdetail->SQL->Add(sql);
+			aqdetail->Open();
+			if (aqdetail->RecordCount > 0) {
+				MessageBox(0,"该客户已经录入，请确认！","录入重复" ,MB_ICONWARNING);
+				return;
+			}else {    //类似名称提示
+                         sql = "select * from CUST_CustomerInfo where type = 2 and Name like '%" + dbedtName->Text.Trim() + "%'";
+			aqdetail->Close();
+			aqdetail->SQL->Clear();
+			aqdetail->SQL->Add(sql);
+			aqdetail->Open();
+                        if (aqdetail->RecordCount > 0) {
+                             AnsiString msg="系统存在类似客户名称：";
+                           while(!aqdetail->Eof)
+                           {
+
+                              msg = msg + aqdetail->FieldByName("name")->AsAnsiString;
+
+
+                              aqdetail->Next();
+                           }
+                           msg=msg+"请注意";
+                            MessageBox(0,msg.c_str(),"提示" ,MB_ICONWARNING);
+
+
+                        }
+
+
+
+
+
+                        }
+
+
+                }
+
+
+			int memtype;
+			if (cbtype->Text != "") {
+            	try {
+					memtype =  int(cbtype->Items->Objects[cbtype->ItemIndex]);
+				} catch (...) {
+					MessageBox(0,"请选择正确的类别！","错误" ,MB_ICONWARNING);
+					return;
+				}
+			}
+
+			AnsiString salesmanID,LocalID;
+
+			salesmanID = CBsale->Text.Trim();
+			LocalID = CBlocal->Text.Trim();
+
+			if (ParentID != -1 && Type != 1) {
+				Type = 3;
+			}
+			if (cbtype->Text != "") {
+				sql = "Insert into cust_customerinfo(Type,name,contact,telephone,fax,salesman,code,date,address,local,PrentID,Email,postAddress,bank,bankAccount,MSNAddress,WEBAddress,secondlyContact,QQCode,logname,logpassword,customertype) ";
+				sql = sql + " values("+StrToInt(Type) + ",'" + dbedtName->Text + "','" + dbeditContact->Text.Trim()+"','" + edtphone->Text + "','";
+				sql = sql + edtfax->Text.Trim() + "','" + salesmanID + "','" + edtcode->Text.Trim();
+				sql = sql + "',GetDate(),'" +  dbedit->Text.Trim()+ "','" + LocalID + "'," + IntToStr(ParentID)  + ",'" + edemail->Text + "','";
+				sql = sql + edpostaddress->Text + "','" + edbank->Text + "','" + edbankaccount->Text + "','" + edmsnaddress->Text + "','";
+				sql = sql + edwebaddress->Text + "','" + edsecondcontact->Text + "','" + edqq->Text + "','" + edlogname->Text + "','" + edpassword->Text + "',";
+				sql = sql + IntToStr(int(cbtype->Items->Objects[cbtype->ItemIndex])) + ")";
+			}
+			else
+			{
+				sql = "Insert into cust_customerinfo(Type,name,contact,telephone,fax,salesman,code,date,address,local,PrentID,Email,postAddress,bank,bankAccount,MSNAddress,WEBAddress,secondlyContact,QQCode,logname,logpassword) ";
+				sql = sql + " values("+StrToInt(Type) + ",'" + dbedtName->Text + "','" + dbeditContact->Text.Trim()+"','" + edtphone->Text + "','";
+				sql = sql + edtfax->Text.Trim() + "','" + salesmanID + "','" + edtcode->Text.Trim();
+				sql = sql + "',GetDate(),'" +  dbedit->Text.Trim()+ "','" + LocalID + "'," + IntToStr(ParentID)  + ",'" + edemail->Text + "','";
+				sql = sql + edpostaddress->Text + "','" + edbank->Text + "','" + edbankaccount->Text + "','" + edmsnaddress->Text + "','";
+				sql = sql + edwebaddress->Text + "','" + edsecondcontact->Text + "','" + edqq->Text + "','" + edlogname->Text + "','" + edpassword->Text + "')";
+			}
+
+			if (Type == 1) {
+				sdf = "确认添加供应商" + dbedtName->Text +"吗？" ;
+			}
+			if ((Type == 2) || (Type == 3)) {
+				sdf = "确认添加客户" + dbedtName->Text +"吗？" ;
+			}
+
+			if (MessageBox(0,sdf.c_str() ,"添加确认?     " ,MB_ICONQUESTION|MB_OKCANCEL)==1) {
+				//qudetail->Active = true;
+				/*if (qudetail->State != dsInsert) {
+					qudetail->Append();
+				}
+				qudetail->FieldByName("Type")->AsInteger = Type;
+				qudetail->FieldByName("name")->AsString =  dbedtName->Text.Trim();
+				qudetail->FieldByName("contact")->AsString =  dbeditContact->Text.Trim();
+				qudetail->FieldByName("telephone")->AsString =  edtphone->Text.Trim();
+				qudetail->FieldByName("fax")->AsString = edtfax->Text.Trim();
+				qudetail->FieldByName("salesman")->AsString   = salesmanID;
+				qudetail->FieldByName("code")->AsString = edtcode->Text.Trim();
+				qudetail->FieldByName("date")->AsDateTime = Date();
+				qudetail->FieldByName("address")->AsString =  dbedit->Text.Trim();
+				qudetail->FieldByName("local")->AsString   =  LocalID;
+				qudetail->Edit() ;*/
+				aqdetail->Close();
+				aqdetail->SQL->Clear();
+				aqdetail->SQL->Add(sql);
+				aqdetail->ExecSQL();
+				sql =  "select max(ID) as id from cust_customerinfo";
+				aqdetail->Close();
+				aqdetail->SQL->Clear();
+				aqdetail->SQL->Add(sql);
+				aqdetail->Open();
+				int customerid = aqdetail->FieldByName("id")->AsInteger ;
+				sql = "insert into CUST_CustomerStartMoney(CustomerID) values (" + IntToStr(customerid)  + ")" ;
+				aqdetail->Close();
+				aqdetail->SQL->Clear();
+				aqdetail->SQL->Add(sql);
+				aqdetail->ExecSQL();
+				this->Close();
+			}
+
+	}
+	if (modsave == 2) {
+		AnsiString sql,sdf;
+		sql = "update cust_customerinfo set name = '" +dbedtName->Text +"',Contact = '" + dbeditContact->Text.Trim()+ "',Telephone = '";
+		sql = sql + edtphone->Text + "',Fax = '" + edtfax->Text.Trim() + "',Address = '" + dbedit->Text.Trim();
+		sql = sql + "',Code = '" + edtcode->Text.Trim() +"',local = '" + CBlocal->Text.Trim() + "',salesman = '" + CBsale->Text.Trim() + "',Email = '";
+		sql = sql + edemail->Text + "',postAddress = '" + edpostaddress->Text + "',bank = '" + edbank->Text + "',bankAccount = '" + edbankaccount->Text;
+		sql = sql + "',MSNAddress = '" + edmsnaddress->Text + "',WEBAddress = '" + edwebaddress->Text + "',secondlyContact = '";
+		sql = sql + edsecondcontact->Text + "',QQCode = '" + edqq->Text + "',logname = '" + edlogname->Text + "',logpassword = '" + edpassword->Text + "'";
+		if (cbtype->Text != "") {
+			sql = sql + ",customertype = " + IntToStr(int(cbtype->Items->Objects[cbtype->ItemIndex]));
+		}
+		sql = sql + " where ID = " + ID;
+
+		if (Type == 1) {
+			sdf = "确认修改供应商" + dbedtName->Text +"吗？" ;
+		}
+		if (Type == 2) {
+			sdf = "确认修改客户" + dbedtName->Text +"吗？" ;
+		}
+
+		if (MessageBox(0,sdf.c_str() ,"修改确认" ,MB_ICONQUESTION|MB_OKCANCEL)==1) {
+			try {
+				aqinit->Close();
+				aqinit->SQL->Clear();
+				aqinit->SQL->Add(sql);
+				aqinit->ExecSQL();
+				this->Close();
+			} catch (Exception &E) {
+				MessageBox(0,"该数据跟系统其他数据有关联，不能修改！","修改错误" ,MB_ICONWARNING);
+			}
+		}
+	}
+}
+//---------------------------------------------------------------------------
+void __fastcall TDetaileForm::BtnExitClick(TObject *Sender)
+{
+	Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::dbedtNameKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+    	edtphone->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edtphoneKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+		CBlocal->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::dbeditKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+    	edpostaddress->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::CBlocalKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+		dbeditContact->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::dbeditContactKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+		edsecondcontact->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edtfaxKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+		edemail->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edtcodeKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+		edtfax->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::CBsaleKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+		edmsnaddress->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edsecondcontactKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+        edtcode->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edemailKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+        CBsale->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edmsnaddressKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+        edqq->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edqqKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+        edbank->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edbankKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+        edbankaccount->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edbankaccountKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+		if (Type == 1) {
+			edwebaddress->SetFocus();
+		}
+		else
+		{
+        	edlogname->SetFocus();
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edlognameKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+        edpassword->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edpasswordKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+{
+	if (Key == VK_RETURN) {
+        edwebaddress->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edwebaddressKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+    	dbedit->SetFocus();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::edpostaddressKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_RETURN) {
+        BtnSave->Click();
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+	if (Key == VK_F4) {     //保存
+		BtnSave->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key == 78 ) {    //最小化
+		BtnAlignBottom->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key == 81 ) {    //退出
+		BtnExit->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key ==90) {   //恢复窗口
+		WindowState = wsNormal  ;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TDetaileForm::BtnAlignBottomClick(TObject *Sender)
+{
+	WindowState = wsMinimized ;
+}
+//---------------------------------------------------------------------------
+

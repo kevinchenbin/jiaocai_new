@@ -1,0 +1,72 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{43709E62-605A-44E8-AB2D-4C00F2E0BBBC}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="book.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="bsadmin\bsadmin.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="bsquery\bsquery.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="catalogadmin\catalogadmin.cbproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="book">
+			<MSBuild Projects="book.cbproj"/>
+		</Target>
+		<Target Name="book:Clean">
+			<MSBuild Targets="Clean" Projects="book.cbproj"/>
+		</Target>
+		<Target Name="book:Make">
+			<MSBuild Targets="Make" Projects="book.cbproj"/>
+		</Target>
+		<Target Name="bsadmin">
+			<MSBuild Projects="bsadmin\bsadmin.cbproj"/>
+		</Target>
+		<Target Name="bsadmin:Clean">
+			<MSBuild Targets="Clean" Projects="bsadmin\bsadmin.cbproj"/>
+		</Target>
+		<Target Name="bsadmin:Make">
+			<MSBuild Targets="Make" Projects="bsadmin\bsadmin.cbproj"/>
+		</Target>
+		<Target Name="bsquery">
+			<MSBuild Projects="bsquery\bsquery.cbproj"/>
+		</Target>
+		<Target Name="bsquery:Clean">
+			<MSBuild Targets="Clean" Projects="bsquery\bsquery.cbproj"/>
+		</Target>
+		<Target Name="bsquery:Make">
+			<MSBuild Targets="Make" Projects="bsquery\bsquery.cbproj"/>
+		</Target>
+		<Target Name="catalogadmin">
+			<MSBuild Projects="catalogadmin\catalogadmin.cbproj"/>
+		</Target>
+		<Target Name="catalogadmin:Clean">
+			<MSBuild Targets="Clean" Projects="catalogadmin\catalogadmin.cbproj"/>
+		</Target>
+		<Target Name="catalogadmin:Make">
+			<MSBuild Targets="Make" Projects="catalogadmin\catalogadmin.cbproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="book;bsadmin;bsquery;catalogadmin"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="book:Clean;bsadmin:Clean;bsquery:Clean;catalogadmin:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="book:Make;bsadmin:Make;bsquery:Make;catalogadmin:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

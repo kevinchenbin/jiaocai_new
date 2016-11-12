@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009/08/20 10:07:11.079.cpp,E:\dev_source\pddata\book_v1\source\catalogadmin\Unit1.cpp=E:\dev_source\pddata\book_v1\source\catalogadmin\SelectCatalogForm.cpp</Transaction>
+    <Transaction>2009/08/20 10:07:11.079.h,E:\dev_source\pddata\book_v1\source\catalogadmin\Unit1.h=E:\dev_source\pddata\book_v1\source\catalogadmin\SelectCatalogForm.h</Transaction>
+    <Transaction>2009/08/20 10:07:11.079.dfm,E:\dev_source\pddata\book_v1\source\catalogadmin\Unit1.dfm=E:\dev_source\pddata\book_v1\source\catalogadmin\SelectCatalogForm.dfm</Transaction>
+    <Transaction>2009-10-19 15:56:53.405.cpp,E:\work\source\catalogadmin\Unit1.cpp=E:\work\source\catalogadmin\NewBookinput.cpp</Transaction>
+    <Transaction>2009-10-19 15:56:53.405.h,E:\work\source\catalogadmin\Unit1.h=E:\work\source\catalogadmin\NewBookinput.h</Transaction>
+    <Transaction>2009-10-19 15:56:53.405.dfm,E:\work\source\catalogadmin\Unit1.dfm=E:\work\source\catalogadmin\NewBookinput.dfm</Transaction>
+    <Transaction>2009-11-05 17:21:16.250.cpp,E:\20091023\source\catalogadmin\Unit1.cpp=E:\20091023\source\catalogadmin\CatalogManage.cpp</Transaction>
+    <Transaction>2009-11-05 17:21:16.250.h,E:\20091023\source\catalogadmin\Unit1.h=E:\20091023\source\catalogadmin\CatalogManage.h</Transaction>
+    <Transaction>2009-11-05 17:21:16.250.dfm,E:\20091023\source\catalogadmin\Unit1.dfm=E:\20091023\source\catalogadmin\CatalogManage.dfm</Transaction>
+    <Transaction>2009-11-06 09:29:05.718.cpp,E:\20091023\source\catalogadmin\NewBookinput.cpp=E:\20091023\source\catalogadmin\Catalogkanli.cpp</Transaction>
+    <Transaction>2009-11-06 09:29:05.718.h,E:\20091023\source\catalogadmin\NewBookinput.h=E:\20091023\source\catalogadmin\Catalogkanli.h</Transaction>
+    <Transaction>2009-11-06 09:29:05.718.dfm,E:\20091023\source\catalogadmin\NewBookinput.dfm=E:\20091023\source\catalogadmin\Catalogkanli.dfm</Transaction>
+    <Transaction>2009-11-29 15:32:50.546.cpp,D:\work\source\catalogadmin\Unit1.cpp=D:\work\source\catalogadmin\BookQuery.cpp</Transaction>
+    <Transaction>2009-11-29 15:32:50.546.h,D:\work\source\catalogadmin\Unit1.h=D:\work\source\catalogadmin\BookQuery.h</Transaction>
+    <Transaction>2009-11-29 15:32:50.546.dfm,D:\work\source\catalogadmin\Unit1.dfm=D:\work\source\catalogadmin\BookQuery.dfm</Transaction>
+    <Transaction>2009-11-30 16:50:51.750.cpp,D:\work\source\catalogadmin\SelectBookTypeForm1.cpp=</Transaction>
+    <Transaction>2009-11-30 16:50:51.750.dfm,D:\work\source\catalogadmin\SelectBookTypeForm1.dfm=</Transaction>
+    <Transaction>2009-11-30 16:50:59.718.cpp,D:\work\source\catalogadmin\StationeryAdminForm.cpp=</Transaction>
+    <Transaction>2009-11-30 16:50:59.718.dfm,D:\work\source\catalogadmin\StationeryAdminForm.dfm=</Transaction>
+    <Transaction>2009-11-30 16:52:10.000.cpp,D:\work\source\catalogadmin\SelectBookTypeForm.cpp=</Transaction>
+    <Transaction>2009-11-30 16:52:10.000.dfm,D:\work\source\catalogadmin\SelectBookTypeForm.dfm=</Transaction>
+    <Transaction>2009-11-30 16:57:16.171.cpp,D:\work\source\catalogadmin\CatalogAdminForm.cpp=</Transaction>
+    <Transaction>2009-11-30 16:57:16.171.dfm,D:\work\source\catalogadmin\CatalogAdminForm.dfm=</Transaction>
+    <Transaction>2009-11-30 16:58:27.187.cpp,D:\work\source\catalogadmin\CatalogManage.cpp=</Transaction>
+    <Transaction>2009-11-30 16:58:27.187.dfm,D:\work\source\catalogadmin\CatalogManage.dfm=</Transaction>
+    <Transaction>2009-11-30 16:58:52.421.cpp,D:\work\source\catalogadmin\SelectCatalogForm.cpp=</Transaction>
+    <Transaction>2009-11-30 16:58:52.421.dfm,D:\work\source\catalogadmin\SelectCatalogForm.dfm=</Transaction>
+    <Transaction>2009-12-23 09:34:51.546.cpp,D:\work\hechuang\source\catalogadmin\Unit1.cpp=D:\work\hechuang\source\catalogadmin\Setunite.cpp</Transaction>
+    <Transaction>2009-12-23 09:34:51.546.h,D:\work\hechuang\source\catalogadmin\Unit1.h=D:\work\hechuang\source\catalogadmin\Setunite.h</Transaction>
+    <Transaction>2009-12-23 09:34:51.546.dfm,D:\work\hechuang\source\catalogadmin\Unit1.dfm=D:\work\hechuang\source\catalogadmin\Setunite.dfm</Transaction>
+    <Transaction>2010-04-07 14:46:19.328.cpp,D:\work\jlbook\11source\catalogadmin\Unit1.cpp=D:\work\jlbook\11source\catalogadmin\catalogbuilt.cpp</Transaction>
+    <Transaction>2010-04-07 14:46:19.328.h,D:\work\jlbook\11source\catalogadmin\Unit1.h=D:\work\jlbook\11source\catalogadmin\catalogbuilt.h</Transaction>
+    <Transaction>2010-04-07 14:46:19.328.dfm,D:\work\jlbook\11source\catalogadmin\Unit1.dfm=D:\work\jlbook\11source\catalogadmin\catalogbuilt.dfm</Transaction>
+    <Transaction>2010-06-02 15:18:50.578.cpp,D:\work\jiaocai\11sourcebk\catalogadmin\catalogbuilt.cpp=D:\work\jiaocai\11sourcebk\catalogadmin\catalognewandrec.cpp</Transaction>
+    <Transaction>2010-06-02 15:18:50.578.h,D:\work\jiaocai\11sourcebk\catalogadmin\catalogbuilt.h=D:\work\jiaocai\11sourcebk\catalogadmin\catalognewandrec.h</Transaction>
+    <Transaction>2010-06-02 15:18:50.578.dfm,D:\work\jiaocai\11sourcebk\catalogadmin\catalogbuilt.dfm=D:\work\jiaocai\11sourcebk\catalogadmin\catalognewandrec.dfm</Transaction>
+    <Transaction>2010-08-18 12:47:08.234.cpp,D:\work\jiaocai\11sourcebk\catalogadmin\Catalogkanli.cpp=D:\work\jiaocai\11sourcebk\catalogadmin\Qikanguanli.cpp</Transaction>
+    <Transaction>2010-08-18 12:47:08.234.h,D:\work\jiaocai\11sourcebk\catalogadmin\Catalogkanli.h=D:\work\jiaocai\11sourcebk\catalogadmin\Qikanguanli.h</Transaction>
+    <Transaction>2010-08-18 12:47:08.234.dfm,D:\work\jiaocai\11sourcebk\catalogadmin\Catalogkanli.dfm=D:\work\jiaocai\11sourcebk\catalogadmin\Qikanguanli.dfm</Transaction>
+    <Transaction>2010-10-06 16:58:09.754.cpp,D:\work\jiaocai\11sourcebk\catalogadmin\Unit1.cpp=D:\work\jiaocai\11sourcebk\catalogadmin\mutibooktongyi.cpp</Transaction>
+    <Transaction>2010-10-06 16:58:09.754.h,D:\work\jiaocai\11sourcebk\catalogadmin\Unit1.h=D:\work\jiaocai\11sourcebk\catalogadmin\mutibooktongyi.h</Transaction>
+    <Transaction>2010-10-06 16:58:09.754.dfm,D:\work\jiaocai\11sourcebk\catalogadmin\Unit1.dfm=D:\work\jiaocai\11sourcebk\catalogadmin\mutibooktongyi.dfm</Transaction>
+    <Transaction>2010/12/16 09:36:40.948.cpp,E:\work\jiaocai\11sourcebk\catalogadmin\SelectPressForm.cpp=</Transaction>
+    <Transaction>2010/12/16 09:36:40.989.dfm,E:\work\jiaocai\11sourcebk\catalogadmin\SelectPressForm.dfm=</Transaction>
+    <Transaction>2010/12/16 09:41:00.574.cpp,E:\work\jiaocai\11sourcebk\common\Addsyslog.cpp=</Transaction>
+    <Transaction>2010/12/29 14:49:28.358.cpp,E:\work\jiaocai\11sourcebk\bsadmin\NewBookModify.cpp=</Transaction>
+    <Transaction>2010/12/29 14:49:28.393.dfm,E:\work\jiaocai\11sourcebk\bsadmin\NewBookModify.dfm=</Transaction>
+    <Transaction>2010/12/29 14:53:44.080.cpp,E:\work\jiaocai\11sourcebk\bsadmin\sendbookselect.cpp=</Transaction>
+    <Transaction>2010/12/29 14:53:44.080.dfm,E:\work\jiaocai\11sourcebk\bsadmin\sendbookselect.dfm=</Transaction>
+    <Transaction>2011-03-22 17:33:33.357.cpp,E:\work\jiaocai\11sourcebk\catalogadmin\BookTypeAdminForm.cpp=E:\work\jiaocai\11sourcebk\catalogadmin\BigBookType.cpp</Transaction>
+    <Transaction>2011-03-22 17:33:33.369.h,E:\work\jiaocai\11sourcebk\catalogadmin\BookTypeAdminForm.h=E:\work\jiaocai\11sourcebk\catalogadmin\BigBookType.h</Transaction>
+    <Transaction>2011-03-22 17:33:33.369.dfm,E:\work\jiaocai\11sourcebk\catalogadmin\BookTypeAdminForm.dfm=E:\work\jiaocai\11sourcebk\catalogadmin\BigBookType.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

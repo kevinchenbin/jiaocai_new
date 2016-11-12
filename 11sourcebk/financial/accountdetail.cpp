@@ -1,0 +1,748 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "accountdetail.h"
+#include "..\bsadmin\UnitSelectClient.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma link "RzPanel"
+#pragma link "RzButton"
+#pragma link "RzCmboBx"
+#pragma link "RzEdit"
+#pragma link "RzDBGrid"
+#pragma link "RzRadChk"
+#pragma link "RpBase"
+#pragma link "RpCon"
+#pragma link "RpConDS"
+#pragma link "RpDefine"
+#pragma link "RpRave"
+#pragma link "RpSystem"
+#pragma resource "*.dfm"
+TAccDetail *AccDetail;
+//---------------------------------------------------------------------------
+__fastcall TAccDetail::TAccDetail(TComponent* Owner,int Type,TADOConnection *cn,int stgid)
+	: TForm(Owner)
+{
+	type = Type;
+	type1 = Type;
+	fcon = cn;
+	aquery->Connection = cn;
+	Querydetail->Connection = cn;
+	Querybance->Connection = cn;
+	Querybase->Connection = cn;
+	aqprint->Connection = cn;
+	aq->Connection = cn;
+	fstgid = stgid;
+	if (Type == 1) {
+		this->Caption = "应付明细";
+		Label9->Caption = "合计应付";
+	}
+	Disc = "0.00";
+
+	AnsiString sql;
+   sql = "select value from sys_bsset where name = 'changeDanHaoDisplay'";
+   TADOQuery *aq1 = new TADOQuery(NULL);
+   aq1->Connection = cn;
+   aq1->SQL->Clear();
+   aq1->SQL->Add(sql);
+   aq1->Open();
+   ChangeDisplay = aq1->FieldByName("value")->AsBoolean;
+
+
+	aq1->Close();
+	aq1->SQL->Clear();
+	aq1->SQL->Add("select * from sys_bsset where name ='xiaoshudian'");
+	aq1->Open();
+	storageformat =  "###,###,##" + aq1->FieldByName("bk")->AsAnsiString ;
+	aq1->Close();
+	aq1->SQL->Clear();
+	aq1->SQL->Add("select * from sys_bsset where name ='salexiaoshudian'");
+	aq1->Open();
+	saleformat =  "###,###,##" + aq1->FieldByName("bk")->AsAnsiString ;
+
+   delete aq1;
+   if (ChangeDisplay) {
+		DBGridbase->Columns->Items[2]->Visible = false;
+		DBGridbase->Columns->Items[3]->Visible = true;
+   }
+   else
+   {
+		DBGridbase->Columns->Items[2]->Visible = true;
+		DBGridbase->Columns->Items[3]->Visible = false;
+   }
+   DTPstart->Date = Date();
+   DTPend->Date = Date();
+   ClientID = -1;
+}
+//---------------------------------------------------------------------------
+void __fastcall TAccDetail::FormShow(TObject *Sender)
+{
+	CBstate->Text = "全部";
+	CBstate->Add("全部");
+	CBstate->Add("未结");
+	CBstate->Add("已结");
+	AnsiString sql ;
+	if (type == 2) {
+	  sql = "select ID,Name from CUST_CustomerInfo where Type in(3,2) and name <> '' order by name";
+	}else
+	{
+		sql = "select ID,Name from CUST_CustomerInfo where Type =1 and name <> '' order by name" ;
+	}
+	aquery->Close();
+	aquery->SQL->Clear();
+	aquery->SQL->Add(sql);
+	aquery->Open();
+	if (aquery->RecordCount == 0) {
+		MessageBox(0,"没有客户！","没有客户" ,MB_OK);
+	}
+	else
+	{
+		while (!aquery->Eof ) {
+			CBcustom->AddItem(aquery->FieldByName("Name")->AsString,(TObject*)aquery->FieldByName("ID")->AsInteger );
+			aquery->Next();
+		}
+		//aquery->First();
+		//CBcustom->ItemIndex = CBcustom->Items->IndexOfObject((TObject*)aquery->FieldByName("ID")->AsInteger);
+	}
+	if (type == 1) {
+		Label1->Caption = "供应商";
+		DBGridbase->Columns->Items[1]->Title->Caption = "供应商名称";
+		DBGridbase->Columns->Items[2]->Title->Caption = "入库单号";
+		DBGridbase->Columns->Items[3]->Title->Caption = "入库单号";
+		spselectClient->Visible = false;
+		edtclient->Visible = false;
+	}
+	if (type == 2) {
+		Label1->Caption = "客户";
+		DBGridbase->Columns->Items[1]->Title->Caption = "客户名称";
+		DBGridbase->Columns->Items[2]->Title->Caption = "发货单号";
+		DBGridbase->Columns->Items[3]->Title->Caption = "发货单号";
+		DBGridbase->Columns->Items[8]->Title->Caption = "总应收";
+		CBcustom->Visible = false;
+	}
+	edquery->SetFocus();
+}
+//---------------------------------------------------------------------------
+void __fastcall TAccDetail::BtnViewClick(TObject *Sender)
+{
+	AnsiString sql,sqlwhere;
+	/*if (edtclient->Text == "" && type == 2) {
+		MessageBox(0,"请选择客户！","提示" ,MB_OK);
+		return;
+	}
+	if (CBcustom->Text == "" && type == 1) {
+		MessageBox(0,"请选择供应商！","提示" ,MB_OK);
+		return;
+	}*/
+	int clientid;
+	try {
+		if (CBcustom->Text != "") {
+			clientid = (int)CBcustom->Items->Objects[CBcustom->ItemIndex];
+		}
+	} catch (...) {
+		MessageBox(0,"请选择正确的单位！","提示" ,MB_OK);
+		return;
+	}
+	if (type == 1) {
+		sql = "select distinct RANK() OVER(order by BS_StorageNoteHeader.ID desc) as xuhao,StgNtCode as NtCode,StgNtCodeStr as CodeStr,TotalFixedPrice as FixedPrice,TotalDiscountedPrice as DiscountedPrice,CUST_CustomerInfo.Name as clientname,"
+			  "TotalAmount,AddCosts,AddCosts + TotalDiscountedPrice as totalyingfu,Checked,NoChecked,Convert(varchar(20),HdTime,111) as HdTime,Remarks from BS_StorageNoteHeader left join CUST_CustomerInfo on BS_StorageNoteHeader.SupplierID = CUST_CustomerInfo.id where BS_StorageNoteHeader.state <> 2 ";
+		if (chguolv->Checked ) {
+			sql = sql + " and BS_StorageNoteHeader.ID in(select StgNtHeaderID from BS_StorageNote) ";
+		}
+		if (CBcustom->Text != "") {
+			sql = sql + " and  SupplierID= "+IntToStr(clientid) ;
+		}
+	}
+	if (type == 2) {
+		sql = "select distinct RANK() OVER(order by BS_WsaleNoteHeader.ID desc) as xuhao,WsaleNtCode as NtCode,WsaleNtCodeStr as CodeStr,FixedPrice,DiscountedPrice,TotalAmount,dbo.uf_bs_getclientname(BS_WsaleNoteHeader.VendorID) as clientname,"
+			  "AddCosts,AddCosts + DiscountedPrice as totalyingfu, Checked,NoChecked,Convert(varchar(20),HdTime,111) as HdTime,Remarks from BS_WsaleNoteHeader left join CUST_CustomerInfo on BS_WsaleNoteHeader.VendorID = CUST_CustomerInfo.id where BS_WsaleNoteHeader.state <> 2 ";
+
+		if (chguolv->Checked ) {
+			sql = sql + " and BS_WsaleNoteHeader.ID in(select WsaleNtHeaderID from BS_WsaleNote) ";
+		}
+		if (edtclient->Text != "") {
+        	sql = sql + " and VendorID in (select ID from GetChild(" + IntToStr(clientid) + "))";
+		}
+	}
+
+	if (CBstart->Checked ) {
+		sqlwhere =  " and HdTime >='" + DateToStr(DTPstart->Date) + " 0:00:00'";
+	}
+	if (CBend->Checked ) {
+		sqlwhere = sqlwhere + " and HdTime <='" + DateToStr(DTPend->Date) + " 23:59:59'";
+	}
+	if (CBstate->Text=="已结") {
+		sqlwhere=sqlwhere+" and State=1" ;
+	}
+	else if (CBstate->Text=="未结") {
+		sqlwhere=sqlwhere+" and State=0";
+	}
+	sql = sql + sqlwhere;
+	Querybase->Close();
+	Querybase->SQL->Clear();
+	Querybase->SQL->Add(sql);
+	Querybase->Open();
+	sql1 =sql;
+	if (type == 1) {
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = storageformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = storageformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("AddCosts"))->DisplayFormat = storageformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("Checked"))->DisplayFormat = storageformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("NoChecked"))->DisplayFormat = storageformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("totalyingfu"))->DisplayFormat = storageformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("TotalAmount"))->DisplayFormat = "###,###,##0";
+	}
+	else
+	{
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = saleformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = saleformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("AddCosts"))->DisplayFormat = saleformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("Checked"))->DisplayFormat = saleformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("NoChecked"))->DisplayFormat = saleformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("totalyingfu"))->DisplayFormat = saleformat;
+		((TFloatField *)DBGridbase->DataSource->DataSet->FieldByName("TotalAmount"))->DisplayFormat = "###,###,##0";
+	}
+
+	float  DiscountedPrice=0.00;
+	float  checked=0.00;
+	float  AddCosts=0.00;
+	float  bance=0.00;
+	while (!Querybase->Eof)
+	{
+		DiscountedPrice+=Querybase->FieldByName("DiscountedPrice")->AsInteger;
+		AddCosts+=Querybase->FieldByName("AddCosts")->AsInteger;
+		checked+=Querybase->FieldByName("Checked")->AsInteger;
+		Querybase->Next();
+	}
+	sql = "select B.balance + B.totalyue as totalyue from CUST_CustomerStartMoney B " ;
+	if ((type == 1 && CBcustom->Text != "") || (type == 2 && edtclient->Text != "")) {
+		sql = sql + " where B.CustomerID in (select ID from GetChild(" + IntToStr(clientid) + "))";
+	}
+	Querybance->Close();
+	Querybance->SQL->Clear();
+	Querybance->SQL->Add(sql);
+	Querybance->Open();
+	bance = Querybance->FieldByName("totalyue")->AsFloat;
+	float s=DiscountedPrice+AddCosts-checked;
+	if (type == 1) {
+		etshiyang->Text = FormatFloat(storageformat,DiscountedPrice);
+		etchecked->Text = FormatFloat(storageformat,checked);
+		etaddcost->Text=FormatFloat(storageformat,AddCosts);
+		etleftmoney->Text=FormatFloat(storageformat,bance);
+		etcount->Text=FormatFloat(storageformat,s);
+	}
+	else
+	{
+		etshiyang->Text = FormatFloat(saleformat,DiscountedPrice);
+		etchecked->Text = FormatFloat(saleformat,checked);
+		etaddcost->Text=FormatFloat(saleformat,AddCosts);
+		etleftmoney->Text=FormatFloat(saleformat,bance);
+		etcount->Text=FormatFloat(saleformat,s);
+	}
+	Querydetail->Close();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::BtnExitClick(TObject *Sender)
+{
+	Close();
+}
+//---------------------------------------------------------------------------
+void __fastcall TAccDetail::DBGridbaseCellClick(TColumn *Column)
+{
+	AnsiString sql;
+	if (Querybase->IsEmpty() ) {
+		return;
+	}
+	if (Querybase->RecordCount > 0) {
+		if (type == 1) {
+			sql="select rank() over(order by BS_BookCatalog.id) as xuhao,Convert(varchar(20),HdTime,111) as HdTime,ISBN,Name,Price,PressCount,AbbreviatedName,BS_StorageNote.Amount as Amount,Discount ,FixedPrice,DiscountedPrice  from BS_StorageNote  left join STK_BookInfo on STK_BookInfo.id=BkInfoID left join BS_BookCatalog on BkcatalogID=BS_BookCatalog.id left join BS_StorageNoteHeader on BS_StorageNoteHeader.id=StgNtHeaderID left join bs_pressinfo on bs_bookcatalog.pressid = bs_pressinfo.id where StgNtCode="+Querybase->FieldByName("NtCode")->AsString;
+		}
+		if (type == 2) {
+			sql="select rank() over(order by BS_BookCatalog.id) as xuhao,Convert(varchar(20),HdTime,111) as HdTime,ISBN,Name,Price,PressCount,AbbreviatedName,BS_WsaleNote.Amount as Amount,Discount ,BS_WsaleNote.FixedPrice,BS_WsaleNote.DiscountedPrice  from BS_WsaleNote  left join STK_BookInfo on STK_BookInfo.id=BkInfoID left join BS_BookCatalog on BkcatalogID=BS_BookCatalog.id left join BS_WsaleNoteHeader on BS_WsaleNoteHeader.id=WsaleNtHeaderID left join bs_pressinfo on bs_bookcatalog.pressid = bs_pressinfo.id where WsaleNtCode="+Querybase->FieldByName("NtCode")->AsString;
+		}
+		Querydetail->Close();
+		Querydetail->SQL->Clear();
+		Querydetail->SQL->Add(sql);
+		Querydetail->Open();
+		/*DBGriddetail->Columns->Items[0]->Width = 84;
+		DBGriddetail->Columns->Items[1]->Width = 120;
+		DBGriddetail->Columns->Items[2]->Width = 64;
+		DBGriddetail->Columns->Items[3]->Width = 64;
+		DBGriddetail->Columns->Items[4]->Width = 64;
+		DBGriddetail->Columns->Items[5]->Width = 64;
+		DBGriddetail->Columns->Items[6]->Width = 64;
+		DBGriddetail->Columns->Items[7]->Width = 64;
+		DBGriddetail->Columns->Items[8]->Width = 80;  */
+		if (type == 1) {
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("Price"))->DisplayFormat = storageformat;
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("Discount"))->DisplayFormat = storageformat;
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = storageformat;
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = storageformat;
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("Amount"))->DisplayFormat = "###,###,##0";
+		}
+		else
+		{
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("Price"))->DisplayFormat = saleformat;
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("Discount"))->DisplayFormat = saleformat;
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("FixedPrice"))->DisplayFormat = saleformat;
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("DiscountedPrice"))->DisplayFormat = saleformat;
+			((TFloatField *)DBGriddetail->DataSource->DataSet->FieldByName("Amount"))->DisplayFormat = "###,###,##0";
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+
+void __fastcall TAccDetail::FormClose(TObject *Sender, TCloseAction &Action)
+{
+  Action = caFree ;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::BtnExportClick(TObject *Sender)
+{
+	if (Querybase->IsEmpty() ) {
+		return;
+	}
+	DbgridToExcel(DBGridbase);
+}
+//---------------------------------------------------------------------------
+bool __fastcall TAccDetail::DbgridToExcel(TRzDBGrid* dbg)
+{
+	/*AnsiString temptext,sql ;
+	int k = dbg->DataSource ->DataSet ->RecordCount ,n=0;
+	if(k == 0)
+	{
+		MessageBox(0,"没有数据！","错误确认" ,MB_OK);
+		return false;
+	}
+	Variant     v;
+	v   =Variant::CreateObject("Excel.Application");
+	v.OlePropertySet("Visible",true);
+	v.OlePropertyGet("WorkBooks").OleFunction("Add");
+//  在Excel中成字符串显示
+	temptext = this->Caption ;
+	v.OlePropertyGet("Cells",1,6).OlePropertySet("Value",temptext .c_str());
+	n=2;
+	int t1= 0;
+	int t2 = dbg->DataSource ->DataSet ->RecordCount ;
+
+	dbg->DataSource ->DataSet ->First();
+	for(int   i=1;i<=t2 ;i++)
+	{
+		t1=0;
+		for(int q=0;q<dbg->FieldCount ;++q)
+		{
+			if (dbg->Columns->Items[q]->Visible == true) {
+				t1++;
+				temptext = "'"+ dbg->Columns ->Items [q]->Title ->Caption;
+				v.OlePropertyGet("Cells",n,(t1)).OlePropertySet("Value",temptext .c_str() );
+			}
+		}
+		n = n+1;
+
+		t1 = 0;
+		for(int j=1;j<dbg->Columns ->Count+1  ;j++)
+		{
+			if (dbg->Columns->Items[j-1]->Visible == true) {
+				t1++;
+				temptext = "'"+ dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+				v.OlePropertyGet("Cells",n,t1).OlePropertySet("Value",temptext .c_str() );  // AsString .c_str()
+			}
+		}
+		n = n+1;
+		//明细显示
+		if (type == 1) {
+			sql="select Convert(varchar(20),HdTime,111) as HdTime,ISBN,Name,Price,PressCount,BS_StorageNote.Amount as Amount,Discount ,FixedPrice,DiscountedPrice  from BS_StorageNote  left join STK_BookInfo on STK_BookInfo.id=BkInfoID left join BS_BookCatalog on BkcatalogID=BS_BookCatalog.id left join BS_StorageNoteHeader on BS_StorageNoteHeader.id=StgNtHeaderID where StgNtCode="+Querybase->FieldByName("NtCode")->AsString;
+		}
+		if (type == 2) {
+			sql="select Convert(varchar(20),HdTime,111) as HdTime,ISBN,Name,Price,PressCount,BS_WsaleNote.Amount as Amount,Discount ,BS_WsaleNote.FixedPrice,BS_WsaleNote.DiscountedPrice  from BS_WsaleNote  left join STK_BookInfo on STK_BookInfo.id=BkInfoID left join BS_BookCatalog on BkcatalogID=BS_BookCatalog.id left join BS_WsaleNoteHeader on BS_WsaleNoteHeader.id=WsaleNtHeaderID where WsaleNtCode="+Querybase->FieldByName("NtCode")->AsString;
+		}
+		aq->Close();
+		aq->SQL->Clear();
+		aq->SQL->Add(sql);
+		aq->Open();
+		if (aq->RecordCount > 0) {
+			t1 = 0;
+			for(int q=0;q<DBGriddetail->FieldCount ;++q)
+			{
+				if (DBGriddetail->Columns->Items[q]->Visible == true) {
+					t1++;
+					temptext = "'"+ DBGriddetail->Columns ->Items [q]->Title ->Caption;
+					v.OlePropertyGet("Cells",n,(t1)).OlePropertySet("Value",temptext .c_str() );
+				}
+			}
+			n = n+1;
+			aq->First();
+			for (int i = 1; i <= aq->RecordCount ; i++) {
+				t1 = 0;
+				for(int j=1;j<DBGriddetail->Columns ->Count+1;j++)
+				{
+					if (DBGriddetail->Columns->Items[j-1]->Visible == true) {
+						t1++;
+						temptext = "'"+ aq ->FieldByName(DBGriddetail->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+						v.OlePropertyGet("Cells",n,t1).OlePropertySet("Value",temptext .c_str() );  // AsString .c_str()
+					}
+				}
+				aq->Next();
+				n = n+1;
+			}
+			n = n+1;
+		}
+		else
+		{
+			n = n+1;
+		}
+		dbg->DataSource ->DataSet ->Next() ;
+	}
+	return false;  */
+
+
+	AnsiString temptext,path;
+	if (type == 1) {
+		savedlg->FileName = CBcustom->Text + "(" + this->Caption + ")";
+	}
+	else
+	{
+		savedlg->FileName = edtclient->Text + "(" + this->Caption + ")";
+	}
+
+	if (savedlg->Execute())
+	{
+		String DBPath,Name;
+		DBPath = ExtractFilePath(savedlg->FileName .c_str()  );
+		Name = ExtractFileName(savedlg->FileName .c_str() );
+		DBPath = DBPath + Name + ".csv";
+		path =  DBPath;
+	}
+	else
+	{
+		return false;
+	}
+	int  iFileHandle;
+	int   iFileLength;
+	if(FileExists(path))
+	   if (DeleteFileA(path))
+			iFileHandle = FileCreate(path.c_str());
+	   else
+			return false;
+	else
+		iFileHandle = FileCreate(path.c_str());
+
+	int t1= 0;
+
+	dbg->DataSource ->DataSet ->First();
+	dbg->DataSource ->DataSet->DisableControls();
+	Querydetail->DisableControls();
+	while(!dbg->DataSource ->DataSet->Eof)
+	{
+		temptext = "\n";
+		for(int q=0;q<dbg->FieldCount ;++q)
+		{
+			if (dbg->Columns->Items[q]->Visible == true) {
+				t1++;
+				temptext = temptext + dbg->Columns ->Items [q]->Title ->Caption + ",";
+			}
+		}
+		iFileLength   =   FileSeek(iFileHandle,0,2);
+		FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+
+		temptext = "\n";
+		for(int j=1;j<dbg->Columns ->Count+1  ;j++)
+		{
+			if (dbg->Columns->Items[j-1]->Visible == true) {
+				/*if (dbg->Columns ->Items [j-1]->FieldName == "NtCode" || dbg->Columns ->Items [j-1]->FieldName == "CodeStr") {
+					temptext = temptext + "'"+ dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+				}
+				else
+				{
+					temptext = temptext + dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+				} */
+				temptext = temptext + dbg->DataSource ->DataSet ->FieldByName(dbg->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+			}
+		}
+		FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+
+		if (type == 1) {
+			sql="select rank() over(order by BS_BookCatalog.id) as xuhao,Convert(varchar(20),HdTime,111) as HdTime,ISBN,Name,Price,PressCount,AbbreviatedName,BS_StorageNote.Amount as Amount,Discount ,FixedPrice,DiscountedPrice  from BS_StorageNote  left join STK_BookInfo on STK_BookInfo.id=BkInfoID left join BS_BookCatalog on BkcatalogID=BS_BookCatalog.id left join BS_StorageNoteHeader on BS_StorageNoteHeader.id=StgNtHeaderID left join bs_pressinfo on bs_bookcatalog.pressid = bs_pressinfo.id where StgNtCode="+Querybase->FieldByName("NtCode")->AsString;
+		}
+		if (type == 2) {
+			sql="select rank() over(order by BS_BookCatalog.id) as xuhao,Convert(varchar(20),HdTime,111) as HdTime,ISBN,Name,Price,PressCount,AbbreviatedName,BS_WsaleNote.Amount as Amount,Discount ,BS_WsaleNote.FixedPrice,BS_WsaleNote.DiscountedPrice  from BS_WsaleNote  left join STK_BookInfo on STK_BookInfo.id=BkInfoID left join BS_BookCatalog on BkcatalogID=BS_BookCatalog.id left join BS_WsaleNoteHeader on BS_WsaleNoteHeader.id=WsaleNtHeaderID left join bs_pressinfo on bs_bookcatalog.pressid = bs_pressinfo.id where WsaleNtCode="+Querybase->FieldByName("NtCode")->AsString;
+		}
+		aq->Close();
+		aq->SQL->Clear();
+		aq->SQL->Add(sql);
+		aq->Open();
+		temptext = "\n";
+		if (aq->RecordCount > 0) {
+			for(int q=0;q<DBGriddetail->FieldCount ;++q)
+			{
+				if (DBGriddetail->Columns->Items[q]->Visible == true) {
+					temptext = temptext + DBGriddetail->Columns ->Items [q]->Title ->Caption + ",";
+				}
+			}
+			FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+
+			aq->First();
+			while (!aq->Eof)
+			{
+                temptext = "\n";
+				for(int j=1;j<DBGriddetail->Columns ->Count+1;j++)
+				{
+					if (DBGriddetail->Columns->Items[j-1]->Visible == true) {
+						/*if (DBGriddetail->Columns ->Items [j-1]->FieldName == "ISBN") {
+							temptext = temptext + "'"+ aq ->FieldByName(DBGriddetail->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+						}*/
+						if (DBGriddetail->Columns ->Items [j-1]->FieldName == "Name") {
+							AnsiString bookname;
+							bookname = aq->FieldByName(DBGriddetail->Columns ->Items [j-1]->FieldName )->AsAnsiString;
+							bookname = StringReplace(bookname , ",",".",TReplaceFlags()<<rfReplaceAll);
+							temptext = temptext + bookname + ",";
+						}
+						else
+						{
+							temptext = temptext + aq->FieldByName(DBGriddetail->Columns ->Items [j-1]->FieldName )->AsAnsiString + ",";
+						}
+					}
+				}
+				FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+				aq->Next();
+			}
+		}
+
+        temptext = "\n";
+		FileWrite(iFileHandle,temptext.c_str() ,temptext.Length());
+		dbg->DataSource ->DataSet ->Next() ;
+	}
+	Querydetail->EnableControls();
+	dbg->DataSource ->DataSet->EnableControls();
+
+	FileClose(iFileHandle);
+
+	MessageBox(0,"导出完毕！","提示" ,MB_OK);
+	return false;
+}
+
+//---------------------------------------------------------------------------
+
+void TAccDetail::PrintFunction(int  type)
+{
+					 //预览
+	// AnsiString sql;
+   /*	 sql = " select RANK() OVER(order by B.ID desc) as xuhao,A.HdTime,A.WsaleNtCode,A.FixedPrice,A.DiscountedPrice, "
+		  " A.TotalAmount,A.Checked,B.discount,A.Nochecked,BS_BookCatalog.Name as bookname,BS_BookCatalog.Price,BS_BookCatalog.ISBN "
+		  " ,p.abbreviatedName,B.Amount,B.Discount,B.fixedprice,B.discountedprice from BS_WsaleNoteHeader A "
+		  " join BS_WsaleNote B ON A.ID = B.WsaleNtHeaderID  join STK_BookInfo on STK_BookInfo.id=BkInfoID "
+		  " join BS_BookCatalog on BkcatalogID=BS_BookCatalog.id left join BS_PressInfo P on P.ID = BS_BookCatalog.pressID ";
+	 sql = sql + sqlwhere;    */
+	 if (Querybase->IsEmpty()) {
+         return;
+	 }
+	  aqprint->Close();
+	  aqprint->SQL->Clear();
+	  aqprint->SQL->Add(sql1);
+	  aqprint->Open();
+	RvSystem1->SystemSetups >>ssAllowSetup;
+	RvSystem1->SystemSetups >>ssAllowDestPreview;
+	RvSystem1->SystemSetups >>ssAllowDestPrinter;
+	RvSystem1->SystemSetups >>ssAllowPrinterSetup;
+	RvSystem1->SystemSetups >>ssAllowDestFile;
+	if (type==1) {
+		RvSystem1->DefaultDest   = rdPreview  ;
+	}else
+	{
+		RvSystem1->DefaultDest   = rdPrinter ;
+	}
+	//RvSystem1->DefaultDest = rdFile ;
+	//RvSystem1->OutputFileName = "D://FYingShouDetail.html";
+	RvSystem1->SystemSetups<<ssAllowDestPrinter;
+  //
+		RvProject1->ProjectFile = ExtractFilePath(Application->ExeName) + "FYingShouDetail.rav";
+		RvProject1->Open();
+
+
+
+		if (type1 == 1)
+		{
+		RvProject1->SetParam("title",stogName+"应付明细");
+		RvProject1->SetParam("supplier","供应商："+CBcustom->Text);
+		}
+		if (type1 == 2) {
+		 {
+		  RvProject1->SetParam("supplier","客户："+CBcustom->Text);}
+			RvProject1->SetParam("title",stogName+"应收明细");
+		}
+
+		RvProject1->SetParam("maker",Maker);
+		RvProject1->SetParam("jiekuan",CBstate->Text);
+		if (CBstart->Checked) {
+		  RvProject1->SetParam("begin",DateToStr(DTPstart->Date));
+		}
+		if (CBend->Checked) {
+		  RvProject1->SetParam("end",DateToStr(DTPend->Date));
+		}
+		RvProject1->SetParam("yihu",etcount->Text);
+		RvProject1->Execute();
+   }
+
+void __fastcall TAccDetail::BtnPrintPreviewClick(TObject *Sender)
+{
+	PrintFunction(1);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::BtnPrintClick(TObject *Sender)
+{
+	PrintFunction(2);
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::edqueryKeyPress(TObject *Sender, wchar_t &Key)
+{
+	if (Key == '\r') {
+		AnsiString sql;
+		if (type == 1) {
+			sql = "select ID,Name from CUST_CustomerInfo where type = 1 and Name like '%" + edquery->Text + "%' and name <> '' ";
+        	aq->Close();
+			aq->SQL->Clear();
+			aq->SQL->Add(sql);
+			aq->Open();
+			CBcustom->Clear();
+			while (!aq->Eof )
+			{
+				CBcustom->AddItem(aq->FieldByName("Name")->AsString,(TObject*)aq->FieldByName("ID")->AsInteger );
+				aq->Next();
+			}
+			aq->First();
+			CBcustom->ItemIndex = CBcustom->Items->IndexOfObject((TObject*)aq->FieldByName("ID")->AsInteger);
+		}
+		else
+		{
+			TfrmselectClient * frm = new TfrmselectClient(Application,fcon,edquery->Text,fstgid);
+			if (mrOk == frm->ShowModal())
+			{
+				ClientID = frm->GetSelectID();
+				CBcustom->ItemIndex = CBcustom->Items->IndexOfObject((TObject*)ClientID);
+				ClientView();
+			}
+			delete frm;
+		}
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::BtnAlignBottomClick(TObject *Sender)
+{
+	WindowState = wsMinimized ;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::FormKeyDown(TObject *Sender, WORD &Key, TShiftState Shift)
+
+{
+    if (Key == VK_F6 ) {    //导入
+		BtnExport->Click();
+	}
+	if (Key == VK_F7 ) {    //预览
+		BtnPrintPreview->Click();
+	}
+	if (Key == VK_F8 ) {    //打印
+		BtnPrint->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key == 70 ) {    //查询
+		BtnView->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key == 78 ) {    //最小化
+		BtnAlignBottom->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key == 81 ) {    //退出
+		BtnExit->Click();
+	}
+	if (Shift.Contains(ssCtrl)&& Key ==90) {   //恢复窗口
+		WindowState = wsNormal  ;
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::spselectClientClick(TObject *Sender)
+{
+	TfrmselectClient * frm = new TfrmselectClient(Application,fcon,"",fstgid);
+	if (mrOk == frm->ShowModal())
+	{
+		ClientID = frm->GetSelectID();
+		CBcustom->ItemIndex = CBcustom->Items->IndexOfObject((TObject*)ClientID);
+		ClientView();
+	}
+	delete frm;
+}
+//---------------------------------------------------------------------------
+void TAccDetail::ClientView()
+{
+	if (ClientID == -1) {
+		return;
+	}
+	AnsiString sql;
+	sql = "exec USP_BS_Client_View 0," + IntToStr(ClientID)  ;
+	aq->Close();
+	aq->SQL->Clear();
+	aq->SQL->Add(sql);
+	aq->Open();
+	edtclient->Text = aq->FieldByName("Name")->AsAnsiString ;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::DTPstartChange(TObject *Sender)
+{
+	CBstart->Checked = true;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::DTPendChange(TObject *Sender)
+{
+	CBend->Checked = true;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::DBGridbaseTitleClick(TColumn *Column)
+{
+	if (Querybase->IsEmpty() ) {
+    	return;
+	}
+	AnsiString qusort;
+	qusort =  Column->FieldName + " ASC";
+	if (Querybase->Sort == "") {
+		Querybase->Sort =  Column->FieldName + " ASC";
+	}
+	else if (Querybase->Sort == qusort) {
+		Querybase->Sort =  Column->FieldName + " DESC";
+	}
+	else
+	{
+		Querybase->Sort =  Column->FieldName + " ASC";
+	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TAccDetail::DBGriddetailTitleClick(TColumn *Column)
+{
+	if (Querydetail->IsEmpty() ) {
+    	return;
+	}
+	AnsiString qusort;
+	qusort =  Column->FieldName + " ASC";
+	if (Querydetail->Sort == "") {
+		Querydetail->Sort =  Column->FieldName + " ASC";
+	}
+	else if (Querydetail->Sort == qusort) {
+		Querydetail->Sort =  Column->FieldName + " DESC";
+	}
+	else
+	{
+		Querydetail->Sort =  Column->FieldName + " ASC";
+	}
+}
+//---------------------------------------------------------------------------
+

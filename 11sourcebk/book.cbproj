@@ -1,0 +1,1059 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{98a1b52a-33f3-4d44-8e32-9ef124921307}</ProjectGuid>
+			<MainSource>book.cpp</MainSource>
+			<Config Condition="'$(Config)'==''">Debug</Config>
+			<ProjectVersion>12.0</ProjectVersion>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<BCC_IncludePath>C:\Program Files\CodeGear\RAD Studio\6.0\otherControl\FastReport 4\LibD12;..\EhLib v4.4.39\RADStudio2009;$(BCC_IncludePath)</BCC_IncludePath>
+			<BCC_MonitorInlinePtrAccess>true</BCC_MonitorInlinePtrAccess>
+			<BCC_MonitorGlobalAndStackData>true</BCC_MonitorGlobalAndStackData>
+			<BCC_MonitorThis>true</BCC_MonitorThis>
+			<LinkPackageStatics>dbrtl.lib;adortl.lib;vcldb.lib;xmlrtl.lib;vclactnband.lib;rtl.lib;vcl.lib;vclx.lib;dsnap.lib;bdertl.lib;Rave76VCL.lib;inet.lib;websnap.lib;webdsnap.lib;inetdb.lib;dsnapcon.lib;dbexpress.lib;DbxClientDriver.lib;DbxCommonDriver.lib;ibxpress.lib;VclSmp.lib;TeeDB.lib;TeeUI.lib;Tee.lib;IndySystem.lib;IndyProtocols.lib;IndyCore.lib;RaizeComponentsVcl.lib;RaizeComponentsVclDb.lib;frx12.lib;fs12.lib;fqb120.lib;frxDB12.lib;fsDB12.lib;EhLib120.lib</LinkPackageStatics>
+			<OutputExt>exe</OutputExt>
+			<DCC_CBuilderOutput>JPHNE</DCC_CBuilderOutput>
+			<ILINK_FullDebugInfo>true</ILINK_FullDebugInfo>
+			<BCC_InlineFunctionExpansion>false</BCC_InlineFunctionExpansion>
+			<BCC_UseRegisterVariables>None</BCC_UseRegisterVariables>
+			<ILINK_AppType>Windows</ILINK_AppType>
+			<BCC_GenerateWindowsApp>true</BCC_GenerateWindowsApp>
+			<BCC_DebugLineNumbers>true</BCC_DebugLineNumbers>
+			<ILINK_ObjectSearchPath>..\source;customer</ILINK_ObjectSearchPath>
+			<BCC_ZeroLengthEmptyMemberFuncs>true</BCC_ZeroLengthEmptyMemberFuncs>
+			<PackageImports>rtl.bpi;vcl.bpi;vclx.bpi;dbrtl.bpi;bdertl.bpi;Rave76VCL.bpi;RaizeComponentsVcl.bpi;RaizeComponentsVclDb.bpi</PackageImports>
+			<BCC_GenerateMultithreaded>true</BCC_GenerateMultithreaded>
+			<BCC_StackFrames>true</BCC_StackFrames>
+			<PackageLibs>dbrtl.lib;adortl.lib;vcldb.lib;xmlrtl.lib;vclactnband.lib</PackageLibs>
+			<BCC_PCHCache>true</BCC_PCHCache>
+			<IncludePath>bsadmin\BIOrderManage;xietong;wholesalebsset;Intelligence;ordermanage;userpurview;supplier;dbmanage;membermanager;localmanage;financial;bsquery;saleanalysis;bsadmin;storage;common;..\source;$(BDS)\include;$(BDS)\include\vcl;$(BDS)\include\dinkumware;C:\Program Files\CodeGear\RAD Studio\6.0\ehlib42;C:\Program Files\CodeGear\RAD Studio\6.0\RaveReports\Lib;C:\Program Files\Raize\RC5\Lib;D:\Program Files\CodeGear\RAD Studio\6.0\Ehlib;D:\Program Files\CodeGear\RAD Studio\6.0\ehlib42;D:\Program Files\CodeGear\RAD Studio\6.0\LibD12;D:\Program Files\FastReports\FastReport 4\LibD12;C:\Program Files\CodeGear\RAD Studio\6.0\otherControl\FastReport 4\LibD12;$(IncludePath)</IncludePath>
+			<BCC_IntegerSizedEnums>false</BCC_IntegerSizedEnums>
+			<AllPackageLibs>rtl.lib;vcl.lib;vclx.lib;dbrtl.lib;adortl.lib;vcldb.lib;xmlrtl.lib;vclactnband.lib;dsnap.lib;bdertl.lib;Rave76VCL.lib;inet.lib;websnap.lib;webdsnap.lib;inetdb.lib;dsnapcon.lib;dbexpress.lib;DbxClientDriver.lib;DbxCommonDriver.lib;ibxpress.lib;VclSmp.lib;TeeDB.lib;TeeUI.lib;Tee.lib;IndySystem.lib;IndyProtocols.lib;IndyCore.lib;RaizeComponentsVcl.lib;RaizeComponentsVclDb.lib;frx12.lib;fs12.lib;fqb120.lib;frxDB12.lib;fsDB12.lib;EhLib120.lib</AllPackageLibs>
+			<BCC_InternalDefines>NO_STRICT</BCC_InternalDefines>
+			<BCC_ZeroLengthEmptyBaseClass>true</BCC_ZeroLengthEmptyBaseClass>
+			<ILINK_LibraryPath>bsadmin\BIOrderManage;xietong;$(BDS)\Ehib\Ehib;wholesalebsset;Intelligence;ordermanage;userpurview;supplier;dbmanage;membermanager;localmanage;financial;bsquery;saleanalysis;bsadmin;storage;Release;common;Debug;..\source;$(BDS)\lib\obj;$(BDS)\lib\psdk;F:\software\BCB2007\EhLib.v4.4.54.Full.Source\RADStudio2009;C:\Program Files\CodeGear\RAD Studio\6.0\Quickrep504C;C:\Program Files\CodeGear\RAD Studio\6.0\RaveReports\Lib;C:\Program Files\Raize\RC5\Lib;D:\Program Files\CodeGear\RAD Studio\6.0\Ehlib;D:\Program Files\CodeGear\RAD Studio\6.0\ehlib42;D:\Program Files\CodeGear\RAD Studio\6.0\LibD12;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<BCC_SourceDebuggingOn>true</BCC_SourceDebuggingOn>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<DCC_Optimize>false</DCC_Optimize>
+			<DCC_DebugInfoInExe>true</DCC_DebugInfoInExe>
+			<ILINK_DisableIncrementalLinking>true</ILINK_DisableIncrementalLinking>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<IntermediateOutputDir>Debug\</IntermediateOutputDir>
+			<TASM_DisplaySourceLines>true</TASM_DisplaySourceLines>
+			<ILINK_LibraryPath>$(BDS)\lib\debug;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<BCC_Defines>_DEBUG;$(BCC_Defines)</BCC_Defines>
+			<TASM_Debugging>Full</TASM_Debugging>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<BCC_OptimizeForSpeed>true</BCC_OptimizeForSpeed>
+			<BCC_InlineFunctionExpansion>true</BCC_InlineFunctionExpansion>
+			<BCC_UseRegisterVariables>Always</BCC_UseRegisterVariables>
+			<DCC_DebugInformation>false</DCC_DebugInformation>
+			<IntermediateOutputDir>Release</IntermediateOutputDir>
+			<BCC_StackFrames>false</BCC_StackFrames>
+			<ILINK_LibraryPath>$(BDS)\lib\release;$(ILINK_LibraryPath)</ILINK_LibraryPath>
+			<BCC_Defines>NDEBUG;$(BCC_Defines)</BCC_Defines>
+			<TASM_Debugging>None</TASM_Debugging>
+		</PropertyGroup>
+		<ProjectExtensions>
+			<Borland.Personality>CPlusPlusBuilder.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<CPlusPlusBuilder.Personality>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">2</VersionInfo>
+						<VersionInfo Name="MinorVer">0</VersionInfo>
+						<VersionInfo Name="Release">1</VersionInfo>
+						<VersionInfo Name="Build">0</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">2052</VersionInfo>
+						<VersionInfo Name="CodePage">936</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName">成都培德科技有限公司</VersionInfoKeys>
+						<VersionInfoKeys Name="FileDescription"/>
+						<VersionInfoKeys Name="FileVersion">2.0.1.0</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright">Copyright 2009-2015  Pddata Ltd</VersionInfoKeys>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename"/>
+						<VersionInfoKeys Name="ProductName">先行者书业智管平台</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments"/>
+					</VersionInfoKeys>
+					<Debugging>
+						<Debugging Name="DebugSourceDirs"/>
+					</Debugging>
+					<Parameters>
+						<Parameters Name="RunParams"/>
+						<Parameters Name="Launcher"/>
+						<Parameters Name="UseLauncher">False</Parameters>
+						<Parameters Name="DebugCWD">D:\work\source\Debug</Parameters>
+						<Parameters Name="HostApplication">D:\work\source\Debug\book.exe</Parameters>
+						<Parameters Name="RemoteHost"/>
+						<Parameters Name="RemotePath"/>
+						<Parameters Name="RemoteParams"/>
+						<Parameters Name="RemoteLauncher"/>
+						<Parameters Name="UseRemoteLauncher">False</Parameters>
+						<Parameters Name="RemoteCWD"/>
+						<Parameters Name="RemoteDebug">False</Parameters>
+						<Parameters Name="Debug Symbols Search Path"/>
+						<Parameters Name="LoadAllSymbols">True</Parameters>
+						<Parameters Name="LoadUnspecifiedSymbols">False</Parameters>
+					</Parameters>
+					<Compiler>
+						<Compiler Name="ShowInfoMsgs">False</Compiler>
+						<Compiler Name="LinkDebugVcl">False</Compiler>
+					</Compiler>
+					<Linker>
+						<Linker Name="LibPrefix"/>
+						<Linker Name="LibSuffix"/>
+						<Linker Name="LibVersion"/>
+					</Linker>
+					<Source>
+						<Source Name="MainSource">book.cpp</Source>
+					</Source>
+					<ProjectProperties>
+						<ProjectProperties Name="AutoShowDeps">False</ProjectProperties>
+						<ProjectProperties Name="ManagePaths">True</ProjectProperties>
+						<ProjectProperties Name="VerifyPackages">True</ProjectProperties>
+					</ProjectProperties>
+					<HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Count">2</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item0">$(BDS)\include;$(BDS)\include\vcl;$(BDS)\include\dinkumware;..\source;customer</HistoryLists_hlIncludePath>
+						<HistoryLists_hlIncludePath Name="Item1">$(BDS)\include;$(BDS)\include\vcl;$(BDS)\include\dinkumware;..\source</HistoryLists_hlIncludePath>
+					</HistoryLists_hlIncludePath>
+					<HistoryLists_hlILINK_LibraryPath>
+						<HistoryLists_hlILINK_LibraryPath Name="Count">1</HistoryLists_hlILINK_LibraryPath>
+						<HistoryLists_hlILINK_LibraryPath Name="Item0">$(BDS)\lib\debug;$(BDS)\lib\obj;$(BDS)\lib;..\source;customer</HistoryLists_hlILINK_LibraryPath>
+					</HistoryLists_hlILINK_LibraryPath>
+					<HistoryLists_hlIntermediateOutputDir>
+						<HistoryLists_hlIntermediateOutputDir Name="Count">1</HistoryLists_hlIntermediateOutputDir>
+						<HistoryLists_hlIntermediateOutputDir Name="Item0">Debug</HistoryLists_hlIntermediateOutputDir>
+					</HistoryLists_hlIntermediateOutputDir>
+					<HistoryLists_hlILINK_MaxErrors>
+						<HistoryLists_hlILINK_MaxErrors Name="Count">1</HistoryLists_hlILINK_MaxErrors>
+						<HistoryLists_hlILINK_MaxErrors Name="Item0">0</HistoryLists_hlILINK_MaxErrors>
+					</HistoryLists_hlILINK_MaxErrors>
+					<HistoryLists_hlILINK_FileAlignment>
+						<HistoryLists_hlILINK_FileAlignment Name="Count">1</HistoryLists_hlILINK_FileAlignment>
+						<HistoryLists_hlILINK_FileAlignment Name="Item0">0x200</HistoryLists_hlILINK_FileAlignment>
+					</HistoryLists_hlILINK_FileAlignment>
+					<HistoryLists_hlILINK_ObjectAlignment>
+						<HistoryLists_hlILINK_ObjectAlignment Name="Count">1</HistoryLists_hlILINK_ObjectAlignment>
+						<HistoryLists_hlILINK_ObjectAlignment Name="Item0">4096</HistoryLists_hlILINK_ObjectAlignment>
+					</HistoryLists_hlILINK_ObjectAlignment>
+					<HistoryLists_hlBCC_Defines>
+						<HistoryLists_hlBCC_Defines Name="Count">1</HistoryLists_hlBCC_Defines>
+						<HistoryLists_hlBCC_Defines Name="Item0">_DEBUG</HistoryLists_hlBCC_Defines>
+					</HistoryLists_hlBCC_Defines>
+					<HistoryLists_hlBCC_MaxIdentifierLength>
+						<HistoryLists_hlBCC_MaxIdentifierLength Name="Count">1</HistoryLists_hlBCC_MaxIdentifierLength>
+						<HistoryLists_hlBCC_MaxIdentifierLength Name="Item0">250</HistoryLists_hlBCC_MaxIdentifierLength>
+					</HistoryLists_hlBCC_MaxIdentifierLength>
+					<HistoryLists_hlILINK_BaseAddress>
+						<HistoryLists_hlILINK_BaseAddress Name="Count">1</HistoryLists_hlILINK_BaseAddress>
+						<HistoryLists_hlILINK_BaseAddress Name="Item0">0x00400000</HistoryLists_hlILINK_BaseAddress>
+					</HistoryLists_hlILINK_BaseAddress>
+					<HistoryLists_hlILINK_HeapCommitSize>
+						<HistoryLists_hlILINK_HeapCommitSize Name="Count">1</HistoryLists_hlILINK_HeapCommitSize>
+						<HistoryLists_hlILINK_HeapCommitSize Name="Item0">0x00001000</HistoryLists_hlILINK_HeapCommitSize>
+					</HistoryLists_hlILINK_HeapCommitSize>
+					<HistoryLists_hlILINK_HeapReserveSize>
+						<HistoryLists_hlILINK_HeapReserveSize Name="Count">1</HistoryLists_hlILINK_HeapReserveSize>
+						<HistoryLists_hlILINK_HeapReserveSize Name="Item0">0x00100000</HistoryLists_hlILINK_HeapReserveSize>
+					</HistoryLists_hlILINK_HeapReserveSize>
+					<HistoryLists_hlILINK_StackCommitSize>
+						<HistoryLists_hlILINK_StackCommitSize Name="Count">1</HistoryLists_hlILINK_StackCommitSize>
+						<HistoryLists_hlILINK_StackCommitSize Name="Item0">0x00002000</HistoryLists_hlILINK_StackCommitSize>
+					</HistoryLists_hlILINK_StackCommitSize>
+					<HistoryLists_hlILINK_StackReserveSize>
+						<HistoryLists_hlILINK_StackReserveSize Name="Count">1</HistoryLists_hlILINK_StackReserveSize>
+						<HistoryLists_hlILINK_StackReserveSize Name="Item0">0x00100000</HistoryLists_hlILINK_StackReserveSize>
+					</HistoryLists_hlILINK_StackReserveSize>
+					<HistoryLists_hlDCC_Define>
+						<HistoryLists_hlDCC_Define Name="Count">1</HistoryLists_hlDCC_Define>
+						<HistoryLists_hlDCC_Define Name="Item0">DEBUG</HistoryLists_hlDCC_Define>
+					</HistoryLists_hlDCC_Define>
+					<HistoryLists_hlDCC_CodePage>
+						<HistoryLists_hlDCC_CodePage Name="Count">1</HistoryLists_hlDCC_CodePage>
+						<HistoryLists_hlDCC_CodePage Name="Item0">0</HistoryLists_hlDCC_CodePage>
+					</HistoryLists_hlDCC_CodePage>
+					<HistoryLists_hlTASM_HashTableCapacity>
+						<HistoryLists_hlTASM_HashTableCapacity Name="Count">1</HistoryLists_hlTASM_HashTableCapacity>
+						<HistoryLists_hlTASM_HashTableCapacity Name="Item0">8192</HistoryLists_hlTASM_HashTableCapacity>
+					</HistoryLists_hlTASM_HashTableCapacity>
+					<HistoryLists_hlTASM_MaxSymbolLength>
+						<HistoryLists_hlTASM_MaxSymbolLength Name="Count">1</HistoryLists_hlTASM_MaxSymbolLength>
+						<HistoryLists_hlTASM_MaxSymbolLength Name="Item0">12</HistoryLists_hlTASM_MaxSymbolLength>
+					</HistoryLists_hlTASM_MaxSymbolLength>
+					<HistoryLists_hlTASM_Passes>
+						<HistoryLists_hlTASM_Passes Name="Count">1</HistoryLists_hlTASM_Passes>
+						<HistoryLists_hlTASM_Passes Name="Item0">1</HistoryLists_hlTASM_Passes>
+					</HistoryLists_hlTASM_Passes>
+					<HistoryLists_hlTASM_VersionId>
+						<HistoryLists_hlTASM_VersionId Name="Count">1</HistoryLists_hlTASM_VersionId>
+						<HistoryLists_hlTASM_VersionId Name="Item0">0</HistoryLists_hlTASM_VersionId>
+					</HistoryLists_hlTASM_VersionId>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcboffice2k120.bpl">CodeGear C++Builder Office 2000 Servers Package</Excluded_Packages>
+						<Excluded_Packages Name="$(BDS)\bin\bcbofficexp120.bpl">CodeGear C++Builder Office XP Servers Package</Excluded_Packages>
+					</Excluded_Packages>
+				</CPlusPlusBuilder.Personality>
+				<ModelSupport>False</ModelSupport>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+		<ItemGroup>
+			<CppCompile Include="UnitLog.cpp">
+				<Form>frmLog</Form>
+				<DependentOn>UnitLog.h</DependentOn>
+				<BuildOrder>100</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MAIN.cpp">
+				<Form>frmMain</Form>
+				<DependentOn>MAIN.h</DependentOn>
+				<BuildOrder>99</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\selectdiaobook.cpp">
+				<Form>frmfinddiaobook</Form>
+				<DependentOn>storage\selectdiaobook.h</DependentOn>
+				<BuildOrder>91</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="UnitFormView.cpp">
+				<Form>frmformview</Form>
+				<DependentOn>UnitFormView.h</DependentOn>
+				<BuildOrder>65</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="global.cpp">
+				<DependentOn>global.h</DependentOn>
+				<BuildOrder>20</BuildOrder>
+			</CppCompile>
+			<None Include="PublicClass.h">
+				<BuildOrder>25</BuildOrder>
+			</None>
+			<CppCompile Include="MemberCardchange.cpp">
+				<Form>frmMemberCardChange</Form>
+				<DependentOn>MemberCardchange.h</DependentOn>
+				<BuildOrder>75</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitclientbijiao.cpp">
+				<Form>frmbijiao</Form>
+				<DependentOn>Unitclientbijiao.h</DependentOn>
+				<BuildOrder>100</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\stockcheckprint.cpp">
+				<Form>frmstoragecheck</Form>
+				<DependentOn>storage\stockcheckprint.h</DependentOn>
+				<BuildOrder>42</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\Unitbalance.cpp">
+				<Form>frmbalance</Form>
+				<DependentOn>financial\Unitbalance.h</DependentOn>
+				<BuildOrder>45</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Syspwdchange.cpp">
+				<Form>frmsyspwdchange</Form>
+				<DependentOn>Syspwdchange.h</DependentOn>
+				<BuildOrder>89</BuildOrder>
+			</CppCompile>
+			<ObjFiles Include="Debug\jpeg.obj">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>98</BuildOrder>
+			</ObjFiles>
+			<CppCompile Include="supplier\Staffmanage.cpp">
+				<Form>frmStaff</Form>
+				<DependentOn>supplier\Staffmanage.h</DependentOn>
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="stockalarmbsset.cpp">
+				<Form>frmstockalarmbsset</Form>
+				<DependentOn>stockalarmbsset.h</DependentOn>
+				<BuildOrder>77</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="Debug\bsquery.lib">
+				<BuildOrder>6</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="financial\Unitwanglai.cpp">
+				<Form>frmwanglaizhang</Form>
+				<DependentOn>financial\Unitwanglai.h</DependentOn>
+				<BuildOrder>92</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="userpurview\UnitGroup.cpp">
+				<Form>frmgroup</Form>
+				<DependentOn>userpurview\UnitGroup.h</DependentOn>
+				<BuildOrder>63</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Moneydiscount.cpp">
+				<Form>frmMonerydiscount</Form>
+				<DependentOn>Moneydiscount.h</DependentOn>
+				<BuildOrder>87</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storagebsset.cpp">
+				<Form>frmstoragebsset</Form>
+				<DependentOn>storagebsset.h</DependentOn>
+				<BuildOrder>80</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\NoteCode.cpp">
+				<DependentOn>common\NoteCode.h</DependentOn>
+				<BuildOrder>20</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="localmanage\AreaSet.cpp">
+				<Form>MemberAreaSet</Form>
+				<DependentOn>localmanage\AreaSet.h</DependentOn>
+				<BuildOrder>47</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitabout.cpp">
+				<Form>frmAboutsoftware</Form>
+				<DependentOn>Unitabout.h</DependentOn>
+				<BuildOrder>101</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="membermanager\RecordQuery.cpp">
+				<Form>FormRecordQuery</Form>
+				<DependentOn>membermanager\RecordQuery.h</DependentOn>
+				<BuildOrder>52</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\StockCheck.cpp">
+				<Form>frmcheckstock</Form>
+				<DependentOn>storage\StockCheck.h</DependentOn>
+				<BuildOrder>19</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="supplier\Staffdetail.cpp">
+				<Form>frmStaffdetail</Form>
+				<DependentOn>supplier\Staffdetail.h</DependentOn>
+				<BuildOrder>59</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="procureset.cpp">
+				<Form>frmprocureset</Form>
+				<DependentOn>procureset.h</DependentOn>
+				<BuildOrder>79</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="Debug\dataanalysis.lib">
+				<BuildOrder>9</BuildOrder>
+			</LibFiles>
+			<ResFiles Include="book.res">
+				<BuildOrder>1</BuildOrder>
+			</ResFiles>
+			<CppCompile Include="systemset.cpp">
+				<Form>frmsystemset</Form>
+				<DependentOn>systemset.h</DependentOn>
+				<BuildOrder>78</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="diaoboset.cpp">
+				<Form>frmdiaoboset</Form>
+				<DependentOn>diaoboset.h</DependentOn>
+				<BuildOrder>96</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="supplier\UnitClient.cpp">
+				<Form>frmclient</Form>
+				<DependentOn>supplier\UnitClient.h</DependentOn>
+				<BuildOrder>69</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="userpurview\UnitNewGroup.cpp">
+				<Form>frmnewgroup</Form>
+				<DependentOn>userpurview\UnitNewGroup.h</DependentOn>
+				<BuildOrder>67</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\Unitcheckquery.cpp">
+				<Form>frmcheck</Form>
+				<DependentOn>storage\Unitcheckquery.h</DependentOn>
+				<BuildOrder>82</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsset.cpp">
+				<Form>frmbsset</Form>
+				<DependentOn>bsset.h</DependentOn>
+				<BuildOrder>17</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="PublicClass.cpp">
+				<BuildOrder>24</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="userpurview\Unituser.cpp">
+				<Form>frmuser</Form>
+				<DependentOn>userpurview\Unituser.h</DependentOn>
+				<BuildOrder>64</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitbaobiao.cpp">
+				<Form>frmBaobiao</Form>
+				<DependentOn>Unitbaobiao.h</DependentOn>
+				<BuildOrder>107</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitchangeaddvalue.cpp">
+				<Form>frmchangeaddvalue</Form>
+				<DependentOn>Unitchangeaddvalue.h</DependentOn>
+				<BuildOrder>126</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsadmin\hoistoryview.cpp">
+				<Form>frmhistoryview</Form>
+				<DependentOn>bsadmin\hoistoryview.h</DependentOn>
+				<BuildOrder>130</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="userpurview\UnitStorToStor.cpp">
+				<Form>frmStorToStor</Form>
+				<DependentOn>userpurview\UnitStorToStor.h</DependentOn>
+				<BuildOrder>122</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsadmin\Unitpsquery.cpp">
+				<Form>frmpsquery</Form>
+				<DependentOn>bsadmin\Unitpsquery.h</DependentOn>
+				<BuildOrder>133</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitsiglebook.cpp">
+				<Form>frmsiglebook</Form>
+				<DependentOn>Unitsiglebook.h</DependentOn>
+				<BuildOrder>135</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="AES.cpp">
+				<DependentOn>AES.h</DependentOn>
+				<BuildOrder>108</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\QryNoteCodeForm.cpp">
+				<Form>frmQryNoteCode</Form>
+				<DependentOn>common\QryNoteCodeForm.h</DependentOn>
+				<BuildOrder>125</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsadmin\retailbookup.cpp">
+				<Form>frmretailbookup</Form>
+				<DependentOn>bsadmin\retailbookup.h</DependentOn>
+				<BuildOrder>128</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unittongqisale.cpp">
+				<Form>frmtongqisale</Form>
+				<DependentOn>Unittongqisale.h</DependentOn>
+				<BuildOrder>120</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="UnitSupplierMerge.cpp">
+				<Form>frmSupplierMerge</Form>
+				<DependentOn>UnitSupplierMerge.h</DependentOn>
+				<BuildOrder>142</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="UnitCbprice.cpp">
+				<Form>frmCbprice</Form>
+				<DependentOn>UnitCbprice.h</DependentOn>
+				<BuildOrder>141</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitkuchengjizhuan.cpp">
+				<Form>frmkuchenjizhuan</Form>
+				<DependentOn>Unitkuchengjizhuan.h</DependentOn>
+				<BuildOrder>145</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitbslock.cpp">
+				<Form>frmbslock</Form>
+				<DependentOn>Unitbslock.h</DependentOn>
+				<BuildOrder>143</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="clientadddot.cpp">
+				<Form>frmclientadddot</Form>
+				<DependentOn>clientadddot.h</DependentOn>
+				<BuildOrder>140</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsadmin\SelectCatalogForm.cpp">
+				<Form>frmSelectCatalog</Form>
+				<DependentOn>bsadmin\SelectCatalogForm.h</DependentOn>
+				<BuildOrder>131</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitjifendh.cpp">
+				<Form>frmjifendh</Form>
+				<DependentOn>Unitjifendh.h</DependentOn>
+				<BuildOrder>137</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\Unittishi.cpp">
+				<Form>frmtishi</Form>
+				<DependentOn>financial\Unittishi.h</DependentOn>
+				<BuildOrder>138</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="unitcfpandian.cpp">
+				<Form>frmcfpandian</Form>
+				<DependentOn>unitcfpandian.h</DependentOn>
+				<BuildOrder>137</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitjxcbijiao.cpp">
+				<Form>frmjxcbijiao</Form>
+				<DependentOn>Unitjxcbijiao.h</DependentOn>
+				<BuildOrder>103</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="userpurview\UnitpurviewManage.cpp">
+				<Form>frmpurview</Form>
+				<DependentOn>userpurview\UnitpurviewManage.h</DependentOn>
+				<BuildOrder>104</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="supplier\detailemessage.cpp">
+				<Form>DetaileForm</Form>
+				<DependentOn>supplier\detailemessage.h</DependentOn>
+				<BuildOrder>86</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\Unitautojie.cpp">
+				<Form>frmautojieshuan</Form>
+				<DependentOn>financial\Unitautojie.h</DependentOn>
+				<BuildOrder>59</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitdaohuorate.cpp">
+				<Form>frmdaohuorate</Form>
+				<DependentOn>Unitdaohuorate.h</DependentOn>
+				<BuildOrder>115</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Dog.cpp">
+				<DependentOn>Dog.h</DependentOn>
+				<BuildOrder>108</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="membermanager\MemberClassSet.cpp">
+				<Form>frmmemclassmg</Form>
+				<DependentOn>membermanager\MemberClassSet.h</DependentOn>
+				<BuildOrder>84</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\Unitweijieselect.cpp">
+				<Form>frmselectjiedan</Form>
+				<DependentOn>financial\Unitweijieselect.h</DependentOn>
+				<BuildOrder>58</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="userpurview\Unitfinduser.cpp">
+				<Form>frmfinduser</Form>
+				<DependentOn>userpurview\Unitfinduser.h</DependentOn>
+				<BuildOrder>68</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsadmin\UnitSelectClient.cpp">
+				<Form>frmselectClient</Form>
+				<DependentOn>bsadmin\UnitSelectClient.h</DependentOn>
+				<BuildOrder>117</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitboolslect.cpp">
+				<Form>frmselectbook</Form>
+				<DependentOn>Unitboolslect.h</DependentOn>
+				<BuildOrder>119</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="dbmanage\ResStore.cpp">
+				<Form>ResDatabase</Form>
+				<DependentOn>dbmanage\ResStore.h</DependentOn>
+				<BuildOrder>55</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="supplier\clientquery.cpp">
+				<Form>frmclientquery</Form>
+				<DependentOn>supplier\clientquery.h</DependentOn>
+				<BuildOrder>112</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="salebsset.cpp">
+				<Form>frmsalebsset</Form>
+				<DependentOn>salebsset.h</DependentOn>
+				<BuildOrder>93</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitrate.cpp">
+				<Form>frmrate</Form>
+				<DependentOn>Unitrate.h</DependentOn>
+				<BuildOrder>116</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="orderbsset.cpp">
+				<Form>frmorderbsset</Form>
+				<DependentOn>orderbsset.h</DependentOn>
+				<BuildOrder>127</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="membermanager\MemberCardaddvalue.cpp">
+				<Form>frmaddvalue</Form>
+				<DependentOn>membermanager\MemberCardaddvalue.h</DependentOn>
+				<BuildOrder>50</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="UnitMyWork.cpp">
+				<Form>frmMyWork</Form>
+				<DependentOn>UnitMyWork.h</DependentOn>
+				<BuildOrder>99</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="book.cpp">
+				<BuildOrder>2</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xietong\UnitTaskdetail.cpp">
+				<Form>frmnewtask</Form>
+				<DependentOn>xietong\UnitTaskdetail.h</DependentOn>
+				<BuildOrder>111</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\pdutil.cpp">
+				<DependentOn>common\pdutil.h</DependentOn>
+				<BuildOrder>26</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\Unitweishenhe.cpp">
+				<Form>frmweishenhe</Form>
+				<DependentOn>financial\Unitweishenhe.h</DependentOn>
+				<BuildOrder>46</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\accountdetail.cpp">
+				<Form>AccDetail</Form>
+				<DependentOn>financial\accountdetail.h</DependentOn>
+				<BuildOrder>55</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\Print.cpp">
+				<Form>frmPrint</Form>
+				<DependentOn>common\Print.h</DependentOn>
+				<BuildOrder>95</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\NotCheckBook.cpp">
+				<Form>frmNotCheckBook</Form>
+				<DependentOn>storage\NotCheckBook.h</DependentOn>
+				<BuildOrder>29</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="Debug\financeadmin.lib">
+				<BuildOrder>10</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="membermanager\MemberImport.cpp">
+				<Form>FormMemImport</Form>
+				<DependentOn>membermanager\MemberImport.h</DependentOn>
+				<BuildOrder>62</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="retailbsset.cpp">
+				<Form>frmretailbsset</Form>
+				<DependentOn>retailbsset.h</DependentOn>
+				<BuildOrder>88</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="unitprinttitle.cpp">
+				<Form>frmprinttitle</Form>
+				<DependentOn>unitprinttitle.h</DependentOn>
+				<BuildOrder>132</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\accountquery.cpp">
+				<Form>AccQuery</Form>
+				<DependentOn>financial\accountquery.h</DependentOn>
+				<BuildOrder>56</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MemberJifenMng.cpp">
+				<Form>frmMemberjifen</Form>
+				<DependentOn>MemberJifenMng.h</DependentOn>
+				<BuildOrder>73</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\ModalDialog.cpp">
+				<Form>frmModalDialog</Form>
+				<DependentOn>common\ModalDialog.h</DependentOn>
+				<BuildOrder>22</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="dbmanage\backdatabase.cpp">
+				<Form>BakDatabase</Form>
+				<DependentOn>dbmanage\backdatabase.h</DependentOn>
+				<BuildOrder>53</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="supplier\CoustomerImport.cpp">
+				<Form>FormCousImport</Form>
+				<DependentOn>supplier\CoustomerImport.h</DependentOn>
+				<BuildOrder>61</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="Debug\sysadmin.lib">
+				<BuildOrder>13</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="common\PwdForm.cpp">
+				<Form>frmPwd</Form>
+				<DependentOn>common\PwdForm.h</DependentOn>
+				<BuildOrder>83</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="Debug\useradmin.lib">
+				<BuildOrder>14</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="wholesalebsset\UnitWSSet.cpp">
+				<Form>frmwsset</Form>
+				<DependentOn>wholesalebsset\UnitWSSet.h</DependentOn>
+				<BuildOrder>83</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\Stockalarm.cpp">
+				<Form>frmalarm</Form>
+				<DependentOn>storage\Stockalarm.h</DependentOn>
+				<BuildOrder>28</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="MemberCardUnuse.cpp">
+				<Form>frmMemberCardUnuse</Form>
+				<DependentOn>MemberCardUnuse.h</DependentOn>
+				<BuildOrder>76</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="about.cpp">
+				<Form>frmabout</Form>
+				<DependentOn>about.h</DependentOn>
+				<BuildOrder>59</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="ClientBackdot.cpp">
+				<Form>frmClientBackdot</Form>
+				<DependentOn>ClientBackdot.h</DependentOn>
+				<BuildOrder>74</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="supplier\suppmanage.cpp">
+				<Form>SuppMana</Form>
+				<DependentOn>supplier\suppmanage.h</DependentOn>
+				<BuildOrder>85</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="LandForm.cpp">
+				<Form>frmLand</Form>
+				<DependentOn>LandForm.h</DependentOn>
+				<BuildOrder>3</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="saleanalysis\Wsale.cpp">
+				<Form>frmWsale</Form>
+				<DependentOn>saleanalysis\Wsale.h</DependentOn>
+				<BuildOrder>38</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="living1st.lib">
+				<IgnorePath>true</IgnorePath>
+				<BuildOrder>106</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="Intelligence\UnitSelectCondition.cpp">
+				<Form>frmselectcondition</Form>
+				<DependentOn>Intelligence\UnitSelectCondition.h</DependentOn>
+				<BuildOrder>70</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unit1orderyuji.cpp">
+				<Form>frmorderyuji</Form>
+				<DependentOn>Unit1orderyuji.h</DependentOn>
+				<BuildOrder>114</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="membermanager\CustomertypeSet.cpp">
+				<Form>frmcustomertype</Form>
+				<DependentOn>membermanager\CustomertypeSet.h</DependentOn>
+				<BuildOrder>51</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\MDIChild.cpp">
+				<Form>frmMDIChild</Form>
+				<DependentOn>common\MDIChild.h</DependentOn>
+				<BuildOrder>16</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitshengji.cpp">
+				<Form>frmshengji</Form>
+				<DependentOn>Unitshengji.h</DependentOn>
+				<BuildOrder>102</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\Addsyslog.cpp">
+				<DependentOn>common\Addsyslog.h</DependentOn>
+				<BuildOrder>97</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsquery\StockInQuery.cpp">
+				<Form>frmStockInQuery</Form>
+				<DependentOn>bsquery\StockInQuery.h</DependentOn>
+				<BuildOrder>35</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\QryNoteCodeForm1.cpp">
+				<Form>frmQryNoteCode1</Form>
+				<DependentOn>common\QryNoteCodeForm1.h</DependentOn>
+				<BuildOrder>66</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsadmin\unitpsinorder.cpp">
+				<Form>frmpsinorder</Form>
+				<DependentOn>bsadmin\unitpsinorder.h</DependentOn>
+				<BuildOrder>134</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="userpurview\AddUser.cpp">
+				<Form>frmAddUser</Form>
+				<DependentOn>userpurview\AddUser.h</DependentOn>
+				<BuildOrder>68</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\StockalarmSet.cpp">
+				<Form>frmalarmSet</Form>
+				<DependentOn>storage\StockalarmSet.h</DependentOn>
+				<BuildOrder>30</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="checkselbook.cpp">
+				<Form>frmcatalogselect</Form>
+				<DependentOn>checkselbook.h</DependentOn>
+				<BuildOrder>23</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="Debug\catalogadmin.lib">
+				<BuildOrder>7</BuildOrder>
+			</LibFiles>
+			<LibFiles Include="Debug\storageadmin.lib">
+				<BuildOrder>12</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="saleanalysis\Stockanalysis.cpp">
+				<Form>frmstockanalysis</Form>
+				<DependentOn>saleanalysis\Stockanalysis.h</DependentOn>
+				<BuildOrder>36</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="saleanalysis\saleanalysis.cpp">
+				<Form>frmsaleanalysis</Form>
+				<DependentOn>saleanalysis\saleanalysis.h</DependentOn>
+				<BuildOrder>33</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\accoutnsdue.cpp">
+				<Form>AccountDoe</Form>
+				<DependentOn>financial\accoutnsdue.h</DependentOn>
+				<BuildOrder>57</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\Unitestartsupclient.cpp">
+				<Form>frmsupplierandclient</Form>
+				<DependentOn>financial\Unitestartsupclient.h</DependentOn>
+				<BuildOrder>44</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unittongqiruku.cpp">
+				<Form>frmtongqiruku</Form>
+				<DependentOn>Unittongqiruku.h</DependentOn>
+				<BuildOrder>117</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="Debug\customer.lib">
+				<BuildOrder>8</BuildOrder>
+			</LibFiles>
+			<LibFiles Include="Debug\marketadmin.lib">
+				<BuildOrder>11</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="membermanager\MemberForm.cpp">
+				<Form>frmMember</Form>
+				<DependentOn>membermanager\MemberForm.h</DependentOn>
+				<BuildOrder>48</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="membermanager\MemberCard.cpp">
+				<Form>frmMemberCard</Form>
+				<DependentOn>membermanager\MemberCard.h</DependentOn>
+				<BuildOrder>49</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="membermanager\MemberResult.cpp">
+				<Form>frmMemberResult</Form>
+				<DependentOn>membermanager\MemberResult.h</DependentOn>
+				<BuildOrder>60</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xietong\UnitreceiverSelect.cpp">
+				<Form>frmuserselect</Form>
+				<DependentOn>xietong\UnitreceiverSelect.h</DependentOn>
+				<BuildOrder>110</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="userpurview\SpecialPasswordForm.cpp">
+				<Form>frmSpecialPassword</Form>
+				<DependentOn>userpurview\SpecialPasswordForm.h</DependentOn>
+				<BuildOrder>69</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\storagelocal.cpp">
+				<Form>frmstorelocal</Form>
+				<DependentOn>storage\storagelocal.h</DependentOn>
+				<BuildOrder>18</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unit1caigouyuji.cpp">
+				<Form>frmcaigouyuji</Form>
+				<DependentOn>Unit1caigouyuji.h</DependentOn>
+				<BuildOrder>113</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsadmin\bookQuery.cpp">
+				<Form>frmbookquery</Form>
+				<DependentOn>bsadmin\bookQuery.h</DependentOn>
+				<BuildOrder>121</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="saleanalysis\saletime.cpp">
+				<Form>frmsaletime</Form>
+				<DependentOn>saleanalysis\saletime.h</DependentOn>
+				<BuildOrder>39</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bookprint.cpp">
+				<Form>frmbookprint</Form>
+				<DependentOn>bookprint.h</DependentOn>
+				<BuildOrder>136</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="storage\localadjust.cpp">
+				<Form>frmadjust</Form>
+				<DependentOn>storage\localadjust.h</DependentOn>
+				<BuildOrder>27</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="xietong\UnitTaskManage.cpp">
+				<Form>frmtaskmanagea</Form>
+				<DependentOn>xietong\UnitTaskManage.h</DependentOn>
+				<BuildOrder>109</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitkucunpandian.cpp">
+				<Form>frmkucunpandian</Form>
+				<DependentOn>Unitkucunpandian.h</DependentOn>
+				<BuildOrder>128</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="setdiscount.cpp">
+				<Form>frmsetdiscount</Form>
+				<DependentOn>setdiscount.h</DependentOn>
+				<BuildOrder>123</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitpanbook.cpp">
+				<Form>frmpanbook</Form>
+				<DependentOn>Unitpanbook.h</DependentOn>
+				<BuildOrder>127</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bookhistory.cpp">
+				<Form>frmbookhistory</Form>
+				<DependentOn>bookhistory.h</DependentOn>
+				<BuildOrder>118</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="membermanager\Unithuancard.cpp">
+				<Form>frmhuancard</Form>
+				<DependentOn>membermanager\Unithuancard.h</DependentOn>
+				<BuildOrder>138</BuildOrder>
+			</CppCompile>
+			<LibFiles Include="Debug\bsadmin.lib">
+				<BuildOrder>5</BuildOrder>
+			</LibFiles>
+			<CppCompile Include="saleanalysis\retail.cpp">
+				<Form>frmretail</Form>
+				<DependentOn>saleanalysis\retail.h</DependentOn>
+				<BuildOrder>37</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="common\SetNotesForm.cpp">
+				<Form>frmSetNotes</Form>
+				<DependentOn>common\SetNotesForm.h</DependentOn>
+				<BuildOrder>91</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="Unitlock.cpp">
+				<Form>frmlock</Form>
+				<DependentOn>Unitlock.h</DependentOn>
+				<BuildOrder>144</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="SetTongyi.cpp">
+				<Form>frmSetTongyi</Form>
+				<DependentOn>SetTongyi.h</DependentOn>
+				<BuildOrder>124</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="financial\unitfapiao.cpp">
+				<Form>frmunitfapiao</Form>
+				<DependentOn>financial\unitfapiao.h</DependentOn>
+				<BuildOrder>139</BuildOrder>
+			</CppCompile>
+			<CppCompile Include="bsquery\Notedetail.cpp">
+				<Form>frmNotedetail</Form>
+				<DependentOn>bsquery\Notedetail.h</DependentOn>
+				<BuildOrder>126</BuildOrder>
+			</CppCompile>
+			<FormResources Include="UnitLog.dfm"/>
+			<FormResources Include="MAIN.dfm"/>
+			<FormResources Include="storage\selectdiaobook.dfm"/>
+			<FormResources Include="UnitFormView.dfm"/>
+			<FormResources Include="MemberCardchange.dfm"/>
+			<FormResources Include="Unitclientbijiao.dfm"/>
+			<FormResources Include="storage\stockcheckprint.dfm"/>
+			<FormResources Include="financial\Unitbalance.dfm"/>
+			<FormResources Include="Syspwdchange.dfm"/>
+			<FormResources Include="supplier\Staffmanage.dfm"/>
+			<FormResources Include="stockalarmbsset.dfm"/>
+			<FormResources Include="financial\Unitwanglai.dfm"/>
+			<FormResources Include="userpurview\UnitGroup.dfm"/>
+			<FormResources Include="Moneydiscount.dfm"/>
+			<FormResources Include="storagebsset.dfm"/>
+			<FormResources Include="localmanage\AreaSet.dfm"/>
+			<FormResources Include="Unitabout.dfm"/>
+			<FormResources Include="membermanager\RecordQuery.dfm"/>
+			<FormResources Include="storage\StockCheck.dfm"/>
+			<FormResources Include="supplier\Staffdetail.dfm"/>
+			<FormResources Include="procureset.dfm"/>
+			<FormResources Include="systemset.dfm"/>
+			<FormResources Include="diaoboset.dfm"/>
+			<FormResources Include="supplier\UnitClient.dfm"/>
+			<FormResources Include="userpurview\UnitNewGroup.dfm"/>
+			<FormResources Include="storage\Unitcheckquery.dfm"/>
+			<FormResources Include="bsset.dfm"/>
+			<FormResources Include="userpurview\Unituser.dfm"/>
+			<FormResources Include="Unitbaobiao.dfm"/>
+			<FormResources Include="Unitchangeaddvalue.dfm"/>
+			<FormResources Include="bsadmin\hoistoryview.dfm"/>
+			<FormResources Include="userpurview\UnitStorToStor.dfm"/>
+			<FormResources Include="bsadmin\Unitpsquery.dfm"/>
+			<FormResources Include="Unitsiglebook.dfm"/>
+			<FormResources Include="common\QryNoteCodeForm.dfm"/>
+			<FormResources Include="bsadmin\retailbookup.dfm"/>
+			<FormResources Include="Unittongqisale.dfm"/>
+			<FormResources Include="UnitSupplierMerge.dfm"/>
+			<FormResources Include="UnitCbprice.dfm"/>
+			<FormResources Include="Unitkuchengjizhuan.dfm"/>
+			<FormResources Include="Unitbslock.dfm"/>
+			<FormResources Include="clientadddot.dfm"/>
+			<FormResources Include="bsadmin\SelectCatalogForm.dfm"/>
+			<FormResources Include="Unitjifendh.dfm"/>
+			<FormResources Include="financial\Unittishi.dfm"/>
+			<FormResources Include="unitcfpandian.dfm"/>
+			<FormResources Include="Unitjxcbijiao.dfm"/>
+			<FormResources Include="userpurview\UnitpurviewManage.dfm"/>
+			<FormResources Include="supplier\detailemessage.dfm"/>
+			<FormResources Include="financial\Unitautojie.dfm"/>
+			<FormResources Include="Unitdaohuorate.dfm"/>
+			<FormResources Include="membermanager\MemberClassSet.dfm"/>
+			<FormResources Include="financial\Unitweijieselect.dfm"/>
+			<FormResources Include="userpurview\Unitfinduser.dfm"/>
+			<FormResources Include="bsadmin\UnitSelectClient.dfm"/>
+			<FormResources Include="Unitboolslect.dfm"/>
+			<FormResources Include="dbmanage\ResStore.dfm"/>
+			<FormResources Include="supplier\clientquery.dfm"/>
+			<FormResources Include="salebsset.dfm"/>
+			<FormResources Include="Unitrate.dfm"/>
+			<FormResources Include="orderbsset.dfm"/>
+			<FormResources Include="membermanager\MemberCardaddvalue.dfm"/>
+			<FormResources Include="UnitMyWork.dfm"/>
+			<FormResources Include="xietong\UnitTaskdetail.dfm"/>
+			<FormResources Include="financial\Unitweishenhe.dfm"/>
+			<FormResources Include="financial\accountdetail.dfm"/>
+			<FormResources Include="common\Print.dfm"/>
+			<FormResources Include="storage\NotCheckBook.dfm"/>
+			<FormResources Include="membermanager\MemberImport.dfm"/>
+			<FormResources Include="retailbsset.dfm"/>
+			<FormResources Include="unitprinttitle.dfm"/>
+			<FormResources Include="financial\accountquery.dfm"/>
+			<FormResources Include="MemberJifenMng.dfm"/>
+			<FormResources Include="common\ModalDialog.dfm"/>
+			<FormResources Include="dbmanage\backdatabase.dfm"/>
+			<FormResources Include="supplier\CoustomerImport.dfm"/>
+			<FormResources Include="common\PwdForm.dfm"/>
+			<FormResources Include="wholesalebsset\UnitWSSet.dfm"/>
+			<FormResources Include="storage\Stockalarm.dfm"/>
+			<FormResources Include="MemberCardUnuse.dfm"/>
+			<FormResources Include="about.dfm"/>
+			<FormResources Include="ClientBackdot.dfm"/>
+			<FormResources Include="supplier\suppmanage.dfm"/>
+			<FormResources Include="LandForm.dfm"/>
+			<FormResources Include="saleanalysis\Wsale.dfm"/>
+			<FormResources Include="Intelligence\UnitSelectCondition.dfm"/>
+			<FormResources Include="Unit1orderyuji.dfm"/>
+			<FormResources Include="membermanager\CustomertypeSet.dfm"/>
+			<FormResources Include="common\MDIChild.dfm"/>
+			<FormResources Include="Unitshengji.dfm"/>
+			<FormResources Include="bsquery\StockInQuery.dfm"/>
+			<FormResources Include="common\QryNoteCodeForm1.dfm"/>
+			<FormResources Include="bsadmin\unitpsinorder.dfm"/>
+			<FormResources Include="userpurview\AddUser.dfm"/>
+			<FormResources Include="storage\StockalarmSet.dfm"/>
+			<FormResources Include="checkselbook.dfm"/>
+			<FormResources Include="saleanalysis\Stockanalysis.dfm"/>
+			<FormResources Include="saleanalysis\saleanalysis.dfm"/>
+			<FormResources Include="financial\accoutnsdue.dfm"/>
+			<FormResources Include="financial\Unitestartsupclient.dfm"/>
+			<FormResources Include="Unittongqiruku.dfm"/>
+			<FormResources Include="membermanager\MemberForm.dfm"/>
+			<FormResources Include="membermanager\MemberCard.dfm"/>
+			<FormResources Include="membermanager\MemberResult.dfm"/>
+			<FormResources Include="xietong\UnitreceiverSelect.dfm"/>
+			<FormResources Include="userpurview\SpecialPasswordForm.dfm"/>
+			<FormResources Include="storage\storagelocal.dfm"/>
+			<FormResources Include="Unit1caigouyuji.dfm"/>
+			<FormResources Include="bsadmin\bookQuery.dfm"/>
+			<FormResources Include="saleanalysis\saletime.dfm"/>
+			<FormResources Include="bookprint.dfm"/>
+			<FormResources Include="storage\localadjust.dfm"/>
+			<FormResources Include="xietong\UnitTaskManage.dfm"/>
+			<FormResources Include="Unitkucunpandian.dfm"/>
+			<FormResources Include="setdiscount.dfm"/>
+			<FormResources Include="Unitpanbook.dfm"/>
+			<FormResources Include="bookhistory.dfm"/>
+			<FormResources Include="membermanager\Unithuancard.dfm"/>
+			<FormResources Include="saleanalysis\retail.dfm"/>
+			<FormResources Include="common\SetNotesForm.dfm"/>
+			<FormResources Include="Unitlock.dfm"/>
+			<FormResources Include="SetTongyi.dfm"/>
+			<FormResources Include="financial\unitfapiao.dfm"/>
+			<FormResources Include="bsquery\Notedetail.dfm"/>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<Import Project="$(BDS)\Bin\CodeGear.Cpp.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Cpp.Targets')"/>
+	</Project>

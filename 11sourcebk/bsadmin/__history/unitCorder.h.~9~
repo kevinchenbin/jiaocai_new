@@ -1,0 +1,61 @@
+
+
+#ifndef unitCorderH
+#define unitCorderH
+//---------------------------------------------------------------------------
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include <ExtCtrls.hpp>
+#include <DBGrids.hpp>
+#include <Grids.hpp>
+#include <ADODB.hpp>
+#include <DB.hpp>
+#include "RzButton.hpp"
+#include "RzPanel.hpp"
+#include <Dialogs.hpp>
+#include <ImgList.hpp>
+//---------------------------------------------------------------------------
+class TCfrmunitorder : public TForm
+{
+__published:	// IDE-managed Components
+	TPanel *Panel1;
+	TDBGrid *DBGrid1;
+	TADOConnection *fcon;
+	TDataSource *ds;
+	TADOQuery *query;
+	TRzToolbar *RzToolbar1;
+	TImageList *ImageList1;
+	TRzToolButton *BtnExport;
+	TSaveDialog *savedlg;
+	TRzToolButton *BtnSave;
+	TRzToolButton *BtnView;
+	TRzToolButton *BtnZoomIn;
+	TRzToolButton *BtnZoomOut;
+	TADOQuery *aq;
+	TEdit *editlocknum;
+
+	void __fastcall BtnExportClick(TObject *Sender);
+	void __fastcall BtnSaveClick(TObject *Sender);
+	void __fastcall BtnViewClick(TObject *Sender);
+	void __fastcall BtnZoomInClick(TObject *Sender);
+	void __fastcall BtnZoomOutClick(TObject *Sender);
+	void __fastcall FormShow(TObject *Sender);
+	void __fastcall editlocknumKeyPress(TObject *Sender, wchar_t &Key);
+	void __fastcall DBGrid1CellClick(TColumn *Column);
+
+private:	// User declarations
+public:		// User declarations
+	__fastcall TCfrmunitorder(TComponent* Owner,TADOConnection *con,int headerid);
+	AnsiString rkcode;
+	int headid;
+	int ISBNET;
+	bool DbgridToExcel(TDBGrid* dbg);
+		void __fastcall DBGrid1DrawColumnCell(TObject *Sender, const TRect &Rect, int DataCol,
+		  TColumn *Column, Grids::TGridDrawState State);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE TCfrmunitorder *Cfrmunitorder;
+//---------------------------------------------------------------------------
+#endif

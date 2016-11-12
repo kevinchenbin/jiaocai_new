@@ -1,0 +1,48 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{DBED8337-AFA2-43CF-9905-31CDFCF05635}</ProjectGuid>
+		</PropertyGroup>
+		<ItemGroup>
+			<Projects Include="bsadmin.cbproj">
+				<Dependencies/>
+			</Projects>
+			<Projects Include="customer\customer.cbproj">
+				<Dependencies/>
+			</Projects>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Default.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Default.Personality/>
+			</BorlandProject>
+		</ProjectExtensions>
+		<Target Name="bsadmin">
+			<MSBuild Projects="bsadmin.cbproj"/>
+		</Target>
+		<Target Name="bsadmin:Clean">
+			<MSBuild Targets="Clean" Projects="bsadmin.cbproj"/>
+		</Target>
+		<Target Name="bsadmin:Make">
+			<MSBuild Targets="Make" Projects="bsadmin.cbproj"/>
+		</Target>
+		<Target Name="customer">
+			<MSBuild Projects="customer\customer.cbproj"/>
+		</Target>
+		<Target Name="customer:Clean">
+			<MSBuild Targets="Clean" Projects="customer\customer.cbproj"/>
+		</Target>
+		<Target Name="customer:Make">
+			<MSBuild Targets="Make" Projects="customer\customer.cbproj"/>
+		</Target>
+		<Target Name="Build">
+			<CallTarget Targets="bsadmin;customer"/>
+		</Target>
+		<Target Name="Clean">
+			<CallTarget Targets="bsadmin:Clean;customer:Clean"/>
+		</Target>
+		<Target Name="Make">
+			<CallTarget Targets="bsadmin:Make;customer:Make"/>
+		</Target>
+		<Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+	</Project>

@@ -1,0 +1,74 @@
+//---------------------------------------------------------------------------
+
+#ifndef UnitznfahuoorderselectH
+#define UnitznfahuoorderselectH
+//---------------------------------------------------------------------------
+#include <Classes.hpp>
+#include <Controls.hpp>
+#include <StdCtrls.hpp>
+#include <Forms.hpp>
+#include "RzButton.hpp"
+#include "RzDBGrid.hpp"
+#include <Buttons.hpp>
+#include <ComCtrls.hpp>
+#include <DBGrids.hpp>
+#include <ExtCtrls.hpp>
+#include <Grids.hpp>
+#include <ADODB.hpp>
+#include <DB.hpp>
+#include <Menus.hpp>
+//---------------------------------------------------------------------------
+class Tfrmzinengfahuo : public TForm
+{
+__published:	// IDE-managed Components
+	TPanel *Panel1;
+	TGroupBox *GroupBox1;
+	TSpeedButton *spselectClient;
+	TCheckBox *chordercode;
+	TCheckBox *chclient;
+	TEdit *edclient;
+	TEdit *edtclient;
+	TRzButton *RzButton1;
+	TCheckBox *chstart;
+	TDateTimePicker *dtpstart;
+	TCheckBox *chend;
+	TDateTimePicker *dtpend;
+	TDBGrid *DBGrid1;
+	TEdit *edordercode;
+	TRzDBGrid *dbgrid;
+	TLabel *Label1;
+	TRadioGroup *rg;
+	TADOQuery *aq;
+	TDataSource *ds;
+	TDataSource *DataSource1;
+	TADOQuery *adoquery;
+	TPopupMenu *PopupMenu1;
+	TMenuItem *N1;
+	TMenuItem *H1;
+	TADOStoredProc *sp;
+	void __fastcall spselectClientClick(TObject *Sender);
+	void __fastcall edclientKeyPress(TObject *Sender, wchar_t &Key);
+	void __fastcall RzButton1Click(TObject *Sender);
+	void __fastcall dbgridCellClick(TColumn *Column);
+	void __fastcall N1Click(TObject *Sender);
+	void __fastcall H1Click(TObject *Sender);
+
+
+private:	// User declarations
+public:		// User declarations
+	__fastcall Tfrmzinengfahuo(TComponent* Owner,TADOConnection *cn,int stgid,int userid);
+
+	int fstgid,fuserid;
+	int ClientID;
+	TADOConnection *fcon;
+    void ClientView();
+    	void __fastcall RzDBGrid1DrawColumnCell(TObject *Sender, const TRect &Rect, int DataCol,
+		  TColumn *Column, Grids::TGridDrawState State);
+		  	void __fastcall DBGrid1DrawColumnCell(TObject *Sender, const TRect &Rect, int DataCol,
+		  TColumn *Column, Grids::TGridDrawState State);
+		  void fhuo(AnsiString ids);
+};
+//---------------------------------------------------------------------------
+extern PACKAGE Tfrmzinengfahuo *frmzinengfahuo;
+//---------------------------------------------------------------------------
+#endif

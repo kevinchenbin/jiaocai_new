@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009-09-14 14:23:08.937.cpp,E:\work\source\bsadmin\customer\Unit1.cpp=E:\work\source\bsadmin\customer\MemberCard.cpp</Transaction>
+    <Transaction>2009-09-14 14:23:08.953.h,E:\work\source\bsadmin\customer\Unit1.h=E:\work\source\bsadmin\customer\MemberCard.h</Transaction>
+    <Transaction>2009-09-14 14:23:08.953.dfm,E:\work\source\bsadmin\customer\Unit1.dfm=E:\work\source\bsadmin\customer\MemberCard.dfm</Transaction>
+    <Transaction>2009-09-14 15:13:26.437.cpp,E:\work\source\bsadmin\customer\Unit1.cpp=E:\work\source\bsadmin\customer\MemberClassSet.cpp</Transaction>
+    <Transaction>2009-09-14 15:13:26.437.h,E:\work\source\bsadmin\customer\Unit1.h=E:\work\source\bsadmin\customer\MemberClassSet.h</Transaction>
+    <Transaction>2009-09-14 15:13:26.437.dfm,E:\work\source\bsadmin\customer\Unit1.dfm=E:\work\source\bsadmin\customer\MemberClassSet.dfm</Transaction>
+    <Transaction>2009-09-14 15:39:48.718.cpp,E:\work\source\bsadmin\customer\Unit1.cpp=E:\work\source\bsadmin\customer\MemberCardaddvalue.cpp</Transaction>
+    <Transaction>2009-09-14 15:39:48.718.h,E:\work\source\bsadmin\customer\Unit1.h=E:\work\source\bsadmin\customer\MemberCardaddvalue.h</Transaction>
+    <Transaction>2009-09-14 15:39:48.718.dfm,E:\work\source\bsadmin\customer\Unit1.dfm=E:\work\source\bsadmin\customer\MemberCardaddvalue.dfm</Transaction>
+    <Transaction>2009-09-14 16:20:04.140.cpp,E:\work\source\bsadmin\customer\Unit1.cpp=E:\work\source\bsadmin\customer\SupplierLocal.cpp</Transaction>
+    <Transaction>2009-09-14 16:20:04.140.h,E:\work\source\bsadmin\customer\Unit1.h=E:\work\source\bsadmin\customer\SupplierLocal.h</Transaction>
+    <Transaction>2009-09-14 16:20:04.140.dfm,E:\work\source\bsadmin\customer\Unit1.dfm=E:\work\source\bsadmin\customer\SupplierLocal.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

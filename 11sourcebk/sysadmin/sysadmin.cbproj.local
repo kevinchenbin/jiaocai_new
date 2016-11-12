@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009/07/09 11:10:36.264.cpp,E:\dev_source\图书连锁项目\book\source\sysadmin\sysadmin.cpp=</Transaction>
+    <Transaction>2009/07/09 11:10:36.265.h,E:\dev_source\图书连锁项目\book\source\sysadmin\sysadmin.h=</Transaction>
+    <Transaction>2009-08-16 20:21:32.765.cpp,G:\work\book\source\sysadmin\Print.cpp=</Transaction>
+    <Transaction>2009-08-16 20:21:32.765.dfm,G:\work\book\source\sysadmin\Print.dfm=</Transaction>
+    <Transaction>2009-11-24 18:05:36.937.cpp,D:\work\source\sysadmin\Unit2.cpp=D:\work\source\sysadmin\Addstorge.cpp</Transaction>
+    <Transaction>2009-11-24 18:05:36.937.h,D:\work\source\sysadmin\Unit2.h=D:\work\source\sysadmin\Addstorge.h</Transaction>
+    <Transaction>2009-11-24 18:05:36.937.dfm,D:\work\source\sysadmin\Unit2.dfm=D:\work\source\sysadmin\Addstorge.dfm</Transaction>
+    <Transaction>2010-04-18 09:41:21.968.cpp,D:\work\jlbook\11source\global.cpp=</Transaction>
+    <Transaction>2010-04-29 12:02:41.968.cpp,D:\work\jlbook\11source\sysadmin\Unit2.cpp=D:\work\jlbook\11source\sysadmin\Masterset.cpp</Transaction>
+    <Transaction>2010-04-29 12:02:41.968.h,D:\work\jlbook\11source\sysadmin\Unit2.h=D:\work\jlbook\11source\sysadmin\Masterset.h</Transaction>
+    <Transaction>2010-04-29 12:02:41.968.dfm,D:\work\jlbook\11source\sysadmin\Unit2.dfm=D:\work\jlbook\11source\sysadmin\Masterset.dfm</Transaction>
+    <Transaction>2010-10-26 09:43:27.495.cpp,D:\work\jiaocai\11sourcebk\sysadmin\BsSettingsForm.cpp=</Transaction>
+    <Transaction>2010-10-26 09:43:27.495.dfm,D:\work\jiaocai\11sourcebk\sysadmin\BsSettingsForm.dfm=</Transaction>
+    <Transaction>2010-10-26 09:44:28.689.cpp,D:\work\jiaocai\11sourcebk\sysadmin\StorageNoteForm.cpp=</Transaction>
+    <Transaction>2010-10-26 09:44:28.689.dfm,D:\work\jiaocai\11sourcebk\sysadmin\StorageNoteForm.dfm=</Transaction>
+    <Transaction>2010-10-26 09:45:09.140.cpp,D:\work\jiaocai\11sourcebk\sysadmin\WholesaleNoteForm.cpp=</Transaction>
+    <Transaction>2010-10-26 09:45:09.140.dfm,D:\work\jiaocai\11sourcebk\sysadmin\WholesaleNoteForm.dfm=</Transaction>
+  </Transactions>
+</BorlandProject>

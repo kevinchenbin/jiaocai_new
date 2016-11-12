@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009-10-15 20:46:04.718.cpp,D:\My Documents\RAD Studio\Projects\Unit1.cpp=E:\supplier\auppliermanage.cpp</Transaction>
+    <Transaction>2009-10-15 20:46:04.718.h,D:\My Documents\RAD Studio\Projects\Unit1.h=E:\supplier\auppliermanage.h</Transaction>
+    <Transaction>2009-10-15 20:46:04.718.dfm,D:\My Documents\RAD Studio\Projects\Unit1.dfm=E:\supplier\auppliermanage.dfm</Transaction>
+    <Transaction>2009-10-15 20:46:14.359.cbproj,D:\My Documents\RAD Studio\Projects\Project1.cbproj=E:\supplier\supplier.cbproj</Transaction>
+    <Transaction>2009-10-15 20:47:24.515.cpp,E:\supplier\Unit2.cpp=E:\supplier\suppmanage.cpp</Transaction>
+    <Transaction>2009-10-15 20:47:24.515.h,E:\supplier\Unit2.h=E:\supplier\suppmanage.h</Transaction>
+    <Transaction>2009-10-15 20:47:24.515.dfm,E:\supplier\Unit2.dfm=E:\supplier\suppmanage.dfm</Transaction>
+    <Transaction>2009-10-15 21:26:21.734.cpp,E:\supplier\Unit2.cpp=E:\supplier\detailemessage.cpp</Transaction>
+    <Transaction>2009-10-15 21:26:21.734.h,E:\supplier\Unit2.h=E:\supplier\detailemessage.h</Transaction>
+    <Transaction>2009-10-15 21:26:21.734.dfm,E:\supplier\Unit2.dfm=E:\supplier\detailemessage.dfm</Transaction>
+  </Transactions>
+</BorlandProject>

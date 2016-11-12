@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2009-12-10 11:40:01.859.cpp,D:\work\retailversion\source\dataanalysis\ClearingProvidForm.cpp=D:\work\retailversion\source\dataanalysis\ClearingClientForm.cpp</Transaction>
+    <Transaction>2009-12-10 11:40:01.859.h,D:\work\retailversion\source\dataanalysis\ClearingProvidForm.h=D:\work\retailversion\source\dataanalysis\ClearingClientForm.h</Transaction>
+    <Transaction>2009-12-10 11:40:01.859.dfm,D:\work\retailversion\source\dataanalysis\ClearingProvidForm.dfm=D:\work\retailversion\source\dataanalysis\ClearingClientForm.dfm</Transaction>
+    <Transaction>2010-07-19 12:09:14.734.cpp,D:\work\jiaocai\11sourcebk\dataanalysis\ClearingProvidForm.cpp=D:\work\jiaocai\11sourcebk\dataanalysis\ClearingProvidForm11.cpp</Transaction>
+    <Transaction>2010-07-19 12:09:14.734.h,D:\work\jiaocai\11sourcebk\dataanalysis\ClearingProvidForm.h=D:\work\jiaocai\11sourcebk\dataanalysis\ClearingProvidForm11.h</Transaction>
+    <Transaction>2010-07-19 12:09:14.734.dfm,D:\work\jiaocai\11sourcebk\dataanalysis\ClearingProvidForm.dfm=D:\work\jiaocai\11sourcebk\dataanalysis\ClearingProvidForm11.dfm</Transaction>
+    <Transaction>2010-09-28 14:11:56.181.cpp,D:\work\jiaocai\11sourcebk\dataanalysis\RetailMemberForm.cpp=</Transaction>
+    <Transaction>2010-09-28 14:11:56.181.dfm,D:\work\jiaocai\11sourcebk\dataanalysis\RetailMemberForm.dfm=</Transaction>
+    <Transaction>2011-03-11 17:47:51.714.cpp,E:\work\jiaocai\11sourcebk\dataanalysis\InvoicingForm.cpp=E:\work\jiaocai\11sourcebk\dataanalysis\Yewutongji.cpp</Transaction>
+    <Transaction>2011-03-11 17:47:51.714.h,E:\work\jiaocai\11sourcebk\dataanalysis\InvoicingForm.h=E:\work\jiaocai\11sourcebk\dataanalysis\Yewutongji.h</Transaction>
+    <Transaction>2011-03-11 17:47:51.714.dfm,E:\work\jiaocai\11sourcebk\dataanalysis\InvoicingForm.dfm=E:\work\jiaocai\11sourcebk\dataanalysis\Yewutongji.dfm</Transaction>
+  </Transactions>
+</BorlandProject>
